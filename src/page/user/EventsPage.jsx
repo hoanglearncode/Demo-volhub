@@ -138,213 +138,81 @@ export default function EventsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Search Bar */}
-        <div className="mb-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Tìm kiếm sự kiện..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-            />
-          </div>
-        </div>
-
-        {/* Filter Section */}
-        <div className={`bg-white rounded-lg shadow-sm border transition-all duration-300 overflow-hidden ${
-          isFilterOpen ? 'mb-6' : 'mb-6'
-        }`}>
-          {/* Filter Header */}
-          <div 
-            className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50"
-            onClick={() => setIsFilterOpen(!isFilterOpen)}
-          >
-            <div className="flex items-center gap-2">
-              <Filter className="w-5 h-5 text-blue-600" />
-              <span className="font-semibold text-gray-900">Bộ lọc</span>
-              {hasActiveFilters && (
-                <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs">
-                  Đang áp dụng
-                </span>
-              )}
-            </div>
-            {isFilterOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-          </div>
-
-          {/* Filter Content */}
-          <div className={`transition-all duration-300 ${
-            isFilterOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-          }`}>
-            <div className="p-4 pt-0 space-y-4 border-t">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* Location Filter */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <MapPin className="w-4 h-4 inline mr-1" />
-                    Địa điểm
-                  </label>
-                  <select
-                    value={filters.location}
-                    onChange={(e) => updateFilter('location', e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    {locations.map(loc => (
-                      <option key={loc} value={loc}>{loc}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Salary Filter */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <DollarSign className="w-4 h-4 inline mr-1" />
-                    Mức phụ cấp
-                  </label>
-                  <select
-                    value={filters.salary}
-                    onChange={(e) => updateFilter('salary', e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    {salaryRanges.map(range => (
-                      <option key={range} value={range}>{range}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Type Filter */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <Clock className="w-4 h-4 inline mr-1" />
-                    Loại hình
-                  </label>
-                  <select
-                    value={filters.type}
-                    onChange={(e) => updateFilter('type', e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    {eventTypes.map(type => (
-                      <option key={type} value={type}>{type}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Category Filter */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <Users className="w-4 h-4 inline mr-1" />
-                    Danh mục
-                  </label>
-                  <select
-                    value={filters.category}
-                    onChange={(e) => updateFilter('category', e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    {categories.map(cat => (
-                      <option key={cat} value={cat}>{cat}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Clear Filters */}
-              {hasActiveFilters && (
-                <div className="flex justify-end">
-                  <button
-                    onClick={clearFilters}
-                    className="flex items-center gap-1 text-blue-600 hover:text-blue-700 text-sm"
-                  >
-                    <X className="w-4 h-4" />
-                    Xóa bộ lọc
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Results Count */}
-        <div className="mb-6">
-          <p className="text-gray-600">
-            Tìm thấy <span className="font-semibold text-blue-600">{filteredEvents.length}</span> sự kiện
-          </p>
-        </div>
-
         {/* Events List */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {filteredEvents.map(event => (
-            <div key={event.id} className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow">
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-xl font-semibold text-gray-900 line-clamp-2">
-                    {event.title}
-                  </h3>
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    event.isVolunteer 
-                      ? 'bg-green-100 text-green-700' 
-                      : 'bg-blue-100 text-blue-700'
-                  }`}>
-                    {event.type}
-                  </span>
-                </div>
-
-                <p className="text-gray-600 mb-4 line-clamp-2">{event.description}</p>
-
-                <div className="space-y-3 mb-6">
-                  <div className="flex items-center text-gray-600">
-                    <MapPin className="w-4 h-4 mr-2 text-blue-600" />
-                    <span>{event.location}</span>
-                  </div>
-                  
-                  <div className="flex items-center text-gray-600">
-                    <DollarSign className="w-4 h-4 mr-2 text-blue-600" />
-                    <span className={event.isVolunteer ? 'text-green-600 font-medium' : ''}>
-                      {event.salary}
+        <div className="grid grid-cols-12 gap-6 px-5 md:px-20">
+          <div className="col-span-9">
+            {filteredEvents.length > 0 && filteredEvents.map(event => (
+              <div key={event.id} className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow">
+                <div className="p-6">
+                  <div className="flex justify-between items-start mb-4">
+                    <h3 className="text-xl font-semibold text-gray-900 line-clamp-2">
+                      {event.title}
+                    </h3>
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      event.isVolunteer 
+                        ? 'bg-green-100 text-green-700' 
+                        : 'bg-blue-100 text-blue-700'
+                    }`}>
+                      {event.type}
                     </span>
                   </div>
-                  
-                  <div className="flex items-center text-gray-600">
-                    <Clock className="w-4 h-4 mr-2 text-blue-600" />
-                    <span>{event.time}</span>
-                  </div>
-                  
-                  <div className="flex items-center text-gray-600">
-                    <Users className="w-4 h-4 mr-2 text-blue-600" />
-                    <span>Cần {event.volunteers} người</span>
-                  </div>
-                </div>
 
-                <div className="flex justify-between items-center">
-                  <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-sm">
-                    {event.category}
-                  </span>
-                  <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
-                    {event.isVolunteer ? 'Đăng ký TNV' : 'Ứng tuyển'}
-                  </button>
+                  <p className="text-gray-600 mb-4 line-clamp-2">{event.description}</p>
+
+                  <div className="space-y-3 mb-6">
+                    <div className="flex items-center text-gray-600">
+                      <MapPin className="w-4 h-4 mr-2 text-blue-600" />
+                      <span>{event.location}</span>
+                    </div>
+                    
+                    <div className="flex items-center text-gray-600">
+                      <DollarSign className="w-4 h-4 mr-2 text-blue-600" />
+                      <span className={event.isVolunteer ? 'text-green-600 font-medium' : ''}>
+                        {event.salary}
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-center text-gray-600">
+                      <Clock className="w-4 h-4 mr-2 text-blue-600" />
+                      <span>{event.time}</span>
+                    </div>
+                    
+                    <div className="flex items-center text-gray-600">
+                      <Users className="w-4 h-4 mr-2 text-blue-600" />
+                      <span>Cần {event.volunteers} người</span>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-center">
+                    <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-sm">
+                      {event.category}
+                    </span>
+                    <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                      {event.isVolunteer ? 'Đăng ký TNV' : 'Ứng tuyển'}
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
 
-        {/* Empty State */}
-        {filteredEvents.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
-              <Search className="w-16 h-16 mx-auto" />
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Không tìm thấy sự kiện nào</h3>
-            <p className="text-gray-600">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
+            {filteredEvents.length === 0 && (
+              <div className="text-center py-12 col-span-9">
+                <div className="text-gray-400 mb-4">
+                  <Search className="w-16 h-16 mx-auto" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Không tìm thấy sự kiện nào</h3>
+                <p className="text-gray-600">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
+              </div>
+            )}
           </div>
-        )}
+          <div className="col-span-2">
+            <div>
+              <h3>Trạng thái việc hiện tại</h3>
+              <button>Sẵn sàng</button>
+              <button>Chờ đợi</button>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
   );
 }
