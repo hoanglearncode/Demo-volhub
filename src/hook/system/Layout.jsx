@@ -68,16 +68,17 @@ export default function Layout() {
   
   const active = url.pathname.split('/')[1];
 
-  console.log(active)
 
   switch (active) {
-    case "user":
-      return <UserLayout />;
     case "btc":
       return <BtcLayout />;
     case "admin":
       return <AdminLayout />;
     default:
-      return <GuestLayout />;
+      if (role === 'user') {
+        return <UserLayout />; 
+      }else {
+        return <GuestLayout />;
+      }
   }
 }

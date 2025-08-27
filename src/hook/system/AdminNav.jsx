@@ -35,9 +35,8 @@ import {
   Brain
 } from "lucide-react";
 
-export default function AdminNav({ counts = {} }) {
+export default function AdminNav({ counts = {}, isCollapsed, setIsCollapsed }) {
   const [open, setOpen] = useState(null);
-  const [isCollapsed, setIsCollapsed] = useState(false)
   const location = useLocation();
   
   const toggle = (key) => setOpen(open === key ? null : key);
@@ -173,7 +172,7 @@ export default function AdminNav({ counts = {} }) {
   };
 
   return (
-    <aside className={`${isCollapsed ? 'w-30' : 'w-72'} bg-white border-r border-gray-200 h-screen sticky top-0 overflow-hidden transition-all duration-300 z-40`}>
+    <aside className={`${isCollapsed ? 'w-30' : 'w-md'} bg-white border-r border-gray-200 h-screen sticky top-0 overflow-hidden transition-all duration-300 z-40`}>
       <div className="h-full flex flex-col">
         {/* Header */}
         <div className="flex justify-between items-center p-4 border-b border-gray-100">

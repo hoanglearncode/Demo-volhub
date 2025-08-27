@@ -3,6 +3,7 @@ import {Link, Route, Routes} from 'react-router-dom'
 import { useState } from "react";
 import Dashboard from "../../page/admin/Dashboard.jsx";
 import AdminNav from "../../hook/system/AdminNav.jsx";
+import NotFoundPage from "../../page/common/NotFoundPage.jsx";
 
 function AdminLayout() {
 
@@ -17,16 +18,17 @@ function AdminLayout() {
   return (
     <div className="flex flex-col min-w-screen">
       <div className="flex gap-5">
-        <AdminNav />
-        <div>
+        <AdminNav isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed}/>
+        <div className="w-full">
           <Routes>
-            {/* <Route path="/admin" element={<Dashboard />} />
-            <Route path="/about" element={<AboutPage />} />
+            <Route path="/admin" element={<Dashboard />} />
+            {/* <Route path="/about" element={<AboutPage />} />
             <Route path="/events" element={<EventsPage />} />
             <Route path="/volunteers" element={<Volunteers />} />
             <Route path="/contests" element= {<ContestPage />} />
             <Route path="/contact" element= {<Contact />} />
-            <Route path="*" element={<NotFoundPage />} /> */}
+            */}
+            <Route path="/admin/*" element={<NotFoundPage />} /> 
           </Routes>
         </div>
       </div>

@@ -29,23 +29,10 @@ export default function TopNav() {
     ],
     user: [
       { to: "/", label: "Trang chủ" },
-      { to: "/dashboard", label: "Bảng điều khiển" },
-      { to: "/profile", label: "Hồ sơ" },
-      { to: "/logout", label: "Đăng xuất", action: logout },
-    ],
-    btc: [
-      { to: "/", label: "Trang chủ" },
-      { to: "/btc-dashboard", label: "Bảng điều khiển BTC" },
-      { to: "/manage-events", label: "Quản lý sự kiện" },
-      { to: "/logout", label: "Đăng xuất", action: logout },
-    ],
-    admin: [
-      { to: "/", label: "Trang chủ" },
-      { to: "/admin-dashboard", label: "Bảng điều khiển Admin" },
-      { to: "/user-management", label: "Quản lý người dùng" },
-      { to: "/site-settings", label: "Cài đặt trang web" },
-      { to: "/logout", label: "Đăng xuất", action: logout },
-    ],
+      { to: "/my-cv", label: "CV của tôi" },
+      { to: "/event", label: "Sự kiện đề xuất" },
+      { to: "/result", label: "Kết quả của tôi"},
+    ]
   };
 
   const role = user?.role ?? "guest";

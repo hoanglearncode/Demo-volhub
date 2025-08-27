@@ -27,7 +27,7 @@ export default function ActivityCart({ prod }) {
         {/* Overlay Button */}
         <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
           <Link
-            to={prod.url}
+            to={`/events/${prod.slug}`}
             className="flex items-center gap-2 px-4 py-2 bg-white/95 backdrop-blur-sm rounded-full text-gray-800 font-semibold hover:bg-white transition-colors duration-200"
           >
             <Play className="w-4 h-4" />

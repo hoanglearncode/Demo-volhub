@@ -11,6 +11,7 @@ import ContestPage from "../../page/user/Contests.jsx";
 
 import NotFoundPage from "../../page/common/NotFoundPage.jsx";
 import LoginPage from "../../page/common/LoginPage.jsx";
+import EventDetail from "../../page/common/EvenDetail.jsx";
 
 function GuestLayout() {
   return (
@@ -24,6 +25,7 @@ function GuestLayout() {
           <Route path="/volunteers" element={<Volunteers />} />
           <Route path="/contests" element= {<ContestPage />} />
           <Route path="/contact" element= {<Contact />} />
+          <Route path="/events/:slug" element= {<EventDetail />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
