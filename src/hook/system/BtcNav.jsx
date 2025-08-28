@@ -52,7 +52,7 @@ export default function BtcNav({isCollapsed = false}) {
       <div className="flex w-full min-w-15 items-center px-2 gap-2">
         <img src="/logo.svg" alt="avatar" className="w-12 h-12 rounded-full"/>
         <div className={`${isCollapsed ? "hidden" : ""} transform transition-transform duration-300 flex flex-col`}>
-          <span className="font-semibold text-sm">{user.name}</span>
+          <span className="font-semibold text-sm">{user?.name}</span>
           <span className="font-semibold text-xs">{user?.role}</span>
           <span className="font-semibold text-xs">{user?.status}</span>
         </div>

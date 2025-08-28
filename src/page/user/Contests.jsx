@@ -1,207 +1,150 @@
 import { useState, useMemo } from "react";
-import { ChevronDown, ChevronUp, MapPin, Trophy, Clock, Users, Filter, Search, X, Calendar, Star, Zap, Gift, Target } from "lucide-react";
+import { ChevronDown, ChevronUp, MapPin, DollarSign, Clock, Users, Filter, Search, X, Heart, Share2, Bookmark, Star } from "lucide-react";
 
-// Mock data - dữ liệu cuộc thi mẫu
-const mockContests = [
+// Mock data - sẽ được thay thế bằng dữ liệu từ Facebook API
+const mockEvents = [
   {
     id: 1,
-    title: "Cuộc thi Khởi nghiệp Đổi mới Sáng tạo 2025",
-    location: "Toàn quốc",
-    category: "Khởi nghiệp",
-    registrationDeadline: "31/03/2025",
-    contestDate: "15/04/2025 - 20/04/2025",
-    prize: "500,000,000 VNĐ",
-    participants: 1000,
-    registered: 657,
-    difficulty: "Khó",
-    format: "Online + Offline",
-    description: "Cuộc thi dành cho các dự án khởi nghiệp sáng tạo, đặc biệt trong lĩnh vực công nghệ và chuyển đổi số.",
-    organizer: "Bộ Khoa học & Công nghệ",
-    requirements: ["Sinh viên/Người đi làm", "Có ý tưởng khởi nghiệp", "Làm việc nhóm"],
-    benefits: ["Giải thưởng lớn", "Mentor 1-1", "Kết nối nhà đầu tư"],
-    status: "Đang mở",
-    featured: true,
-    trending: false
+    title: "Hội chợ Xuân 2025 - Tuyển MC và Staff",
+    location: "Hà Nội",
+    salary: "200,000 - 500,000 VNĐ/ngày",
+    time: "15/02/2025 - 20/02/2025",
+    type: "Part-time",
+    category: "Sự kiện",
+    volunteers: 50,
+    description: "Tuyển MC và nhân viên hỗ trợ cho hội chợ xuân tại Hà Nội. Yêu cầu có kinh nghiệm.",
+    isVolunteer: false,
+    rating: 4.8,
+    applicants: 120,
+    urgency: "high",
+    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=200&fit=crop"
   },
   {
     id: 2,
-    title: "Olympic Tin học Việt Nam 2025",
-    location: "Hà Nội",
-    category: "Lập trình",
-    registrationDeadline: "15/02/2025",
-    contestDate: "01/03/2025",
-    prize: "50,000,000 VNĐ",
-    participants: 500,
-    registered: 423,
-    difficulty: "Rất khó",
-    format: "Offline",
-    description: "Cuộc thi lập trình danh giá nhất Việt Nam dành cho học sinh, sinh viên và các lập trình viên chuyên nghiệp.",
-    organizer: "Hội Tin học Việt Nam",
-    requirements: ["Kiến thức thuật toán", "Ngôn ngữ lập trình", "Tư duy logic"],
-    benefits: ["Chứng chỉ Olympic", "Cơ hội việc làm", "Học bổng"],
-    status: "Sắp đóng",
-    featured: true,
-    trending: true
+    title: "Chương trình từ thiện vì trẻ em nghèo",
+    location: "TP.HCM",
+    salary: "Phi lợi nhuận",
+    time: "10/03/2025",
+    type: "Tình nguyện",
+    category: "Từ thiện",
+    volunteers: 100,
+    description: "Chương trình giúp đỡ trẻ em có hoàn cảnh khó khăn. Tìm kiếm những tình nguyện viên nhiệt huyết.",
+    isVolunteer: true,
+    rating: 4.9,
+    applicants: 85,
+    urgency: "medium",
+    image: "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=400&h=200&fit=crop"
   },
   {
     id: 3,
-    title: "Cuộc thi Thiết kế Đồ họa Creative Awards",
-    location: "TP.HCM",
-    category: "Thiết kế",
-    registrationDeadline: "20/04/2025",
-    contestDate: "05/05/2025 - 10/05/2025",
-    prize: "100,000,000 VNĐ",
-    participants: 300,
-    registered: 178,
-    difficulty: "Vừa",
-    format: "Online",
-    description: "Cuộc thi dành cho các nhà thiết kế đồ họa, tìm kiếm những ý tưởng sáng tạo và độc đáo nhất.",
-    organizer: "Adobe Vietnam",
-    requirements: ["Kỹ năng thiết kế", "Phần mềm đồ họa", "Tư duy sáng tạo"],
-    benefits: ["Phần mềm Adobe", "Internship", "Portfolio"],
-    status: "Đang mở",
-    featured: false,
-    trending: true
+    title: "Festival Âm nhạc Hè 2025",
+    location: "Đà Nẵng",
+    salary: "300,000 - 800,000 VNĐ/ngày",
+    time: "01/06/2025 - 03/06/2025",
+    type: "Full-time",
+    category: "Festival",
+    volunteers: 30,
+    description: "Tuyển nhân viên tổ chức festival âm nhạc lớn nhất miền Trung. Ưu tiên có kinh nghiệm.",
+    isVolunteer: false,
+    rating: 4.7,
+    applicants: 200,
+    urgency: "low",
+    image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=200&fit=crop"
   },
   {
     id: 4,
-    title: "Hội thi Hùng biện Tiếng Anh 2025",
-    location: "Đà Nẵng", 
-    category: "Ngôn ngữ",
-    registrationDeadline: "10/03/2025",
-    contestDate: "25/03/2025",
-    prize: "30,000,000 VNĐ",
-    participants: 200,
-    registered: 156,
-    difficulty: "Vừa",
-    format: "Offline",
-    description: "Cuộc thi hùng biện tiếng Anh dành cho sinh viên, nâng cao kỹ năng thuyết trình và giao tiếp.",
-    organizer: "IDP Education",
-    requirements: ["Tiếng Anh tốt", "Kỹ năng thuyết trình", "Tự tin"],
-    benefits: ["Học bổng du học", "Chứng chỉ IELTS", "Networking"],
-    status: "Đang mở",
-    featured: false,
-    trending: false
+    title: "Hội thảo Khởi nghiệp Công nghệ",
+    location: "Hà Nội",
+    salary: "150,000 - 300,000 VNĐ/ngày",
+    time: "25/04/2025",
+    type: "Part-time",
+    category: "Hội thảo",
+    volunteers: 20,
+    description: "Hỗ trợ tổ chức hội thảo khởi nghiệp công nghệ. Tuyển nhân viên check-in và hỗ trợ kỹ thuật.",
+    isVolunteer: false,
+    rating: 4.6,
+    applicants: 45,
+    urgency: "medium",
+    image: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400&h=200&fit=crop"
   },
   {
     id: 5,
-    title: "Cuộc thi Ảnh Du lịch Việt Nam",
-    location: "Toàn quốc",
-    category: "Nghệ thuật",
-    registrationDeadline: "30/06/2025",
-    contestDate: "15/07/2025",
-    prize: "80,000,000 VNĐ",
-    participants: 1500,
-    registered: 234,
-    difficulty: "Dễ",
-    format: "Online",
-    description: "Cuộc thi chụp ảnh du lịch, giới thiệu vẻ đẹp Việt Nam qua góc nhìn của nhiếp ảnh gia.",
-    organizer: "Tổng cục Du lịch VN",
-    requirements: ["Máy ảnh/Điện thoại", "Đam mê du lịch", "Góc nhìn sáng tạo"],
-    benefits: ["Du lịch miễn phí", "Thiết bị chụp ảnh", "Triển lãm ảnh"],
-    status: "Đang mở",
-    featured: false,
-    trending: false
+    title: "Chiến dịch Trồng cây xanh",
+    location: "Cần Thơ",
+    salary: "Phi lợi nhuận",
+    time: "05/05/2025",
+    type: "Tình nguyện",
+    category: "Môi trường",
+    volunteers: 200,
+    description: "Tham gia chiến dịch trồng cây xanh bảo vệ môi trường. Chung tay vì một Việt Nam xanh.",
+    isVolunteer: true,
+    rating: 4.8,
+    applicants: 300,
+    urgency: "high",
+    image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=200&fit=crop"
   },
   {
     id: 6,
-    title: "Hackathon Fintech Challenge 2025",
+    title: "Triển lãm Nghệ thuật Đương đại",
     location: "TP.HCM",
-    category: "Công nghệ",
-    registrationDeadline: "28/02/2025",
-    contestDate: "15/03/2025 - 17/03/2025",
-    prize: "200,000,000 VNĐ",
-    participants: 400,
-    registered: 389,
-    difficulty: "Khó",
-    format: "Offline",
-    description: "Cuộc thi phát triển ứng dụng tài chính trong 48 giờ, tập trung vào blockchain và AI.",
-    organizer: "Techcombank & FPT",
-    requirements: ["Lập trình", "Hiểu biết fintech", "Làm việc nhóm"],
-    benefits: ["Việc làm ngay", "Đầu tư startup", "Mentorship"],
-    status: "Sắp đóng",
-    featured: true,
-    trending: true
-  },
-  {
-    id: 7,
-    title: "Cuộc thi Viết Blog Du lịch",
-    location: "Online",
-    category: "Văn học",
-    registrationDeadline: "15/05/2025",
-    contestDate: "01/06/2025",
-    prize: "25,000,000 VNĐ",
-    participants: 800,
-    registered: 145,
-    difficulty: "Dễ",
-    format: "Online",
-    description: "Cuộc thi viết blog chia sẻ trải nghiệm du lịch, khuyến khích khám phá văn hóa Việt Nam.",
-    organizer: "Vietnam Airlines",
-    requirements: ["Kỹ năng viết", "Trải nghiệm du lịch", "Sáng tạo nội dung"],
-    benefits: ["Vé máy bay", "Voucher khách sạn", "Cơ hội hợp tác"],
-    status: "Đang mở",
-    featured: false,
-    trending: false
-  },
-  {
-    id: 8,
-    title: "Cuộc thi Nhảy Street Dance Battle",
-    location: "Hà Nội",
-    category: "Thể thao",
-    registrationDeadline: "20/03/2025",
-    contestDate: "05/04/2025",
-    prize: "40,000,000 VNĐ",
-    participants: 150,
-    registered: 98,
-    difficulty: "Vừa",
-    format: "Offline",
-    description: "Cuộc thi nhảy street dance quy mô lớn, tìm kiếm những dancer tài năng nhất Việt Nam.",
-    organizer: "Youth Dance Vietnam",
-    requirements: ["Kỹ năng nhảy", "Thể lực tốt", "Tinh thần thi đấu"],
-    benefits: ["Hợp đồng biểu diễn", "Đào tạo chuyên nghiệp", "Quảng bá"],
-    status: "Đang mở",
-    featured: false,
-    trending: true
+    salary: "250,000 - 400,000 VNĐ/ngày",
+    time: "12/07/2025 - 20/07/2025",
+    type: "Part-time",
+    category: "Triển lãm",
+    volunteers: 15,
+    description: "Tuyển hướng dẫn viên và nhân viên bảo vệ cho triển lãm nghệ thuật đương đại.",
+    isVolunteer: false,
+    rating: 4.5,
+    applicants: 60,
+    urgency: "low",
+    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop"
   }
 ];
 
-const locations = ["Tất cả", "Toàn quốc", "Online", "Hà Nội", "TP.HCM", "Đà Nẵng"];
-const categories = ["Tất cả", "Khởi nghiệp", "Lập trình", "Thiết kế", "Ngôn ngữ", "Nghệ thuật", "Công nghệ", "Văn học", "Thể thao"];
-const difficulties = ["Tất cả", "Dễ", "Vừa", "Khó", "Rất khó"];
-const formats = ["Tất cả", "Online", "Offline", "Online + Offline"];
-const statuses = ["Tất cả", "Đang mở", "Sắp đóng", "Đã đóng"];
+const locations = ["Tất cả", "Hà Nội", "TP.HCM", "Đà Nẵng", "Cần Thơ"];
+const salaryRanges = ["Tất cả", "Phi lợi nhuận", "Dưới 200k", "200k - 500k", "Trên 500k"];
+const eventTypes = ["Tất cả", "Part-time", "Full-time", "Tình nguyện"];
+const categories = ["Tất cả", "Sự kiện", "Từ thiện", "Festival", "Hội thảo", "Môi trường", "Triển lãm"];
 
 export default function ContestPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [showOnlyFeatured, setShowOnlyFeatured] = useState(false);
-  const [showOnlyTrending, setShowOnlyTrending] = useState(false);
+  const [viewMode, setViewMode] = useState("grid"); // grid or list
+  const [sortBy, setSortBy] = useState("newest");
+  const [savedEvents, setSavedEvents] = useState(new Set());
+  const [userStatus, setUserStatus] = useState("available");
   const [filters, setFilters] = useState({
     location: "Tất cả",
-    category: "Tất cả",
-    difficulty: "Tất cả",
-    format: "Tất cả",
-    status: "Tất cả"
+    salary: "Tất cả", 
+    type: "Tất cả",
+    category: "Tất cả"
   });
 
   // Filter logic
-  const filteredContests = useMemo(() => {
-    return mockContests.filter(contest => {
-      const matchesSearch = contest.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           contest.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           contest.organizer.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesLocation = filters.location === "Tất cả" || contest.location === filters.location;
-      const matchesCategory = filters.category === "Tất cả" || contest.category === filters.category;
-      const matchesDifficulty = filters.difficulty === "Tất cả" || contest.difficulty === filters.difficulty;
-      const matchesFormat = filters.format === "Tất cả" || contest.format === filters.format;
-      const matchesStatus = filters.status === "Tất cả" || contest.status === filters.status;
-      const matchesFeatured = !showOnlyFeatured || contest.featured;
-      const matchesTrending = !showOnlyTrending || contest.trending;
+  const filteredEvents = useMemo(() => {
+    return mockEvents.filter(event => {
+      const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           event.description.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesLocation = filters.location === "Tất cả" || event.location === filters.location;
+      const matchesType = filters.type === "Tất cả" || event.type === filters.type;
+      const matchesCategory = filters.category === "Tất cả" || event.category === filters.category;
+      
+      let matchesSalary = true;
+      if (filters.salary !== "Tất cả") {
+        if (filters.salary === "Phi lợi nhuận") {
+          matchesSalary = event.isVolunteer;
+        } else if (filters.salary === "Dưới 200k") {
+          matchesSalary = !event.isVolunteer && event.salary.includes("200,000") && !event.salary.includes("500,000");
+        } else if (filters.salary === "200k - 500k") {
+          matchesSalary = !event.isVolunteer && (event.salary.includes("200,000") || event.salary.includes("300,000") || event.salary.includes("500,000"));
+        } else if (filters.salary === "Trên 500k") {
+          matchesSalary = !event.isVolunteer && event.salary.includes("800,000");
+        }
+      }
 
-      return matchesSearch && matchesLocation && matchesCategory && matchesDifficulty && 
-             matchesFormat && matchesStatus && matchesFeatured && matchesTrending;
+      return matchesSearch && matchesLocation && matchesType && matchesCategory && matchesSalary;
     });
-  }, [searchTerm, filters, showOnlyFeatured, showOnlyTrending]);
+  }, [searchTerm, filters]);
 
   const updateFilter = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
@@ -210,213 +153,126 @@ export default function ContestPage() {
   const clearFilters = () => {
     setFilters({
       location: "Tất cả",
-      category: "Tất cả",
-      difficulty: "Tất cả",
-      format: "Tất cả",
-      status: "Tất cả"
+      salary: "Tất cả",
+      type: "Tất cả", 
+      category: "Tất cả"
     });
     setSearchTerm("");
-    setShowOnlyFeatured(false);
-    setShowOnlyTrending(false);
   };
 
-  const hasActiveFilters = Object.values(filters).some(val => val !== "Tất cả") || 
-                          searchTerm || showOnlyFeatured || showOnlyTrending;
-
-  const getDifficultyColor = (difficulty) => {
-    switch(difficulty) {
-      case "Dễ": return "bg-green-100 text-green-700";
-      case "Vừa": return "bg-yellow-100 text-yellow-700";
-      case "Khó": return "bg-orange-100 text-orange-700";
-      case "Rất khó": return "bg-red-100 text-red-700";
-      default: return "bg-gray-100 text-gray-700";
-    }
+  const toggleSaveEvent = (eventId) => {
+    setSavedEvents(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(eventId)) {
+        newSet.delete(eventId);
+      } else {
+        newSet.add(eventId);
+      }
+      return newSet;
+    });
   };
 
-  const getStatusColor = (status) => {
-    switch(status) {
-      case "Đang mở": return "bg-green-100 text-green-700 border-green-200";
-      case "Sắp đóng": return "bg-yellow-100 text-yellow-700 border-yellow-200";
-      case "Đã đóng": return "bg-gray-100 text-gray-700 border-gray-200";
-      default: return "bg-blue-100 text-blue-700 border-blue-200";
-    }
-  };
+  const hasActiveFilters = Object.values(filters).some(val => val !== "Tất cả") || searchTerm;
 
-  const getCategoryIcon = (category) => {
-    switch(category) {
-      case "Khởi nghiệp": return "🚀";
-      case "Lập trình": return "💻";
-      case "Thiết kế": return "🎨";
-      case "Ngôn ngữ": return "🗣️";
-      case "Nghệ thuật": return "📸";
-      case "Công nghệ": return "⚡";
-      case "Văn học": return "✍️";
-      case "Thể thao": return "🏆";
-      default: return "🎯";
+  const getUrgencyColor = (urgency) => {
+    switch (urgency) {
+      case 'high': return 'bg-red-100 text-red-700 border-red-200';
+      case 'medium': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+      default: return 'bg-green-100 text-green-700 border-green-200';
     }
   };
 
-  const formatPrize = (prize) => {
-    if (prize.includes("000,000,000")) {
-      return prize.replace("000,000,000 VNĐ", " tỷ VNĐ");
+  const getUrgencyText = (urgency) => {
+    switch (urgency) {
+      case 'high': return 'Gấp';
+      case 'medium': return 'Bình thường';
+      default: return 'Không gấp';
     }
-    if (prize.includes("000,000")) {
-      return prize.replace("000,000 VNĐ", " triệu VNĐ");
-    }
-    return prize;
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-blue-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="flex items-center gap-3 mb-4">
-            <Trophy className="w-8 h-8 text-yellow-300" />
-            <h1 className="text-3xl font-bold">Cuộc Thi & Giải Đấu</h1>
+      <div className="bg-white shadow-sm border-b sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="flex-1">
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">Cơ hội Việc làm & Tình nguyện</h1>
+              <p className="text-gray-600">Khám phá {filteredEvents.length} cơ hội phù hợp với bạn</p>
+            </div>
+            
+            {/* Search Bar */}
+            <div className="flex-1 max-w-md">
+              <div className="relative">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Tìm kiếm sự kiện..."
+                  className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm("")}
+                    className="absolute right-3 top-3 h-4 w-4 text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
-          <p className="text-blue-100 text-lg max-w-2xl">
-            Tham gia các cuộc thi hấp dẫn, thử thách bản thân và giành những giải thưởng giá trị
-          </p>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white p-4 rounded-lg shadow-sm border">
-            <div className="flex items-center">
-              <div className="bg-purple-100 p-2 rounded-lg">
-                <Trophy className="w-6 h-6 text-purple-600" />
-              </div>
-              <div className="ml-3">
-                <p className="text-2xl font-bold text-gray-900">{mockContests.length}</p>
-                <p className="text-gray-600 text-sm">Cuộc thi</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white p-4 rounded-lg shadow-sm border">
-            <div className="flex items-center">
-              <div className="bg-green-100 p-2 rounded-lg">
-                <Users className="w-6 h-6 text-green-600" />
-              </div>
-              <div className="ml-3">
-                <p className="text-2xl font-bold text-gray-900">
-                  {mockContests.reduce((sum, contest) => sum + contest.registered, 0)}
-                </p>
-                <p className="text-gray-600 text-sm">Thí sinh đăng ký</p>
-              </div>
-            </div>
-          </div>
+      {/* Filter Bar */}
+      <div className="bg-white border-b shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => setIsFilterOpen(!isFilterOpen)}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors border border-blue-200"
+            >
+              <Filter className="h-4 w-4" />
+              Bộ lọc
+              {isFilterOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </button>
 
-          <div className="bg-white p-4 rounded-lg shadow-sm border">
-            <div className="flex items-center">
-              <div className="bg-yellow-100 p-2 rounded-lg">
-                <Gift className="w-6 h-6 text-yellow-600" />
-              </div>
-              <div className="ml-3">
-                <p className="text-2xl font-bold text-gray-900">
-                  {Math.round(mockContests.reduce((sum, contest) => {
-                    const prizeNum = parseFloat(contest.prize.replace(/[^\d]/g, '')) / 1000000;
-                    return sum + prizeNum;
-                  }, 0))}M
-                </p>
-                <p className="text-gray-600 text-sm">Tổng giải thưởng</p>
-              </div>
-            </div>
-          </div>
+            {hasActiveFilters && (
+              <button
+                onClick={clearFilters}
+                className="flex items-center gap-1 px-3 py-1.5 text-sm text-red-600 bg-red-50 rounded-full hover:bg-red-100 transition-colors"
+              >
+                <X className="h-3 w-3" />
+                Xóa lọc
+              </button>
+            )}
 
-          <div className="bg-white p-4 rounded-lg shadow-sm border">
-            <div className="flex items-center">
-              <div className="bg-red-100 p-2 rounded-lg">
-                <Zap className="w-6 h-6 text-red-600" />
-              </div>
-              <div className="ml-3">
-                <p className="text-2xl font-bold text-gray-900">
-                  {mockContests.filter(c => c.trending).length}
-                </p>
-                <p className="text-gray-600 text-sm">Đang hot</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Search Bar */}
-        <div className="mb-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Tìm kiếm cuộc thi, giải đấu, tổ chức..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-            />
-          </div>
-        </div>
-
-        {/* Quick Filter Toggles */}
-        <div className="flex gap-3 mb-6 flex-wrap">
-          <button
-            onClick={() => setShowOnlyFeatured(!showOnlyFeatured)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              showOnlyFeatured 
-                ? 'bg-purple-600 text-white' 
-                : 'bg-white border border-purple-200 text-purple-600 hover:bg-purple-50'
-            }`}
-          >
-            ⭐ Nổi bật
-          </button>
-          <button
-            onClick={() => setShowOnlyTrending(!showOnlyTrending)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              showOnlyTrending 
-                ? 'bg-red-600 text-white' 
-                : 'bg-white border border-red-200 text-red-600 hover:bg-red-50'
-            }`}
-          >
-            🔥 Đang hot
-          </button>
-        </div>
-
-        {/* Filter Section */}
-        <div className={`bg-white rounded-lg shadow-sm border transition-all duration-300 overflow-hidden ${
-          isFilterOpen ? 'mb-6' : 'mb-6'
-        }`}>
-          {/* Filter Header */}
-          <div 
-            className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50"
-            onClick={() => setIsFilterOpen(!isFilterOpen)}
-          >
-            <div className="flex items-center gap-2">
-              <Filter className="w-5 h-5 text-blue-600" />
-              <span className="font-semibold text-gray-900">Bộ lọc chi tiết</span>
-              {hasActiveFilters && (
-                <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs">
-                  Đang áp dụng
-                </span>
+            <div className="flex flex-wrap gap-2">
+              {Object.entries(filters).map(([key, value]) => 
+                value !== "Tất cả" && (
+                  <span key={key} className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
+                    {value}
+                    <button onClick={() => updateFilter(key, "Tất cả")} className="hover:bg-blue-200 rounded-full p-0.5">
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                )
               )}
             </div>
-            {isFilterOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
           </div>
 
-          {/* Filter Content */}
-          <div className={`transition-all duration-300 ${
-            isFilterOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-          }`}>
-            <div className="p-4 pt-0 space-y-4 border-t">
-              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                {/* Location Filter */}
+          {/* Filter Panel */}
+          {isFilterOpen && (
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg border">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <MapPin className="w-4 h-4 inline mr-1" />
-                    Địa điểm
-                  </label>
-                  <select
-                    value={filters.location}
-                    onChange={(e) => updateFilter('location', e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Địa điểm</label>
+                  <select 
+                    value={filters.location} 
+                    onChange={(e) => updateFilter("location", e.target.value)}
+                    className="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 bg-white"
                   >
                     {locations.map(loc => (
                       <option key={loc} value={loc}>{loc}</option>
@@ -424,243 +280,400 @@ export default function ContestPage() {
                   </select>
                 </div>
 
-                {/* Category Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <Target className="w-4 h-4 inline mr-1" />
-                    Danh mục
-                  </label>
-                  <select
-                    value={filters.category}
-                    onChange={(e) => updateFilter('category', e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Lương</label>
+                  <select 
+                    value={filters.salary} 
+                    onChange={(e) => updateFilter("salary", e.target.value)}
+                    className="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 bg-white"
+                  >
+                    {salaryRanges.map(range => (
+                      <option key={range} value={range}>{range}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Loại hình</label>
+                  <select 
+                    value={filters.type} 
+                    onChange={(e) => updateFilter("type", e.target.value)}
+                    className="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 bg-white"
+                  >
+                    {eventTypes.map(type => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Danh mục</label>
+                  <select 
+                    value={filters.category} 
+                    onChange={(e) => updateFilter("category", e.target.value)}
+                    className="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 bg-white"
                   >
                     {categories.map(cat => (
                       <option key={cat} value={cat}>{cat}</option>
                     ))}
                   </select>
                 </div>
-
-                {/* Difficulty Filter */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <Trophy className="w-4 h-4 inline mr-1" />
-                    Độ khó
-                  </label>
-                  <select
-                    value={filters.difficulty}
-                    onChange={(e) => updateFilter('difficulty', e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    {difficulties.map(diff => (
-                      <option key={diff} value={diff}>{diff}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Format Filter */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <Clock className="w-4 h-4 inline mr-1" />
-                    Hình thức
-                  </label>
-                  <select
-                    value={filters.format}
-                    onChange={(e) => updateFilter('format', e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    {formats.map(format => (
-                      <option key={format} value={format}>{format}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Status Filter */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <Star className="w-4 h-4 inline mr-1" />
-                    Trạng thái
-                  </label>
-                  <select
-                    value={filters.status}
-                    onChange={(e) => updateFilter('status', e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    {statuses.map(status => (
-                      <option key={status} value={status}>{status}</option>
-                    ))}
-                  </select>
-                </div>
               </div>
+            </div>
+          )}
+        </div>
+      </div>
 
-              {/* Clear Filters */}
-              {hasActiveFilters && (
-                <div className="flex justify-end">
-                  <button
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="lg:grid lg:grid-cols-12 lg:gap-8">
+          {/* Events List */}
+          <div className="lg:col-span-9">
+            <div className="flex items-center justify-between mb-6">
+              <p className="text-sm text-gray-600">
+                Hiển thị <span className="font-medium">{filteredEvents.length}</span> kết quả
+              </p>
+              <div className="flex items-center gap-2">
+                <select 
+                  value={sortBy} 
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="px-3 py-1.5 border border-gray-200 rounded-md text-sm focus:ring-2 focus:ring-blue-500 bg-white"
+                >
+                  <option value="newest">Mới nhất</option>
+                  <option value="salary">Lương cao</option>
+                  <option value="rating">Đánh giá</option>
+                  <option value="urgent">Gấp</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              {filteredEvents.length > 0 ? filteredEvents.map(event => (
+                <div key={event.id} className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden group">
+                  <div className="flex flex-col md:flex-row">
+                    {/* Event Image */}
+                    <div className="md:w-48 h-48 md:h-auto bg-gradient-to-br from-blue-400 to-purple-500 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                      <div className="absolute top-3 left-3">
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full border ${getUrgencyColor(event.urgency)}`}>
+                          {getUrgencyText(event.urgency)}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Event Content */}
+                    <div className="flex-1 p-6">
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <h3 className="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                              {event.title}
+                            </h3>
+                            <div className="flex items-center text-yellow-500">
+                              <Star className="w-4 h-4 fill-current" />
+                              <span className="text-sm text-gray-600 ml-1">{event.rating}</span>
+                            </div>
+                          </div>
+                          
+                          <p className="text-gray-600 mb-4 line-clamp-2 leading-relaxed">{event.description}</p>
+                        </div>
+
+                        <div className="flex items-center gap-2 ml-4">
+                          <button
+                            onClick={() => toggleSaveEvent(event.id)}
+                            className={`p-2 rounded-full transition-colors ${
+                              savedEvents.has(event.id) 
+                                ? 'bg-red-100 text-red-600' 
+                                : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                            }`}
+                          >
+                            <Heart className={`w-4 h-4 ${savedEvents.has(event.id) ? 'fill-current' : ''}`} />
+                          </button>
+                          <button className="p-2 rounded-full bg-gray-100 text-gray-400 hover:bg-gray-200 transition-colors">
+                            <Share2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <div className="flex items-center text-gray-600">
+                          <MapPin className="w-4 h-4 mr-2 text-blue-500" />
+                          <span className="text-sm">{event.location}</span>
+                        </div>
+                        
+                        <div className="flex items-center text-gray-600">
+                          <DollarSign className="w-4 h-4 mr-2 text-green-500" />
+                          <span className={`text-sm ${event.isVolunteer ? 'text-green-600 font-medium' : ''}`}>
+                            {event.salary}
+                          </span>
+                        </div>
+                        
+                        <div className="flex items-center text-gray-600">
+                          <Clock className="w-4 h-4 mr-2 text-purple-500" />
+                          <span className="text-sm">{event.time}</span>
+                        </div>
+                        
+                        <div className="flex items-center text-gray-600">
+                          <Users className="w-4 h-4 mr-2 text-orange-500" />
+                          <span className="text-sm">Cần {event.volunteers} người</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            event.isVolunteer 
+                              ? 'bg-green-100 text-green-700' 
+                              : 'bg-blue-100 text-blue-700'
+                          }`}>
+                            {event.type}
+                          </span>
+                          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-medium">
+                            {event.category}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {event.applicants} người đã ứng tuyển
+                          </span>
+                        </div>
+                        
+                        <button className={`px-6 py-2.5 rounded-lg font-medium transition-all transform hover:scale-105 ${
+                          event.isVolunteer 
+                            ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg shadow-green-500/25' 
+                            : 'bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/25'
+                        }`}>
+                          {event.isVolunteer ? 'Đăng ký TNV' : 'Ứng tuyển'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )) : (
+                <div className="text-center py-16 bg-white rounded-xl border border-gray-200">
+                  <div className="text-gray-400 mb-4">
+                    <Search className="w-20 h-20 mx-auto" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Không tìm thấy sự kiện nào</h3>
+                  <p className="text-gray-600 mb-4">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
+                  <button 
                     onClick={clearFilters}
-                    className="flex items-center gap-1 text-blue-600 hover:text-blue-700 text-sm"
+                    className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                   >
-                    <X className="w-4 h-4" />
                     Xóa tất cả bộ lọc
                   </button>
                 </div>
               )}
             </div>
           </div>
-        </div>
 
-        {/* Results Count */}
-        <div className="mb-6">
-          <p className="text-gray-600">
-            Tìm thấy <span className="font-semibold text-blue-600">{filteredContests.length}</span> cuộc thi
-          </p>
-        </div>
-
-        {/* Contest List */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {filteredContests.map(contest => (
-            <div key={contest.id} className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-all duration-300 overflow-hidden">
-              {/* Contest Header */}
-              <div className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2 flex-wrap">
-                      <span className="text-2xl">{getCategoryIcon(contest.category)}</span>
-                      {contest.featured && (
-                        <span className="bg-purple-100 text-purple-600 px-2 py-1 rounded-full text-xs font-medium">
-                          ⭐ NỔI BẬT
-                        </span>
-                      )}
-                      {contest.trending && (
-                        <span className="bg-red-100 text-red-600 px-2 py-1 rounded-full text-xs font-medium">
-                          🔥 HOT
-                        </span>
-                      )}
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(contest.status)}`}>
-                        {contest.status}
-                      </span>
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-900 line-clamp-2 mb-2">
-                      {contest.title}
-                    </h3>
-                    <p className="text-sm text-blue-600 font-medium">{contest.organizer}</p>
-                  </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getDifficultyColor(contest.difficulty)}`}>
-                    {contest.difficulty}
-                  </span>
-                </div>
-
-                <p className="text-gray-600 mb-4 line-clamp-3">{contest.description}</p>
-
-                {/* Prize & Participants */}
-                <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-lg p-4 mb-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <Gift className="w-5 h-5 text-yellow-600 mr-2" />
+          {/* Sidebar */}
+          <div className="lg:col-span-3 mt-8 lg:mt-0">
+            <div className="space-y-6">
+              {/* User Status Card */}
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Trạng thái của bạn</h3>
+                <div className="space-y-3">
+                  <button 
+                    onClick={() => setUserStatus("available")}
+                    className={`w-full p-3 rounded-lg text-left transition-all ${
+                      userStatus === "available" 
+                        ? 'bg-green-50 border-2 border-green-200 text-green-800' 
+                        : 'bg-gray-50 border border-gray-200 text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm text-gray-600">Tổng giải thưởng</p>
-                        <p className="text-lg font-bold text-yellow-700">{formatPrize(contest.prize)}</p>
+                        <div className="font-medium">Sẵn sàng làm việc</div>
+                        <div className="text-sm opacity-75">Tìm kiếm cơ hội mới</div>
                       </div>
+                      <div className={`w-3 h-3 rounded-full ${userStatus === "available" ? 'bg-green-500' : 'bg-gray-300'}`}></div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm text-gray-600">Đã đăng ký</p>
-                      <p className="text-lg font-bold text-blue-600">
-                        {contest.registered}/{contest.participants}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="mt-3">
-                    <div className="bg-white rounded-full h-2">
-                      <div 
-                        className="bg-gradient-to-r from-yellow-400 to-orange-400 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${Math.min(100, (contest.registered / contest.participants) * 100)}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Contest Details */}
-                <div className="space-y-3 mb-4">
-                  <div className="flex items-center text-gray-600">
-                    <MapPin className="w-4 h-4 mr-2 text-blue-600" />
-                    <span>{contest.location} • {contest.format}</span>
-                  </div>
+                  </button>
                   
-                  <div className="flex items-center text-gray-600">
-                    <Calendar className="w-4 h-4 mr-2 text-blue-600" />
-                    <span>Đăng ký đến: {contest.registrationDeadline}</span>
-                  </div>
-                  
-                  <div className="flex items-center text-gray-600">
-                    <Clock className="w-4 h-4 mr-2 text-blue-600" />
-                    <span>Thi đấu: {contest.contestDate}</span>
-                  </div>
+                  <button 
+                    onClick={() => setUserStatus("busy")}
+                    className={`w-full p-3 rounded-lg text-left transition-all ${
+                      userStatus === "busy" 
+                        ? 'bg-yellow-50 border-2 border-yellow-200 text-yellow-800' 
+                        : 'bg-gray-50 border border-gray-200 text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-medium">Đang bận</div>
+                        <div className="text-sm opacity-75">Không nhận công việc mới</div>
+                      </div>
+                      <div className={`w-3 h-3 rounded-full ${userStatus === "busy" ? 'bg-yellow-500' : 'bg-gray-300'}`}></div>
+                    </div>
+                  </button>
                 </div>
+              </div>
 
-                {/* Requirements & Benefits */}
-                <div className="mb-4 space-y-2">
-                  <div>
-                    <span className="text-sm font-medium text-gray-700">Yêu cầu: </span>
-                    <span className="text-sm text-gray-600">{contest.requirements.join(", ")}</span>
-                  </div>
-                  <div>
-                    <span className="text-sm font-medium text-gray-700">Lợi ích: </span>
-                    <span className="text-sm text-gray-600">{contest.benefits.join(", ")}</span>
-                  </div>
-                </div>
-
-                {/* Footer */}
-                <div className="flex justify-between items-center pt-4 border-t">
-                  <div className="flex items-center gap-2">
-                    <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm font-medium">
-                      {contest.category}
+              {/* Quick Stats */}
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Thống kê nhanh</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Sự kiện đã lưu</span>
+                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-medium">
+                      {savedEvents.size}
                     </span>
                   </div>
-                  <div className="flex gap-2">
-                    <button className="px-4 py-2 text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors text-sm">
-                      Chi tiết
-                    </button>
-                    <button 
-                      className={`px-6 py-2 rounded-lg font-medium text-sm transition-colors ${
-                        contest.status === 'Đã đóng' 
-                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                          : contest.status === 'Sắp đóng'
-                          ? 'bg-yellow-600 text-white hover:bg-yellow-700'
-                          : 'bg-blue-600 text-white hover:bg-blue-700'
-                      }`}
-                      disabled={contest.status === 'Đã đóng'}
-                    >
-                      {contest.status === 'Đã đóng' ? 'Đã đóng' : 'Đăng ký ngay'}
-                    </button>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Đang ứng tuyển</span>
+                    <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-sm font-medium">
+                      3
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Hoàn thành</span>
+                    <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-medium">
+                      12
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Recent Activity */}
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Hoạt động gần đây</h3>
+                <div className="space-y-3 text-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <span className="text-gray-600">Đã ứng tuyển "Hội chợ Xuân 2025"</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span className="text-gray-600">Đã lưu "Festival Âm nhạc Hè"</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                    <span className="text-gray-600">Hoàn thành "Chương trình từ thiện"</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Recommended Events */}
+              <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 shadow-sm border border-purple-100">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Đề xuất cho bạn</h3>
+                <div className="space-y-3">
+                  <div className="bg-white rounded-lg p-3 border border-purple-100">
+                    <h4 className="font-medium text-gray-900 text-sm">Hội chợ Sách Hà Nội</h4>
+                    <p className="text-xs text-gray-600 mt-1">Phù hợp với sở thích của bạn</p>
+                    <div className="flex items-center justify-between mt-2">
+                      <span className="text-xs text-purple-600 bg-purple-100 px-2 py-1 rounded-full">Part-time</span>
+                      <button className="text-xs text-blue-600 hover:underline">Xem chi tiết</button>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white rounded-lg p-3 border border-purple-100">
+                    <h4 className="font-medium text-gray-900 text-sm">Tình nguyện dạy học</h4>
+                    <p className="text-xs text-gray-600 mt-1">Dựa trên kinh nghiệm của bạn</p>
+                    <div className="flex items-center justify-between mt-2">
+                      <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">Tình nguyện</span>
+                      <button className="text-xs text-blue-600 hover:underline">Xem chi tiết</button>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-
-        {/* Empty State */}
-        {filteredContests.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
-              <Trophy className="w-16 h-16 mx-auto" />
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Không tìm thấy cuộc thi nào</h3>
-            <p className="text-gray-600">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm để tìm các cuộc thi phù hợp</p>
           </div>
-        )}
-
-        {/* CTA Banner */}
-        <div className="mt-12 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl p-8 text-white text-center">
-          <h2 className="text-2xl font-bold mb-4">Bạn muốn tổ chức cuộc thi?</h2>
-          <p className="text-purple-100 mb-6 max-w-2xl mx-auto">
-            Đăng thông tin cuộc thi của bạn trên nền tảng để tiếp cận hàng ngàn thí sinh tài năng
-          </p>
-          <button className="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-            Đăng cuộc thi miễn phí
-          </button>
         </div>
       </div>
+
+      {/* Floating Action Button */}
+      <div className="fixed bottom-6 right-6 z-20">
+        <div className="relative group">
+          <button className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110">
+            <Bookmark className="w-6 h-6" />
+          </button>
+          <div className="absolute bottom-16 right-0 bg-gray-900 text-white px-3 py-2 rounded-lg text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            Sự kiện đã lưu ({savedEvents.size})
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Filter Overlay */}
+      {isFilterOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden">
+          <div className="fixed bottom-0 left-0 right-0 bg-white rounded-t-xl p-6 max-h-96 overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Bộ lọc</h3>
+              <button onClick={() => setIsFilterOpen(false)}>
+                <X className="w-6 h-6 text-gray-500" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Địa điểm</label>
+                <select 
+                  value={filters.location} 
+                  onChange={(e) => updateFilter("location", e.target.value)}
+                  className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
+                >
+                  {locations.map(loc => (
+                    <option key={loc} value={loc}>{loc}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Lương</label>
+                <select 
+                  value={filters.salary} 
+                  onChange={(e) => updateFilter("salary", e.target.value)}
+                  className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
+                >
+                  {salaryRanges.map(range => (
+                    <option key={range} value={range}>{range}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Loại hình</label>
+                <select 
+                  value={filters.type} 
+                  onChange={(e) => updateFilter("type", e.target.value)}
+                  className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
+                >
+                  {eventTypes.map(type => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Danh mục</label>
+                <select 
+                  value={filters.category} 
+                  onChange={(e) => updateFilter("category", e.target.value)}
+                  className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
+                >
+                  {categories.map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  onClick={clearFilters}
+                  className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Xóa tất cả
+                </button>
+                <button
+                  onClick={() => setIsFilterOpen(false)}
+                  className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Áp dụng
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

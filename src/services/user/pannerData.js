@@ -7,7 +7,7 @@ const trustedPartners = [
         name: "Hội Chữ Thập Đỏ Việt Nam",
         logoSources: {
           official: "https://redcross.org.vn/",
-          vector: "https://haitrieu.com/blogs/vector-logo-hoi-chu-thap-do-viet-nam-viet-nam-red-cross-society/",
+          src : "https://www.google.com.vn/imgres?q=h%E1%BB%99i%20ch%E1%BB%AF%20th%E1%BA%ADp%20%C4%91%E1%BB%8F%20vi%E1%BB%87t%20nam&imgurl=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fvi%2Fthumb%2F1%2F16%2FHi%25E1%25BB%2587u_k%25E1%25BB%25B3_CT%25C4%2590_VN.svg%2F250px-Hi%25E1%25BB%2587u_k%25E1%25BB%25B3_CT%25C4%2590_VN.svg.png&imgrefurl=https%3A%2F%2Fvi.wikipedia.org%2Fwiki%2FH%25E1%25BB%2599i_Ch%25E1%25BB%25AF_th%25E1%25BA%25ADp_%25C4%2591%25E1%25BB%258F_Vi%25E1%25BB%2587t_Nam&docid=qfauEqNgTCnprM&tbnid=tMXx6KgLQXytWM&vet=12ahUKEwjjqN-kvqyPAxXle_UHHeBAAaIQM3oECB8QAA..i&w=250&h=167&hcb=2&ved=2ahUKEwjjqN-kvqyPAxXle_UHHeBAAaIQM3oECB8QAA",
           description: "Logo chữ thập đỏ trên nền trắng với viền trang trí và dòng chữ 'Việt Nam'"
         }
       },

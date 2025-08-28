@@ -124,7 +124,7 @@ function Home() {
         <div className="w-full h-auto py-4 px-2 flex items-center justify-center overflow-x-auto gap-8">
           {pannerCompany.map((item, idx) => (
             <Link to={item.logoSources.official} key={idx} className="flex flex-col justify-center gap-2 items-center">
-              <img src={`${item.logoSources?.svg}`} alt="" className="w-10 h-10 rounded-xl"/>
+              <img src={`${item.logoSources?.src}`} alt="" className="w-10 h-10 rounded-xl"/>
               <span className="font-semibold text-gray-700">{item.name}</span>
             </Link>
           ))}

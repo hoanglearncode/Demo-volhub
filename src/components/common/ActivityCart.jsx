@@ -42,7 +42,7 @@ export default function ActivityCart({ prod }) {
           {prod.title}
         </h3>
         <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-          {prod.description}
+          {prod.subTitle}
         </p>
 
         {/* Info */}

@@ -5,9 +5,9 @@ const AuthContext = createContext(null);
 const useAuth = () => useContext(AuthContext);
 
 function AuthProvider({ children }) {
-  const [user, setUser] = useState({ role: null, name: "Đỗ Việt Hoàng" });
+  const [user, setUser] = useState(null);
 
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const login = (role, name = "") => {
     const roleName = role === "guest" ? "Khách" : role === "user" ? "Người dùng" : role === "btc" ? "BTC" : "Admin";

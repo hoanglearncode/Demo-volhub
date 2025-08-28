@@ -17,7 +17,7 @@ const featuredEvents = [
         {
           id: 1,
           title: "Tình nguyện dạy học cho trẻ em vùng cao",
-          userId: 1,
+          accountId: 1,
           image: "https://images.unsplash.com/photo-1497486751825-1233686d5d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
           location: "Sapa, Lào Cai",
           participants: 24,
@@ -27,7 +27,24 @@ const featuredEvents = [
           salary: 100,
           category: "Giáo dục",
           rating: 4.8,
-          description: "[Tuyển Gấp]: Đại sứ thương hiệu AI Việt Nam - Đội ngũ tình nguyện viên chuyên nghiệp! LỜI KÊU GỌI TRỞ THÀNH ĐẠI SỨ LOCAAI – CẦU NỐI QUỐC TẾ TẠI TRIỂN LÃM A80 👉 Đăng ký ngay: https://forms.gle/T2XafzLJzjmNsbYdA Nhằm phục vụ cho Chương trình Triển lãm 80 năm thành tựu kinh tế - xã hội Việt Nam tại Trung tâm Triển lãm Việt Nam, Công ty Cổ phần Công nghệ LocaAI phối hợp cùng Học viện Công nghệ AI Việt Nam (AIUNI) trân trọng mời các bạn trẻ tham gia đội ngũ Đại sứ Thương hiệu AI Việt - những tình nguyện viên tiên phong mang sứ mệnh đặc biệt. Đây là mong mỏi của Chính phủ Việt Nam: giúp bạn bè quốc tế có thể trực tiếp trò chuyện tại các gian hàng triển lãm bằng bất cứ ngôn ngữ nào, qua nền tảng công nghệ Việt. Thông qua sản phẩm Loa Locatalk, chúng ta sẽ mang đến cho khách Quốc tế những trải nghiệm phong phú, giao tiếp không giới hạn, giúp quan khách quốc tế khám phá hành trình lập quốc và những thành tựu to lớn của Việt Nam trong 80 năm qua, giúp họ hiểu rõ hơn về con người, văn hóa, sản phẩm và kinh tế Việt Nam. Bạn – những Đại sứ LOCAAI đầy nhiệt huyết, sẽ là cầu nối văn hóa, trí tuệ và công nghệ, góp phần lan tỏa niềm tự hào dân tộc và quảng bá công nghệ AI “Make in Vietnam” ra thế giới, để chia sẻ câu chuyện Việt Nam sáng tạo – hội nhập – vươn tầm. 🌍 Vì sao bạn nên tham gia sự kiện này? - Bạn chính là ĐẠI SỨ THƯƠNG HIỆU AI VIỆT trong mắt bạn bè quốc tế. - Được khoác áo Đại sứ thương hiệu - Tình nguyện viên Việt Nam tại sự kiện lịch sử 80 năm – một trải nghiệm chỉ có một lần trong đời. 🎁 Quyền lợi độc quyền dành cho bạn: + Gặp gỡ & được dẫn dắt bởi các chuyên gia AI hàng đầu Việt Nam – đội ngũ từng đào tạo cho nhiều Tập đoàn lớn hàng đầu Việt Nam như VNPT, Mobifone, Bảo Việt, TH Group… + Chứng nhận Đại sứ thương hiệu AI Việt – dấu ấn danh giá trong hồ sơ của bạn!👉 Để biết thêm thông tin, vui lòng liên hệ Thầy Nguyễn Đức Long - 0912 777 068",
+          description : "<p><strong>[Tuyển Gấp]</strong>: Đại sứ thương hiệu AI Việt Nam - Đội ngũ tình nguyện viên chuyên nghiệp!</p>\
+            <p><strong>LỜI KÊU GỌI TRỞ THÀNH ĐẠI SỨ LOCAAI – CẦU NỐI QUỐC TẾ TẠI TRIỂN LÃM A80</strong></p>\
+            <p>👉 Đăng ký ngay: <a href=\"https://forms.gle/T2XafzLJzjmNsbYdA\" target=\"_blank\">https://forms.gle/T2XafzLJzjmNsbYdA</a></p>\
+            <p>Nhằm phục vụ cho Chương trình Triển lãm 80 năm thành tựu kinh tế - xã hội Việt Nam tại Trung tâm Triển lãm Việt Nam, Công ty Cổ phần Công nghệ LocaAI phối hợp cùng Học viện Công nghệ AI Việt Nam (AIUNI) trân trọng mời các bạn trẻ tham gia đội ngũ Đại sứ Thương hiệu AI Việt - những tình nguyện viên tiên phong mang sứ mệnh đặc biệt.</p>\
+            <p>Đây là mong mỏi của Chính phủ Việt Nam: giúp bạn bè quốc tế có thể trực tiếp trò chuyện tại các gian hàng triển lãm bằng bất cứ ngôn ngữ nào, qua nền tảng công nghệ Việt. Thông qua sản phẩm Loa Locatalk, chúng ta sẽ mang đến cho khách Quốc tế những trải nghiệm phong phú, giao tiếp không giới hạn, giúp quan khách quốc tế khám phá hành trình lập quốc và những thành tựu to lớn của Việt Nam trong 80 năm qua, giúp họ hiểu rõ hơn về con người, văn hóa, sản phẩm và kinh tế Việt Nam.</p>\
+            <p><strong>Bạn – những Đại sứ LOCAAI đầy nhiệt huyết, sẽ là cầu nối văn hóa, trí tuệ và công nghệ</strong>, góp phần lan tỏa niềm tự hào dân tộc và quảng bá công nghệ AI “Make in Vietnam” ra thế giới, để chia sẻ câu chuyện Việt Nam sáng tạo – hội nhập – vươn tầm.</p>\
+            <p>🌍 <strong>Vì sao bạn nên tham gia sự kiện này?</strong></p>\
+            <ul>\
+            <li>Bạn chính là <strong>ĐẠI SỨ THƯƠNG HIỆU AI VIỆT</strong> trong mắt bạn bè quốc tế.</li>\
+            <li>Được khoác áo Đại sứ thương hiệu - Tình nguyện viên Việt Nam tại sự kiện lịch sử 80 năm – một trải nghiệm chỉ có một lần trong đời.</li>\
+            </ul>\
+            <p>🎁 <strong>Quyền lợi độc quyền dành cho bạn:</strong></p>\
+            <ul>\
+            <li>Gặp gỡ & được dẫn dắt bởi các chuyên gia AI hàng đầu Việt Nam – đội ngũ từng đào tạo cho nhiều Tập đoàn lớn hàng đầu Việt Nam như VNPT, Mobifone, Bảo Việt, TH Group…</li>\
+            <li>Chứng nhận Đại sứ thương hiệu AI Việt – dấu ấn danh giá trong hồ sơ của bạn!</li>\
+            </ul>\
+            <p>👉 Để biết thêm thông tin, vui lòng liên hệ <strong>Thầy Nguyễn Đức Long - 0912 777 068</strong></p>",
+          subTitle: 'LỜI KÊU GỌI TRỞ THÀNH ĐẠI SỨ LOCAAI – CẦU NỐI QUỐC TẾ TẠI TRIỂN LÃM A80',
           slug : "tinh-nguy-day-hoc-cho-tre-em-vung-cao",
           btc: "/profile/1"
         },
@@ -38,14 +55,16 @@ const featuredEvents = [
           location: "Vũng Tàu",
           participants: 156,
           date: "22/12/2024",
-          category: "Môi trường",
+          category: "Môi trường - Giáo dục",
           rating: 4.9,
           description: "Hoạt động bảo vệ môi trường biển và tuyên truyền ý thức cộng đồng",
+          subTitle: 'LỜI KÊU GỌI TRỞ THÀNH ĐẠI SỨ LOCAAI – CẦU NỐI QUỐC TẾ TẠI TRIỂN LÃM A80',
           slug : "lam-sach-bai-bien-cung-cong-dong",
           btc: "/profile/1"
         },
         {
           id: 3,
+          accountId: 1,
           title: "Chăm sóc người già tại viện dưỡng lão",
           image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
           location: "TP.HCM",
@@ -54,11 +73,13 @@ const featuredEvents = [
           category: "Y tế",
           rating: 4.7,
           description: "Mang niềm vui và sự quan tâm đến những người cao tuổi",
+          subTitle: 'LỜI KÊU GỌI TRỞ THÀNH ĐẠI SỨ LOCAAI – CẦU NỐI QUỐC TẾ TẠI TRIỂN LÃM A80',
           slug : "cham-soc-nguoi-gia-tai-vien-duong-lao",
           btc: "/profile/1"
         },
         {
           id: 4,
+          accountId: 1,
           title: "Xây dựng nhà cho hộ nghèo",
           image: "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
           location: "An Giang",
@@ -67,6 +88,7 @@ const featuredEvents = [
           category: "Xã hội",
           rating: 4.8,
           description: "Cùng nhau xây dựng mái ấm cho những gia đình khó khăn",
+          subTitle: 'LỜI KÊU GỌI TRỞ THÀNH ĐẠI SỨ LOCAAI – CẦU NỐI QUỐC TẾ TẠI TRIỂN LÃM A80',
           slug : "xay-dung-nha-cho-ho-ngheo",
           btc: "/profile/1"
         }
@@ -123,6 +145,11 @@ export default {
   
   findActive : (slug) => {
     const data = featuredEvents.find(e => e.slug === slug);
+    return data;
+  },
+
+  sortByCategory : (category) => {
+    const data = featuredEvents.filter(e => e.category.concat(category));
     return data;
   }
 };
