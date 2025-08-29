@@ -13,12 +13,12 @@ import NotFoundPage from "../../page/common/NotFoundPage.jsx";
 import LoginPage from "../../page/common/LoginPage.jsx";
 import EventDetail from "../../page/common/EvenDetail.jsx";
 import ScrollToTop from "../common/ScrollToTop.jsx";
+import OTPVerification from "../../page/common/VerifiyPage.jsx";
 
 function GuestLayout() {
   return (
     <div className="flex flex-col">
       <TopNav />
-      <ScrollToTop behavior="smooth" top={0} />
       <main className="pt-20 min-h-screen">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -28,6 +28,7 @@ function GuestLayout() {
           <Route path="/contests" element= {<ContestPage />} />
           <Route path="/contact" element= {<Contact />} />
           <Route path="/events/:slug" element= {<EventDetail />} />
+          <Route path="/verify" element={<OTPVerification />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>

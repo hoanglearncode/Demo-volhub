@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
+import {useNavigate} from 'react-router-dom';
 import { CheckCircle, Lock, Mail, ArrowRight, User, Phone, AlertCircle } from "lucide-react";
 import { useState } from "react";
 
 export default function RegisterPage() {
+
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     fullName: "",
     username: "",
@@ -115,9 +119,8 @@ export default function RegisterPage() {
 
       const data = await response.json();
 
-      if (response.ok) {
-        setSubmitMessage("success");
-        // Reset form after successful registration
+      if (response.status) {
+        navigate('/verify');
         setFormData({
           fullName: "",
           username: "",
@@ -136,6 +139,10 @@ export default function RegisterPage() {
       setIsLoading(false);
     }
   };
+
+  useEffect(()=> {
+    alert(submitMessage);
+  }, [submitMessage]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 px-4 py-8">
