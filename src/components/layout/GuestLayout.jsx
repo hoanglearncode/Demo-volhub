@@ -12,11 +12,13 @@ import ContestPage from "../../page/user/Contests.jsx";
 import NotFoundPage from "../../page/common/NotFoundPage.jsx";
 import LoginPage from "../../page/common/LoginPage.jsx";
 import EventDetail from "../../page/common/EvenDetail.jsx";
+import ScrollToTop from "../common/ScrollToTop.jsx";
 
 function GuestLayout() {
   return (
     <div className="flex flex-col">
       <TopNav />
+      <ScrollToTop behavior="smooth" top={0} />
       <main className="pt-20 min-h-screen">
         <Routes>
           <Route path="/" element={<Home />} />

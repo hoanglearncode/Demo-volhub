@@ -131,7 +131,7 @@ function Home() {
         </div>
         <div className="flex items-center justify-between w-full rounded-xl py-4 md:px-10 bg-gradient-to-r from-blue-600 to-purple-500 py-10 md:px-20">
           <h3 className="text-xl md:text-2xl font-bold text-white">Trở thành đối tác của chúng tôi ngay!</h3>
-          <Link to="/panner/register" className="flex items-center justify-center px-6 py-2 font-semibold border-gray-200 text-blue-600 hover:font-bold transition-all duration-300 bg-white border-1 max-w-lg rounded-2xl">Đăng ký <ArrowRight className="ml-3 mt-1"/></Link>
+          <Link to="/register" className="flex items-center justify-center px-6 py-2 font-semibold border-gray-200 text-blue-600 hover:font-bold transition-all duration-300 bg-white border-1 max-w-lg rounded-2xl">Đăng ký <ArrowRight className="ml-3 mt-1"/></Link>
         </div>
       </section>
       

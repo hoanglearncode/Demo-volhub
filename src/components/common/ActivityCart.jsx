@@ -1,7 +1,21 @@
 import { Calendar, MapPin, Play, Star, Users } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import eventServices from "../../services/user/event.services";
 
 export default function ActivityCart({ prod }) {
+  const {user, token} = useAuth();
+  const navigation = useNavigate();
+  const handleAction = () => {
+    if(!user && !token){
+      alert("Bạn phải đăng nhập để có thể đăng ký sự kiện này!");
+      return;
+    } else {
+      const value = eventServices.applyEvent(user.id, prod.id);
+      value ? alert("Apply thành công!") : alert("apply thất bại");
+    }
+  }
+
   return (
     <div className="group flex flex-col border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:scale-[1.02] transition-all duration-300 bg-white hover:border-blue-300">
       
@@ -62,12 +76,12 @@ export default function ActivityCart({ prod }) {
         </div>
 
         {/* CTA */}
-        <Link
-          to={`/events/resgister/${prod.id}`}
+        <button
+          onClick={handleAction}
           className="mt-auto text-center w-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white py-3 px-4 rounded-2xl font-semibold transition-all duration-300 hover:shadow-lg"
         >
           Đăng ký ngay
-        </Link>
+        </button>
       </div>
     </div>
   );

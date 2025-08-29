@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Star, Quote, ChevronLeft, ChevronRight, Heart, ThumbsUp, Users } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function VolunteerFeedbackSection() {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
@@ -286,9 +287,9 @@ export default function VolunteerFeedbackSection() {
             <p className="text-lg text-indigo-100 mb-6 max-w-2xl mx-auto">
               Hãy tham gia cộng đồng tình nguyện viên và tạo nên những kỷ niệm đáng nhớ
             </p>
-            <button className="bg-white hover:bg-gray-50 text-indigo-600 px-8 py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+            <Link to={'/login'} className="bg-white hover:bg-gray-50 text-indigo-600 px-8 py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
               Tham gia ngay hôm nay
-            </button>
+            </Link>
           </div>
         </div>
       </div>
