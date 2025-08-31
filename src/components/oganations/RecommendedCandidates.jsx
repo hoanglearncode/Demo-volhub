@@ -1,8 +1,10 @@
 // components/Dashboard/RecommendedCandidates.jsx
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, Star, Users, Clock } from "lucide-react";
+import {Link, useNavigate} from 'react-router-dom'
 
 const RecommendedCandidates = ({ candidates = [] }) => {
+  const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const itemsPerPage = 3;
   const totalPages = Math.ceil(candidates.length / itemsPerPage);
@@ -99,10 +101,10 @@ const RecommendedCandidates = ({ candidates = [] }) => {
             </div>
             
             <div className="flex gap-2">
-              <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 rounded-lg transition-colors">
+              <button onClick={()=> {navigate(`/btc/view-profile/${candidate?.id}`)}} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 rounded-lg transition-colors">
                 Xem hồ sơ
               </button>
-              <button className="px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors">
+              <button onClick={()=> {navigate(`/btc/contact/${candidate?.id}`)}} className="px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors">
                 Liên hệ
               </button>
             </div>

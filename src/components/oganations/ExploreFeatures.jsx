@@ -1,5 +1,6 @@
 // components/Dashboard/ExploreFeatures.jsx
 import { ShoppingCart, Calendar, Users, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const ExploreFeatures = () => {
   const features = [
@@ -7,6 +8,7 @@ const ExploreFeatures = () => {
       title: "Mua dịch vụ",
       description: "Nâng cấp gói dịch vụ để tiếp cận nhiều ứng viên hơn",
       icon: ShoppingCart,
+      to: "/btc/services",
       color: "blue",
       action: "Xem gói dịch vụ"
     },
@@ -14,6 +16,7 @@ const ExploreFeatures = () => {
       title: "Đăng tin sự kiện",
       description: "Chia sẻ các sự kiện tuyển dụng và hội thảo nghề nghiệp",
       icon: Calendar,
+      to: "/btc/recruitment-post",
       color: "green", 
       action: "Đăng tin ngay"
     },
@@ -21,6 +24,7 @@ const ExploreFeatures = () => {
       title: "Tìm kiếm ứng viên",
       description: "Khám phá cơ sở dữ liệu ứng viên tiềm năng",
       icon: Users,
+      to: "/btc/recommendation-cv",
       color: "purple",
       action: "Tìm kiếm"
     }
@@ -68,10 +72,10 @@ const ExploreFeatures = () => {
                 </div>
                 <h3 className="font-semibold text-gray-800 mb-2">{feature.title}</h3>
                 <p className="text-sm text-gray-600 mb-4 flex-grow">{feature.description}</p>
-                <button className={`${colorClasses.button} text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors flex items-center justify-center group-hover:shadow-md`}>
+                <Link to={feature.to} className={`${colorClasses.button} text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors flex items-center justify-center group-hover:shadow-md`}>
                   {feature.action}
                   <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
-                </button>
+                </Link>
               </div>
             </div>
           );

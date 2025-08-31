@@ -27,6 +27,8 @@ import RecruitmentPage from '../../page/oganations/RecruitmentPage.jsx';
 import { useAuth } from "../../context/AuthContext.jsx";
 import Notification from "../../hook/oganations/Notification.jsx";
 import Account from "../../page/oganations/Account.jsx";
+import VerifyPage from "../../page/oganations/Verify.jsx";
+import CandidateRecommendation from "../../page/oganations/CandidateRecommendation .jsx";
 
 function BtcLayout() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -63,40 +65,7 @@ function BtcLayout() {
     const currentNav = navData.find(nav => nav.to === location.pathname);
     return currentNav ? currentNav.title : "Bảng tin";
   };
-
-  const quickActions = [
-    {
-      title: "HR Insider",
-      description: "Khám phá xu hướng tuyển dụng",
-      color: "bg-blue-500",
-      textColor: "text-white"
-    },
-    {
-      title: "Đăng tin",
-      description: "Đăng tin tuyển dụng mới",
-      color: "bg-green-500", 
-      textColor: "text-white"
-    },
-    {
-      title: "Tìm CV",
-      description: "Tìm kiếm ứng viên phù hợp",
-      color: "bg-purple-500",
-      textColor: "text-white"
-    },
-    {
-      title: "Connect", 
-      description: "Kết nối với ứng viên",
-      color: "bg-orange-500",
-      textColor: "text-white"
-    },
-    {
-      title: "Insights",
-      description: "Phân tích dữ liệu tuyển dụng",
-      color: "bg-pink-500",
-      textColor: "text-white"
-    }
-  ];
-
+  
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top Header */}
@@ -359,9 +328,13 @@ function BtcLayout() {
           <div className="p-6">
             <Routes>
               <Route path="/btc" element={<Dashboard isCollapsed={isCollapsed} />} />
+              <Route path="/btc/recommendation-cv" element={<CandidateRecommendation />} />
               <Route path="/btc/recruitment" element={<RecruitmentPage />} />
+
               <Route path="/btc/account" element={<Account />} />
-              {/* Add other routes here */}
+              
+              {/* router verify */}
+              <Route path="/btc/verify" element={<VerifyPage />} />
             </Routes>
           </div>
         </main>

@@ -172,7 +172,7 @@ export default function AdminNav({ counts = {}, isCollapsed, setIsCollapsed }) {
   };
 
   return (
-    <aside className={`${isCollapsed ? 'w-30' : 'w-md'} bg-white border-r border-gray-200 h-screen sticky top-0 overflow-hidden transition-all duration-300 z-40`}>
+    <aside className={`${isCollapsed ? 'w-20' : 'w-md'} bg-white border-r border-gray-200 h-screen sticky top-0 overflow-hidden transition-all duration-300 z-40`}>
       <div className="h-full flex flex-col">
         {/* Header */}
         <div className="flex justify-between items-center p-4 border-b border-gray-100">
@@ -194,9 +194,11 @@ export default function AdminNav({ counts = {}, isCollapsed, setIsCollapsed }) {
             </Link>
           )}
 
-          <button className="rounded-full w-10 h-10 flex justify-center items-center bg-gray-200" onClick={()=> setIsCollapsed(!isCollapsed)}>
-            <ChevronRight className={`transform transition-transform duration-300 ${isCollapsed ? "rotate-180" : ""}`} size={18} />
-          </button>
+          {!isCollapsed && (
+            <button className="rounded-full w-10 h-10 flex justify-center items-center bg-gray-200" onClick={()=> setIsCollapsed(!isCollapsed)}>
+              <ChevronRight className={`transform transition-transform duration-300 ${isCollapsed ? "rotate-180" : ""}`} size={18} />
+            </button>
+          )}
         </div>
 
         {/* Navigation */}
@@ -387,14 +389,14 @@ export default function AdminNav({ counts = {}, isCollapsed, setIsCollapsed }) {
         </nav>
 
         {/* Footer */}
-        {!isCollapsed && (
+        {/* {!isCollapsed && (
           <div className="p-4 border-t border-gray-100">
             <div className="text-xs text-gray-500 text-center">
               <div>Admin Panel v2.1</div>
               <div>© 2024 Volunteer Platform</div>
             </div>
           </div>
-        )}
+        )} */}
       </div>
     </aside>
   );

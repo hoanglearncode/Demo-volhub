@@ -1,6 +1,6 @@
 // components/Dashboard/VerificationBanner.jsx
 import { CheckCircle, AlertTriangle } from "lucide-react";
-
+import { Link } from 'react-router-dom';
 const VerificationBanner = ({ isVerified = false }) => {
   if (isVerified) return null;
 
@@ -16,9 +16,9 @@ const VerificationBanner = ({ isVerified = false }) => {
           </p>
         </div>
         <div className="ml-4">
-          <button className="bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold px-3 py-1.5 rounded-md transition-colors">
+          <Link to='/btc/verify' className="bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold px-3 py-1.5 rounded-md transition-colors">
             Xác thực ngay
-          </button>
+          </Link>
         </div>
       </div>
     </div>

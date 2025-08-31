@@ -23,17 +23,16 @@ export default function Dashboard() {
     
     try {
       const value = await dashboardService.getDashboardData();
-      console.log(value);
       if (value.success) {
         setData(value.data);
-        setNotification(value?.notification);
-        setRecommendedCandidates(value?.recommendedCandidates);
-        setSystemUpdates(value?.systemUpdates);
+        setNotification(value.data?.notification);
+        setRecommendedCandidates(value.data?.recommendedCandidates);
+        setSystemUpdates(value.data?.systemUpdates);
       }
       setIsError(!value.success);
     } catch (error) {
       setIsError(true);
-      console.error('Error fetching dashboard data:', error);
+      // console.error('Error fetching dashboard data:', error);
     } finally {
       setLoading(false);
     }
@@ -42,9 +41,6 @@ export default function Dashboard() {
   useEffect(() => {
     fetchData();
   }, []);
-
-  console.log(data)
-
   return (
     <div className={`bg-gray-50 w-full min-h-screen transition-all duration-300`}>
       {/* Content */}

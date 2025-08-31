@@ -14,6 +14,8 @@ import LoginPage from "../../page/common/LoginPage.jsx";
 import EventDetail from "../../page/common/EvenDetail.jsx";
 import ScrollToTop from "../common/ScrollToTop.jsx";
 import OTPVerification from "../../page/common/VerifiyPage.jsx";
+import RegisterPage from "../../page/common/Register.jsx";
+// import 
 
 function UserLayout() {
   return (
@@ -29,6 +31,7 @@ function UserLayout() {
           <Route path="/contact" element= {<Contact />} />
           <Route path="/events/:slug" element= {<EventDetail />} />
           <Route path="/verify" element={<OTPVerification />} />
+          <Route path="/register" element = {<RegisterPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
