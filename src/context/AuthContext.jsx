@@ -90,7 +90,7 @@ function AuthProvider({ children }) {
   jti: "a1b2c3d4-e5f6-7890-1234-56789abcdef0"
 });
 
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
 
 
 
