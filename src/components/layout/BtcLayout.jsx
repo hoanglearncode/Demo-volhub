@@ -29,6 +29,8 @@ import Notification from "../../hook/oganations/Notification.jsx";
 import Account from "../../page/oganations/Account.jsx";
 import VerifyPage from "../../page/oganations/Verify.jsx";
 import CandidateRecommendation from "../../page/oganations/CandidateRecommendation .jsx";
+import PostBoxPage from "../../page/oganations/PostPage.jsx";
+import SystemNotificationPage from "../../page/oganations/NotificationSystem.jsx";
 
 function BtcLayout() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -332,7 +334,8 @@ function BtcLayout() {
               <Route path="/btc/recruitment" element={<RecruitmentPage />} />
 
               <Route path="/btc/account" element={<Account />} />
-              
+              <Route path="/btc/notification-system" element={<SystemNotificationPage />} />
+              <Route path="/btc/post-box" element={<PostBoxPage />} />
               {/* router verify */}
               <Route path="/btc/verify" element={<VerifyPage />} />
             </Routes>

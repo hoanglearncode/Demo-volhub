@@ -18,25 +18,16 @@ export default function TopNav() {
   const firstMobileLinkRef = useRef(null);
 
   // nav items per role
-  const navData = {
-    guest: [
-      { to: "/", label: "Trang chủ" },
-      { to: "/about", label: "Giới thiệu" },
-      { to: "/events", label: "Sự kiện" },
-      { to: "/volunteers", label: "Tình nguyện" },
-      { to: "/contests", label: "Cuộc thi" },
-      { to: "/contact", label: "Liên hệ" },
-    ],
-    user: [
-      { to: "/", label: "Trang chủ" },
-      { to: "/my-cv", label: "CV của tôi" },
-      { to: "/event", label: "Sự kiện đề xuất" },
-      { to: "/result", label: "Kết quả của tôi"},
-    ]
-  };
+  const navData = [
+    { to: "/", label: "Trang chủ" },
+    { to: "/about", label: "Giới thiệu" },
+    { to: "/events", label: "Sự kiện - Tình nguyện" },
+    { to: "/contests", label: "Cuộc thi" },
+    { to: "/contact", label: "Liên hệ" },
+  ];
 
   const role = user?.role ?? "guest";
-  const navItems = navData[role] ?? navData["guest"];
+  const navItems = navData;
 
   // detect active link by pathname
   useEffect(() => {

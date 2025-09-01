@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import {Link} from 'react-router-dom';
 import { Search, Filter, Plus, Eye, Edit, Trash2, Calendar, Users, TrendingUp, Clock, CheckCircle, AlertCircle, XCircle } from 'lucide-react';
 import {recruitmentService} from '../../services/oganations/index.js'
 
@@ -147,10 +148,10 @@ const CampaignManagement = () => {
               <h1 className="text-3xl font-bold text-gray-800">Quản lý chiến dịch tuyển dụng</h1>
               <p className="text-gray-600 mt-1">Theo dõi và quản lý tất cả chiến dịch tuyển dụng của bạn</p>
             </div>
-            <button className="bg-green-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-600 transition-all duration-300 flex items-center space-x-2 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+            <Link to='/btc/recruitment-post' className="bg-green-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-600 transition-all duration-300 flex items-center space-x-2 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
               <Plus className="w-5 h-5" />
               <span>Thêm chiến dịch mới</span>
-            </button>
+            </Link>
           </div>
         </div>
       </div>
@@ -249,9 +250,9 @@ const CampaignManagement = () => {
         </div>
 
         {/* Campaign Table */}
-        <div className="bg-white rounded-t-2xl shadow-lg border border-gray-100 overflow-hidden">
+        <div className="max-h-96 overflow-y-auto relative bg-white rounded-t-2xl shadow-lg border border-gray-100 overflow-hidden">
           {/* Table Header */}
-          <div className="bg-gray-50 border-b border-gray-200">
+          <div className="bg-gray-50 border-b sticky top-0 left-0 border-gray-200">
             <div className="grid grid-cols-12 gap-4 px-6 py-4 text-sm font-semibold text-gray-700">
               <div className="col-span-3">Chiến dịch tuyển dụng</div>
               <div className="col-span-1 text-center">Tối ưu</div>
@@ -370,29 +371,29 @@ const CampaignManagement = () => {
 
         {/* Quick Actions */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow cursor-pointer group">
+          <Link to="/btc/recruitment-post" className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow cursor-pointer group">
             <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-green-200 transition-colors">
               <Plus className="w-6 h-6 text-green-600" />
             </div>
             <h3 className="font-bold text-gray-800 mb-2">Tạo chiến dịch mới</h3>
             <p className="text-gray-600 text-sm">Bắt đầu chiến dịch tuyển dụng mới với AI hỗ trợ</p>
-          </div>
+          </Link>
           
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow cursor-pointer group">
+          <Link to="/btc/recruitment-report" className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow cursor-pointer group">
             <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-200 transition-colors">
               <TrendingUp className="w-6 h-6 text-blue-600" />
             </div>
             <h3 className="font-bold text-gray-800 mb-2">Phân tích hiệu quả</h3>
             <p className="text-gray-600 text-sm">Xem báo cáo chi tiết về hiệu quả các chiến dịch</p>
-          </div>
+          </Link>
           
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow cursor-pointer group">
+          <Link to="btc/cv-manage" className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow cursor-pointer group">
             <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-purple-200 transition-colors">
               <Users className="w-6 h-6 text-purple-600" />
             </div>
             <h3 className="font-bold text-gray-800 mb-2">Quản lý ứng viên</h3>
             <p className="text-gray-600 text-sm">Xem và quản lý tất cả ứng viên đã ứng tuyển</p>
-          </div>
+          </Link>
         </div>
       </div>
     </div>

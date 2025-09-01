@@ -6,7 +6,10 @@ import VerificationBanner from '../../components/oganations/VerificationBanner.j
 import ExploreFeatures from '../../components/oganations/ExploreFeatures.jsx'
 import SystemUpdates from '../../components/oganations/SystemUpdates.jsx'
 import ErrorState from '../../components/oganations/ErrorState.jsx'
-
+import EventStatusCard from "../../components/oganations/EventStatusCard.jsx"
+import PostingHeatmap from "../../components/oganations/PostingHeatmap.jsx";
+import RegistrationTrendChart from "../../components/oganations/RegistrationTrendChart.jsx";
+import KPIDashboard from "../../components/oganations/KPIDashboard.jsx";
 
 export default function Dashboard() {
   const [isError, setIsError] = useState(false);
@@ -23,6 +26,7 @@ export default function Dashboard() {
     
     try {
       const value = await dashboardService.getDashboardData();
+      console.log(value.data)
       if (value.success) {
         setData(value.data);
         setNotification(value.data?.notification);
@@ -57,6 +61,7 @@ export default function Dashboard() {
               <ImportantNotification notification={notification} />
               <VerificationBanner isVerified={data?.isVerified} />
               <ExploreFeatures />
+              <KPIDashboard />
               <RecommendedCandidates candidates={recommendedCandidates} />
               <SystemUpdates updates={systemUpdates} />
             </div>
