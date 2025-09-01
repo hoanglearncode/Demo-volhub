@@ -31,6 +31,8 @@ import VerifyPage from "../../page/oganations/Verify.jsx";
 import CandidateRecommendation from "../../page/oganations/CandidateRecommendation .jsx";
 import PostBoxPage from "../../page/oganations/PostPage.jsx";
 import SystemNotificationPage from "../../page/oganations/NotificationSystem.jsx";
+import RecruitmentPostPage from "../../page/oganations/RecruitmentPagePost.jsx";
+import CVManages from "../../page/oganations/CVManages.jsx";
 
 function BtcLayout() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -332,6 +334,8 @@ function BtcLayout() {
               <Route path="/btc" element={<Dashboard isCollapsed={isCollapsed} />} />
               <Route path="/btc/recommendation-cv" element={<CandidateRecommendation />} />
               <Route path="/btc/recruitment" element={<RecruitmentPage />} />
+              <Route path="/btc/recruitment-post" element={<RecruitmentPostPage />} />
+              <Route path="/btc/cv-manage" element = {<CVManages />} />
 
               <Route path="/btc/account" element={<Account />} />
               <Route path="/btc/notification-system" element={<SystemNotificationPage />} />
