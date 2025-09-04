@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { dashboardService } from '../../services/oganations/index.js';
+import dashboardService  from '../../services/oganations/dashboardService.js';
 import RecommendedCandidates from '../../components/oganations/RecommendedCandidates.jsx'
 import ImportantNotification from '../../components/oganations/ImportantNotification.jsx'
 import VerificationBanner from '../../components/oganations/VerificationBanner.jsx'
@@ -26,7 +26,6 @@ export default function Dashboard() {
     
     try {
       const value = await dashboardService.getDashboardData();
-      console.log(value.data)
       if (value.success) {
         setData(value.data);
         setNotification(value.data?.notification);

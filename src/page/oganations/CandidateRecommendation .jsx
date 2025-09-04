@@ -1,13 +1,16 @@
 import React, { use, useEffect, useState } from 'react';
 import { Search, Filter, Star, MapPin, Clock, Users, Plus, TrendingUp, Award, Eye } from 'lucide-react';
 import CandidateCard from '../../components/oganations/CandidateCard.jsx';
-import {recommendationCvService} from '../../services/oganations/index.js';
+import recommendationCvService from '../../services/oganations/recommendationCvService.js';
+import { useNavigate } from 'react-router-dom';
 const CandidateRecommendation = () => {
-  const [hasEvents, setHasEvents] = useState(true);
+  const [hasEvents, setHasEvents] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [candidatesData, setCandidateData] = useState([]);
   const [filteredCandidates, setFilteredCandidates] = useState([]);
+
+  const navigate = useNavigate();
   
   useEffect(()=> {
     if(candidatesData.length > 0) {
@@ -33,7 +36,6 @@ const CandidateRecommendation = () => {
   useEffect(()=> {
     const load = async () => {
         const data = await recommendationCvService.getRecommendedCandidates();
-        console.log(data)
         if(data.success) {
             setCandidateData(data.data);
         }else {
@@ -59,7 +61,7 @@ const CandidateRecommendation = () => {
           Hãy tạo sự kiện đầu tiên của bạn để bắt đầu nhận được các đề xuất ứng viên phù hợp nhất!
         </p>
         <button 
-          onClick={() => setHasEvents(true)}
+          onClick={() => navigate('/btc/recruitment-post')}
           className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
         >
           Tạo sự kiện đầu tiên

@@ -29,7 +29,7 @@ function UserLayout() {
           <Route path="/volunteers" element={<Volunteers />} />
           <Route path="/contests" element= {<ContestPage />} />
           <Route path="/contact" element= {<Contact />} />
-          <Route path="/events/:slug" element= {<EventDetail />} />
+          <Route path="/events/:id" element= {<EventDetail />} />
           <Route path="/verify" element={<OTPVerification />} />
           <Route path="/register" element = {<RegisterPage />} />
           <Route path="*" element={<NotFoundPage />} />

@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Search,
   Filter,
@@ -13,22 +13,29 @@ import {
   Clock,
   CheckCircle,
   AlertCircle,
+  ChartNoAxesCombined,
   XCircle
 } from 'lucide-react';
-import { recruitmentService } from '../../services/oganations/index.js';
+import recruitmentService  from '../../services/oganations/recruitmentService.js';
+import ErrorState from '../../components/oganations/ErrorState.jsx';
 
 // map status API -> tiếng Việt
 function mapStatus(status) {
   switch (status) {
     case 'active':
+    case 'Đang tuyển':
       return 'Đang tuyển';
     case 'paused':
+    case 'Tạm dừng':
       return 'Tạm dừng';
     case 'completed':
+    case 'Hoàn thành':
       return 'Hoàn thành';
     case 'closed':
+    case 'Đã đóng':
       return 'Đã đóng';
     case 'draft':
+    case 'Bản nháp':
       return 'Bản nháp';
     default:
       return 'Không xác định';
@@ -58,11 +65,74 @@ function formatDate(dateStr) {
   return d.toLocaleDateString(); // bạn có thể đổi format nếu muốn
 }
 
+// normalize function: chuẩn hóa nhiều dạng input thành 1 schema
+function normalizeRecruitments(items = []) {
+  const safeNumber = (v) => {
+    const n = Number(v ?? 0);
+    return Number.isFinite(n) ? n : 0;
+  };
+
+  return (items || []).map((item) => {
+    // hỗ trợ camelCase và snake_case
+    const id = item.id ?? item._id ?? '';
+    const title = item.title ?? item.activityTitle ?? item.name ?? item.job_title ?? null;
+    const organizationName = item.organizationName ?? item.organization ?? item.orgName ?? '';
+    // raw status có thể đã là VN hoặc EN
+    const rawStatus = item.status ?? item.rawStatus ?? '';
+    const statusVN = mapStatus(rawStatus);
+    const statusColor = getStatusColor(statusVN);
+
+    const createdAt = item.createdAt ?? item.created_at ?? item.timeStart ?? item.created ?? '';
+    const createdDate = formatDate(createdAt);
+
+    const applicants = safeNumber(item.applications ?? item.applicants ?? item.num_applicants ?? 0);
+    const views = safeNumber(item.views ?? 0);
+    const optimization = item.optimization !== undefined && item.optimization !== null ? String(item.optimization) : '0%';
+
+    // jobPostings: dùng salary/department/position nếu có, fallback 'N/A'
+    const jobPostings = item.jobPostings ?? item.job_postings ?? (item.salary ? item.salary : (item.department ?? 'N/A'));
+
+    const serviceStatus = item.serviceStatus ?? item.service_status ?? (item.isFeatured ? 'Featured' : 'Chưa có');
+
+    const location = item.local ?? item.location ?? item.city ?? '';
+
+    const compensation = item.compensation ?? item.salary ?? '';
+
+    const timeStart = item.timeStart ?? item.start ?? '';
+    const timeEnd = item.timeEnd ?? item.end ?? '';
+    const deadline = item.deadline ?? item.deadline_at ?? '';
+
+    return {
+      id,
+      name: title ?? 'Không có tiêu đề',
+      rawStatus,
+      status: statusVN,
+      statusColor,
+      createdDate,
+      applicants,
+      views,
+      optimization,
+      jobPostings,
+      serviceStatus,
+      organizationName,
+      location,
+      compensation,
+      timeStart,
+      timeEnd,
+      deadline,
+      // keep original for debug if needed
+      original: item
+    };
+  });
+}
+
 const CampaignManagement = () => {
+  const navigate = useNavigate();
   // read query params
   const [searchParams] = useSearchParams();
 
   // state
+  const [reload, setReload] = useState(false);
   const [campaignsData, setCampaignsData] = useState([]);
   const [filteredCampaigns, setFilteredCampaigns] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -83,6 +153,8 @@ const CampaignManagement = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]); // khi query param thay đổi
 
+
+
   // load dữ liệu từ API và chuẩn hóa
   useEffect(() => {
     let isMounted = true;
@@ -93,26 +165,8 @@ const CampaignManagement = () => {
         const res = await recruitmentService.getRecruitments();
         if (!isMounted) return;
 
-        const items = Array.isArray(res?.data) ? res.data : [];
-        const normalized = items.map((item) => {
-          const statusVN = mapStatus(item.status);
-          return {
-            id: item.id ?? '',
-            name: item.title ?? item.name ?? 'Không có tiêu đề',
-            rawStatus: item.status ?? '',
-            status: statusVN,
-            statusColor: getStatusColor(statusVN),
-            createdDate: formatDate(item.createdAt ?? item.created_at ?? ''),
-            applicants: Number(item.applications ?? item.applicants ?? 0) || 0,
-            views: Number(item.views ?? 0) || 0,
-            optimization:
-              item.optimization !== undefined && item.optimization !== null
-                ? String(item.optimization)
-                : '0%',
-            jobPostings: item.jobPostings ?? item.job_postings ?? 'N/A',
-            serviceStatus: item.serviceStatus ?? item.service_status ?? 'Chưa có'
-          };
-        });
+        const items = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
+        const normalized = normalizeRecruitments(items);
 
         setCampaignsData(normalized);
       } catch (err) {
@@ -123,13 +177,11 @@ const CampaignManagement = () => {
         if (isMounted) setLoading(false);
       }
     };
-
     load();
-
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [reload]);
 
   // lọc & tìm kiếm
   useEffect(() => {
@@ -141,10 +193,12 @@ const CampaignManagement = () => {
     const q = searchTerm.trim().toLowerCase();
 
     const filtered = campaignsData.filter((campaign) => {
-      // matches search: id or name
+      // matches search: id or name or organization or location
       const matchesSearch =
         !q ||
         (campaign.name || '').toLowerCase().includes(q) ||
+        (campaign.organizationName || '').toLowerCase().includes(q) ||
+        (campaign.location || '').toLowerCase().includes(q) ||
         String(campaign.id).toLowerCase().includes(q);
 
       // matches filter: nếu "Tất cả chiến dịch" (hoặc empty) -> luôn true
@@ -176,6 +230,8 @@ const CampaignManagement = () => {
     }
   };
 
+
+
   const getOptimizationColor = (percentage) => {
     // parseInt sẽ lấy số ở đầu chuỗi như "80%" -> 80
     const num = parseInt(String(percentage).replace('%', ''), 10) || 0;
@@ -199,8 +255,27 @@ const CampaignManagement = () => {
     setSelectedFilter('Tất cả chiến dịch');
   };
 
-  if (loading) return <p className="text-gray-500">Đang tải dữ liệu...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
+  const handleDelete = async (id) => {
+    const check = confirm("Bạn có chắc muốn xóa sự kiện này!");
+    if(check) {
+      const res = await recruitmentService.deleteRecruitment(id);
+      if(res.success){
+        alert("Xóa thành công!");
+        setReload(!reload);
+      }else {
+        alert("Xóa thất bại");
+      }
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  };
+  if (error) return <ErrorState />;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -285,10 +360,6 @@ const CampaignManagement = () => {
                 placeholder="Tìm chiến dịch (Nhấn enter để tìm kiếm)"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyDown={(e) => {
-                  // nếu muốn chỉ tìm khi nhấn Enter, có thể bỏ comment dưới
-                  // if (e.key === 'Enter') setSearchTerm(e.target.value);
-                }}
                 className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -318,16 +389,17 @@ const CampaignManagement = () => {
         </div>
 
         {/* Campaign Table */}
-        <div className="max-h-96 overflow-y-auto relative bg-white rounded-t-2xl shadow-lg border border-gray-100 overflow-hidden">
+        <div className="overflow-y-auto relative bg-white rounded-t-2xl shadow-lg border border-gray-100 overflow-hidden">
           {/* Table Header */}
           <div className="bg-gray-50 border-b sticky top-0 left-0 border-gray-200 z-10">
             <div className="grid grid-cols-12 gap-4 px-6 py-4 text-sm font-semibold text-gray-700">
               <div className="col-span-3">Chiến dịch tuyển dụng</div>
               <div className="col-span-1 text-center">Tối ưu</div>
               <div className="col-span-2">Tin tuyển dụng</div>
-              <div className="col-span-2">UV từ hệ thống</div>
+              <div className="col-span-1">UV từ hệ thống</div>
               <div className="col-span-1">Lọc UV</div>
               <div className="col-span-2">Dịch vụ đang chạy</div>
+              <div className="col-span-1">Hạn tuyển</div>
               <div className="col-span-1 text-center">Thao tác</div>              
             </div>
           </div>
@@ -335,7 +407,7 @@ const CampaignManagement = () => {
           {/* Table Body */}
           <div className="divide-y divide-gray-100">
             {filteredCampaigns.map((campaign) => (
-              <div key={campaign.id || Math.random()} className="grid grid-cols-12 gap-4 px-6 py-6 hover:bg-gray-50 transition-colors group">
+              <div key={campaign.id ?? Math.random()} className="grid grid-cols-12 gap-4 px-6 py-6 hover:bg-gray-50 transition-colors group">
                 {/* Campaign Info */}
                 <div className="col-span-3">
                   <div className="flex items-center space-x-4">
@@ -349,7 +421,7 @@ const CampaignManagement = () => {
                         </span>
                       </div>
 
-                      <h3 className="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors truncate">{campaign.name}</h3>
+                      <a target='blank' href={`/events/${campaign.id}`} className="font-semibold text-gray-800 group-hover:text-blue-600 hover:underline transition-colors truncate">{campaign.name}</a>
 
                       <div className="flex flex-col justity-center space-y-1 mt-2 text-sm text-gray-500">
                         <div className="flex items-center space-x-1">
@@ -364,6 +436,12 @@ const CampaignManagement = () => {
                           <Eye className="w-4 h-4" />
                           <span>{campaign.views} lượt xem</span>
                         </div>
+                        {campaign.organizationName && (
+                          <div className="flex items-center space-x-1 text-xs text-gray-400 mt-1">
+                            <span className="italic">{campaign.organizationName}</span>
+                            {campaign.location && <span>• {campaign.location}</span>}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -381,31 +459,39 @@ const CampaignManagement = () => {
                   <div className="text-sm">
                     <div className="font-medium text-gray-800">{campaign.jobPostings}</div>
                     {campaign.status === 'Đang tuyển' && <div className="text-green-600 text-xs mt-1">✓ Đang hiển thị công khai</div>}
+                    {campaign.compensation && <div className="text-xs text-gray-500 mt-1">Mức lương: {campaign.compensation}</div>}
                   </div>
                 </div>
 
                 {/* CV Recommendations */}
-                <div className="col-span-2 flex items-center">
-                  <button className="text-blue-600 hover:text-blue-800 font-medium text-sm flex items-center space-x-1 hover:underline">
-                    <Eye className="w-4 h-4" />
-                    <span>Xem CV đề xuất</span>
+                <div className="col-span-1 flex items-center">
+                  <button onClick={()=> navigate(`/btc/recommendation-cv?eventId=${campaign.id}`)} className="text-blue-600 hover:text-blue-800 font-medium text-sm flex items-center space-x-1 hover:underline">
+                    <span>UV đề xuất</span>
                   </button>
                 </div>
 
                 {/* CV Filter */}
                 <div className="col-span-1 flex items-center">
-                  <button className="text-purple-600 hover:text-purple-800 font-medium text-sm hover:underline">Lọc CV</button>
+                  <button onClick={()=> navigate(`/btc/cv-manage?eventId=${campaign.id}&&type=filter`)} className="text-purple-600 hover:text-purple-800 font-medium text-sm hover:underline">Lọc CV</button>
                 </div>
 
                 {/* Service Status */}
                 <div className="col-span-2 flex items-center justify-between px-2">
                   <div className="text-sm text-gray-600">{campaign.serviceStatus}</div>
                 </div>
-                <div className="flex items-center space-x-2 col-span-1">
-                  <button className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+
+                <div className="col-span-1 flex items-center justify-between px-2">
+                  <div className="text-xs text-gray-400">{campaign.deadline ? `${formatDate(campaign.deadline)}` : ''}</div>
+                </div>
+
+                <div className="flex items-center space-x-0.5 col-span-1 justify-end">
+                  <button onClick={()=> navigate(`/btc/recruitment-post?eventId=${campaign.id}&&type=edit`)} className="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
                     <Edit className="w-4 h-4" />
                   </button>
-                  <button className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                  <button onClick={()=> navigate(`/btc/recruitment-report?eventId=${campaign.id}`)} className="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                    <ChartNoAxesCombined className="w-4 h-4" />
+                  </button>
+                  <button onClick={()=> {handleDelete(campaign.id)}} className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>

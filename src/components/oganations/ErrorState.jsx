@@ -1,7 +1,7 @@
 // components/Dashboard/ErrorState.jsx
 import { Unplug, RefreshCw } from "lucide-react";
 
-const ErrorState = ({ status = 404, onRetry }) => {
+const ErrorState = ({ status = 404, onRetry, message = "Có lỗi xảy ra trong quá trình tải dữ liệu. Vui lòng thử lại sau." }) => {
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] bg-gray-50 rounded-xl">
       <div className="text-center max-w-md">
@@ -9,7 +9,7 @@ const ErrorState = ({ status = 404, onRetry }) => {
           <Unplug size={64} className="text-gray-400" />
         </div>
         <h1 className="text-4xl font-bold text-gray-700 mb-2">{status} - Oops!</h1>
-        <p className="text-gray-600 mb-6">Có lỗi xảy ra trong quá trình tải dữ liệu. Vui lòng thử lại sau.</p>
+        <p className="text-gray-600 mb-6">{message}</p>
         <button 
           onClick={onRetry}
           className="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"

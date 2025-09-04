@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { postBoxService } from "../../services/oganations";
+import postBoxService from "../../services/oganations/postBoxService.js";
 import ErrorState from "../../components/oganations/ErrorState.jsx";
 import { 
   Mail, 

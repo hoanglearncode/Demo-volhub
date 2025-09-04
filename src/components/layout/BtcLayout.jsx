@@ -5,22 +5,23 @@ import {
   Menu, 
   User, 
   Boxes, 
-  BellDot, 
+  Building, 
   History, 
   WandSparkles, 
   ShoppingCart, 
   ChartNoAxesCombined, 
-  Newspaper, 
+  Megaphone, 
   BriefcaseBusiness, 
   ThumbsUp, 
-  Mail,
+  Headphones,
   ChevronDown,
   Search,
   Plus,
   Home,
-  Settings
+  Settings,
+  Mail
 } from "lucide-react";
-import { Link, Route, Routes, useLocation } from 'react-router-dom';
+import { Link, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from "react";
 import Dashboard from "../../page/oganations/Dashboard.jsx";
 import RecruitmentPage from '../../page/oganations/RecruitmentPage.jsx';
@@ -30,13 +31,21 @@ import Account from "../../page/oganations/Account.jsx";
 import VerifyPage from "../../page/oganations/Verify.jsx";
 import CandidateRecommendation from "../../page/oganations/CandidateRecommendation .jsx";
 import PostBoxPage from "../../page/oganations/PostPage.jsx";
-import SystemNotificationPage from "../../page/oganations/NotificationSystem.jsx";
 import RecruitmentPostPage from "../../page/oganations/RecruitmentPagePost.jsx";
 import CVManages from "../../page/oganations/CVManages.jsx";
+import HistoryPage from "../../page/oganations/HistoryPage.jsx";
+import ServicePurchasePage from "../../page/oganations/PayServicesPage.jsx";
+import RecruitmentDashboard  from "../../page/oganations/RecruitmentDashboard.jsx"
+import SystemNotificationPage from "../../page/oganations/NotificationSystem.jsx";
+import Profile from "../../page/common/ProfilePage.jsx";
+import RecruiterSupportPage from "../../page/oganations/RecruiterSupportPage.jsx";
+import MediaToolsDashboard from "../../page/oganations/MediaToolsDashboard.jsx";
+import MyCartsPage from "../../page/oganations/MyCartPage.jsx";
 
 function BtcLayout() {
   const { user, isAuthenticated, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [notificationMenuOpen, setNotificationMenuOpen] = useState(false);
@@ -48,16 +57,12 @@ function BtcLayout() {
     const data = Notification.getNotification();
     setNavData([
       { to: "/btc", title: "Bảng tin", Icon: Boxes, badge: null },
-      { to: "/btc/recommendation-cv", title: "CV đề xuất", Icon: ThumbsUp, badge: null },
-      { to: "/btc/recruitment", title: "Tuyển dụng", Icon: BriefcaseBusiness, badge: null },
-      { to: "/btc/recruitment-post", title: "Tin tuyển dụng", Icon: Newspaper, badge: null },
-      { to: "/btc/cv-manage", title: "Quản lý CV", Icon: User, badge: null },
+      { to: "/btc/recruitment", title: "Sự kiện của tôi", Icon: BriefcaseBusiness, badge: null },
+      { to: "/btc/cv-manage", title: "Ứng viên của tôi", Icon: User, badge: null },
       { to: "/btc/recruitment-report", title: "Báo cáo tuyển dụng", Icon: ChartNoAxesCombined, badge: null },
-      { to: "/btc/services", title: "Mua dịch vụ mới", Icon: ShoppingCart, badge: null },
-      { to: "/btc/my-services", title: "Dịch vụ của tôi", Icon: WandSparkles, badge: null },
-      { to: "/btc/history", title: "Lịch sử hoạt động", Icon: History, badge: null },
-      { to: "/btc/notification-system", title: "Thông báo hệ thống", Icon: BellDot, badge: 3 },
-      { to: "/btc/post-box", title: "Hộp thư", Icon: Mail, badge: 5 },
+      { to: "/btc/profile", title: "Hồ sơ tổ chức", Icon: Building, badge: null },
+      { to: "/btc/media", title: "Công cụ truyền thông", Icon: Megaphone, badge: 3 },
+      { to: "/btc/support", title: "Hỗ trợ", Icon: Headphones, badge: 5 },
     ]);
     
     if (data.length > 0) {
@@ -159,13 +164,16 @@ function BtcLayout() {
                         </Link>
                       ))}
                     </div>
+                    <div className="pt-2 py-2 text-gray-700 text-center hover:text-blue-600">
+                      <Link to={'/btc/notification-system'}>Xem tất cả</Link>
+                    </div>
                   </div>
                 )}
               </div>
             </div>
 
             {/* Cart */}
-            <button className="relative p-2 hover:bg-slate-700 rounded-lg transition-colors">
+            <button onClick={()=> navigate('/btc/my-cart')} className="relative p-2 hover:bg-slate-700 rounded-lg transition-colors">
               <ShoppingCart size={18} />
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                 0
@@ -211,6 +219,20 @@ function BtcLayout() {
                   onClick={() => setUserMenuOpen(false)}
                 >
                   <Settings size={16} /> Cài đặt
+                </Link>
+                <Link 
+                  to="/btc/post-box" 
+                  className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                  onClick={() => setUserMenuOpen(false)}
+                >
+                  <Mail size={16} /> Hộp thư
+                </Link>
+                <Link 
+                  to="/btc/history" 
+                  className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                  onClick={() => setUserMenuOpen(false)}
+                >
+                  <History size={16} /> Lịch sử hoạt động
                 </Link>
                 <hr className="my-2" />
                 <button
@@ -281,35 +303,26 @@ function BtcLayout() {
                       <span className={`${isCollapsed ? 'hidden' : 'block'} text-sm font-medium truncate`}>
                         {item.title}
                       </span>
-                      {item.badge && !isCollapsed && (
-                        <span className="ml-auto bg-red-100 text-red-600 text-xs font-semibold px-2 py-0.5 rounded-full">
-                          {item.badge}
-                        </span>
-                      )}
                       
                       {/* Tooltip for collapsed state */}
                       {isCollapsed && (
                         <div className="absolute left-full ml-2 px-3 py-1 bg-gray-800 text-white text-sm rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50">
                           {item.title}
-                          {item.badge && (
-                            <span className="ml-2 bg-red-500 text-xs px-1.5 py-0.5 rounded-full">
-                              {item.badge}
-                            </span>
-                          )}
                         </div>
                       )}
                     </Link>
                   );
                 })}
               </div>
+
             </nav>
 
             {/* Bottom Actions */}
             <div className="border-t border-gray-200 p-2">
-              <button className="w-full flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white py-2.5 rounded-lg transition-colors">
+              <Link to={'/btc/recruitment-post'} className="w-full flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white py-2.5 rounded-lg transition-colors">
                 <Plus size={18} />
                 <span className={`${isCollapsed ? 'hidden' : 'block'} font-medium`}>Đăng tin mới</span>
-              </button>
+              </Link>
             </div>
           </div>
         </aside>
@@ -332,16 +345,29 @@ function BtcLayout() {
           <div className="p-6">
             <Routes>
               <Route path="/btc" element={<Dashboard isCollapsed={isCollapsed} />} />
-              <Route path="/btc/recommendation-cv" element={<CandidateRecommendation />} />
+
               <Route path="/btc/recruitment" element={<RecruitmentPage />} />
               <Route path="/btc/recruitment-post" element={<RecruitmentPostPage />} />
+
               <Route path="/btc/cv-manage" element = {<CVManages />} />
+              <Route path="/btc/cv-manage/view-profile/:id" element = {<Profile />}/>
+              <Route path="/btc/cv-manage/contact/:id" element = {<Profile />}/>
+
+              <Route path="/btc/history" element = {<HistoryPage />} />
+              <Route path="/btc/services" element = {<ServicePurchasePage />} />
+              <Route path="/btc/recruitment-report" element = {<RecruitmentDashboard  />} />
+
+              <Route path="/btc/notification-system" element = {<SystemNotificationPage />} />
+              <Route path="/btc/notification-system//detail/:id" element = {<SystemNotificationPage />} />
+
+              <Route path="/btc/support" element={<RecruiterSupportPage />} />
+
+              <Route path="/btc/media" element={<MediaToolsDashboard />} />
 
               <Route path="/btc/account" element={<Account />} />
-              <Route path="/btc/notification-system" element={<SystemNotificationPage />} />
-              <Route path="/btc/post-box" element={<PostBoxPage />} />
-              {/* router verify */}
               <Route path="/btc/verify" element={<VerifyPage />} />
+              <Route path="/btc/my-cart" element = {<MyCartsPage />} />
+              <Route path="/btc/post-box" element={<PostBoxPage />} />
             </Routes>
           </div>
         </main>

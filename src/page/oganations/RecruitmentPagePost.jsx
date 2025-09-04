@@ -1,12 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { recruitmentPostService } from '../../services/oganations/index.js';
+import recruitmentService  from '../../services/oganations/recruitmentService.js';
 import { 
   Calendar, Users, MapPin, Clock, DollarSign, Briefcase, Star, Copy, Download, Edit,
   Heart, Globe, Award, Coffee, Zap, Target, BookOpen, Camera, Music, Utensils,
-  Save, X, CheckCircle, Loader2, Filter, Search
+  Save, X, CheckCircle, Loader2, Filter, Search, Eye
 } from 'lucide-react';
 
+import { useSearchParams } from "react-router-dom";
+
 export default function VolunteerRecruitmentPlatform() {
+    const [searchParams] = useSearchParams();
+  const eventId = searchParams.get('eventId');
+  const type = searchParams.get('type');
   const [activeTab, setActiveTab] = useState('create');
   const [isGenerating, setIsGenerating] = useState(true);
   const [formData, setFormData] = useState({
@@ -58,6 +63,25 @@ export default function VolunteerRecruitmentPlatform() {
   ];
 
 
+  useEffect(()=> {
+    const loaded = async ()=> {
+        try {
+            const res = await recruitmentService.getRecruitmentsById(eventId);
+            if(res.success) {
+                setFormData(res.data);
+                quillRef.current.clipboard.dangerouslyPasteHTML(`<div>${formData.description}</div>`)
+            }else {
+                alert("lỗi")
+            }
+        }catch(err){
+            console.log(err.message);
+        }
+    }
+    if(type === 'edit') {
+        loaded();
+    }
+  }, []);
+
   // Load Quill.js
   useEffect(() => {
     const loadQuill = async () => {
@@ -82,6 +106,7 @@ export default function VolunteerRecruitmentPlatform() {
 
     loadQuill();
   }, []);
+
 
   const initializeEditor = () => {
     if (editorRef.current && window.Quill && !quillRef.current) {
@@ -141,8 +166,7 @@ export default function VolunteerRecruitmentPlatform() {
        
     }
     const publish = () => {
-        recruitmentPostService.createRecruitmentPost(formData);
-        resetForm();
+        recruitmentService.createRecruitment(formData);
     }
     const resetForm = ()=> {
         setFormData({
@@ -320,7 +344,7 @@ export default function VolunteerRecruitmentPlatform() {
                 </div>
 
                 {/* Compensation (for collaborators) */}
-                {formData.activityType === 'collaborator' && (
+                {(formData.profitType !== 'nonprofit' || formData.activityType ) === 'collaborator' && (
                     <div className="space-y-2">
                     <label className="block text-sm font-semibold text-gray-700 flex items-center gap-1">
                         <DollarSign size={16} className="text-green-500" />
@@ -471,7 +495,7 @@ export default function VolunteerRecruitmentPlatform() {
                 className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2 ml-auto"
                 >
                 <CheckCircle size={16} />
-                🚀 Đăng tuyển
+                    {type === 'edit' ? "Cập nhật" : "🚀 Đăng tuyển"}
                 </button>
                 
                 <button 

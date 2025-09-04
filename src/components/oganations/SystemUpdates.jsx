@@ -1,7 +1,9 @@
 // components/Dashboard/SystemUpdates.jsx
 import { Bell, Clock, CheckCircle, AlertCircle, Info } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const SystemUpdates = ({ updates = [] }) => {
+  const navigate = useNavigate();
   const getIcon = (type) => {
     switch (type) {
       case 'success': return <CheckCircle size={20} className="text-green-600" />;
@@ -55,7 +57,7 @@ const SystemUpdates = ({ updates = [] }) => {
                 </div>
                 <p className="text-sm text-gray-600 leading-relaxed">{update.message}</p>
                 {update.action && (
-                  <button className="mt-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors">
+                  <button onClick={()=> navigate(`/btc/notification-system/detail/${update?.id}`)} className="mt-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors">
                     {update.action}
                   </button>
                 )}
