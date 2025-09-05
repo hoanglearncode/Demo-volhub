@@ -21,35 +21,32 @@ import {
   Eye,
   MessageSquare,
   Flag,
-  Facebook,
-  Mail,
-  Smartphone,
+  Calendar,
+  Handshake,
   Activity,
-  Key,
-  HardDrive,
-  Download,
   Archive,
-  UserCog,
-  FileQuestion,
-  Ticket,
-  Brain
+  Headphones,
+  User,
+  Brain,
+  User2
 } from "lucide-react";
 
-export default function AdminNav({ counts = {}, isCollapsed, setIsCollapsed }) {
+export default function AdminNav({ pendingQueue = {}, isCollapsed, setIsCollapsed }) {
   const [open, setOpen] = useState(null);
   const location = useLocation();
   
   const toggle = (key) => setOpen(open === key ? null : key);
 
-  const isActive = (path) => location.pathname.startsWith(path);
+  const isActive = (path) => location.pathname === path || location.pathname.startsWith(path + '/');
   const isMenuActive = (menuKey) => {
     const menuPaths = {
-      users: '/admin/users',
+      events: '/admin/events',
+      volunteers: '/admin/volunteers',
+      partners: '/admin/partners',
+      connections: '/admin/connections',
       content: '/admin/content',
-      integrations: '/admin/integrations',
-      system: '/admin/monitoring',
+      system: '/admin/system',
       data: '/admin/backup',
-      recruitment: '/admin/recruitment',
       support: '/admin/support'
     };
     return location.pathname.startsWith(menuPaths[menuKey] || '');
@@ -172,35 +169,8 @@ export default function AdminNav({ counts = {}, isCollapsed, setIsCollapsed }) {
   };
 
   return (
-    <aside className={`${isCollapsed ? 'w-20' : 'w-md'} bg-white border-r border-gray-200 h-screen sticky top-0 overflow-hidden transition-all duration-300 z-40`}>
-      <div className="h-full flex flex-col">
-        {/* Header */}
-        <div className="flex justify-between items-center p-4 border-b border-gray-100">
-          {!isCollapsed ? (
-            <Link to="/admin" className="flex items-center gap-3 group">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                <Home size={16} className="text-white" />
-              </div>
-              <div>
-                <div className="font-bold text-gray-900 text-lg">Admin Panel</div>
-                <div className="text-xs text-gray-500">Volunteer Management</div>
-              </div>
-            </Link>
-          ) : (
-            <Link to="/admin" className="flex justify-center">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                <Home size={16} className="text-white" />
-              </div>
-            </Link>
-          )}
-
-          {!isCollapsed && (
-            <button className="rounded-full w-10 h-10 flex justify-center items-center bg-gray-200" onClick={()=> setIsCollapsed(!isCollapsed)}>
-              <ChevronRight className={`transform transition-transform duration-300 ${isCollapsed ? "rotate-180" : ""}`} size={18} />
-            </button>
-          )}
-        </div>
-
+    <aside className={`${isCollapsed ? 'w-16' : 'w-64'} bg-white border-r border-gray-200 h-screen overflow-y-scroll overflow-x-scroll fixed top-0 overflow-hidden transition-all duration-300 z-40`}>
+      <div className="h-full flex flex-col  mt-16">
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
           {/* Dashboard */}
@@ -208,26 +178,41 @@ export default function AdminNav({ counts = {}, isCollapsed, setIsCollapsed }) {
             Dashboard
           </DirectNavLink>
 
-          {/* User Management */}
-          <MenuButton
-            icon={Users}
-            title="Quản lý người dùng & phân quyền"
-            menuKey="users"
+          {/* Event Management */}
+          <DirectNavLink 
+            to="/admin/events" 
+            icon={Calendar}
+            badge={<Badge count={pendingQueue.events} color="bg-orange-500" />}
           >
-            <NavLink to="/admin/users" icon={UserCheck}>
-              Danh sách người dùng
+            Quản lý sự kiện
+          </DirectNavLink>
+
+          {/* Volunteer Management */}
+          <DirectNavLink to="/admin/volunteers" icon={User2}>
+            Quản lý tình nguyện viên
+          </DirectNavLink>
+
+          {/* Partner Management */}
+          <DirectNavLink to="/admin/partners" icon={Handshake}>
+            Quản lý đối tác/BTC
+          </DirectNavLink>
+
+          {/* Connection & Messages Queue */}
+          <MenuButton
+            icon={MessageSquare}
+            title="Kết nối & Tin nhắn"
+            menuKey="connections"
+            badge={<Badge count={pendingQueue.connections} color="bg-blue-500" />}
+          >
+            <NavLink 
+              to="/admin/connections" 
+              icon={LinkIcon}
+              badge={<Badge count={pendingQueue.connections} color="bg-blue-500" />}
+            >
+              Hàng đợi kết nối
             </NavLink>
-            <NavLink to="/admin/users/create" icon={UserPlus}>
-              Tạo / Invite tài khoản
-            </NavLink>
-            <NavLink to="/admin/roles" icon={Shield}>
-              Roles & Permissions
-            </NavLink>
-            <NavLink to="/admin/users/impersonate" icon={Eye}>
-              Impersonate (debug)
-            </NavLink>
-            <NavLink to="/admin/users/blocked" icon={Lock}>
-              Tài khoản bị khóa
+            <NavLink to="/admin/messages" icon={MessageSquare}>
+              Proxy Chat
             </NavLink>
           </MenuButton>
 
@@ -236,52 +221,39 @@ export default function AdminNav({ counts = {}, isCollapsed, setIsCollapsed }) {
             icon={FileText}
             title="Kiểm duyệt nội dung"
             menuKey="content"
-            badge={<Badge count={counts.pendingModeration} />}
+            badge={<Badge count={pendingQueue.content} color="bg-yellow-500" />}
           >
             <NavLink 
-              to="/admin/content/moderation" 
+              to="/admin/content" 
               icon={AlertTriangle}
-              badge={<Badge count={counts.pendingModeration} color="bg-orange-500" />}
+              badge={<Badge count={pendingQueue.content} color="bg-yellow-500" />}
             >
-              Hòm duyệt (pending)
+              Nội dung chờ duyệt
             </NavLink>
-            <NavLink to="/admin/content/posts" icon={FileText}>
-              Quản lý bài đăng
-            </NavLink>
-            <NavLink to="/admin/content/comments" icon={MessageSquare}>
-              Quản lý bình luận
-            </NavLink>
-            <NavLink to="/admin/content/reports" icon={Flag}>
-              Báo cáo & Flags
-            </NavLink>
-            <NavLink to="/admin/content/external" icon={Facebook}>
-              Nội dung import (Facebook)
-            </NavLink>
-            <NavLink to="/admin/content/history" icon={Archive}>
+            <NavLink to="/admin/moderation" icon={Shield}>
               Lịch sử moderation
             </NavLink>
           </MenuButton>
 
-          {/* Integrations */}
+          {/* Reports & Analytics */}
           <MenuButton
-            icon={LinkIcon}
-            title="Tích hợp & Kết nối"
-            menuKey="integrations"
+            icon={BarChart3}
+            title="Báo cáo & Analytics"
+            menuKey="reports"
+            badge={<Badge count={pendingQueue.reports} color="bg-red-500" />}
           >
-            <NavLink to="/admin/integrations/facebook" icon={Facebook}>
-              Facebook App & Page
+            <NavLink to="/admin/reports" icon={BarChart3}>
+              Dashboard báo cáo
             </NavLink>
-            <NavLink to="/admin/integrations/fb-mapping" icon={LinkIcon}>
-              Mapping nội dung (FB → App)
+            <NavLink to="/admin/analytics" icon={Activity}>
+              Phân tích chi tiết
             </NavLink>
-            <NavLink to="/admin/integrations/email" icon={Mail}>
-              Email provider (keys)
-            </NavLink>
-            <NavLink to="/admin/integrations/sms" icon={Smartphone}>
-              SMS gateway
-            </NavLink>
-            <NavLink to="/admin/integrations/tests" icon={Activity}>
-              Test token / Connection
+            <NavLink 
+              to="/admin/reports/violations" 
+              icon={Flag}
+              badge={<Badge count={pendingQueue.reports} color="bg-red-500" />}
+            >
+              Báo cáo vi phạm
             </NavLink>
           </MenuButton>
 
@@ -290,74 +262,26 @@ export default function AdminNav({ counts = {}, isCollapsed, setIsCollapsed }) {
             icon={Monitor}
             title="Hệ thống & Giám sát"
             menuKey="system"
-            badge={<Badge count={counts.alerts} color="bg-red-500" />}
           >
-            <NavLink to="/admin/monitoring/health" icon={Activity}>
+            <NavLink to="/admin/system-monitoring" icon={Activity}>
+              Giám sát hệ thống
+            </NavLink>
+            <NavLink to="/admin/monitoring" icon={Monitor}>
               Health checks
-            </NavLink>
-            <NavLink 
-              to="/admin/alerts" 
-              icon={AlertTriangle}
-              badge={<Badge count={counts.alerts} color="bg-red-500" />}
-            >
-              Alerts & Thresholds
-            </NavLink>
-            <NavLink to="/admin/keys" icon={Key}>
-              API keys & Key rotation
-            </NavLink>
-            <NavLink to="/admin/settings/security" icon={Shield}>
-              Security settings (MFA, IP allowlist)
-            </NavLink>
-            <NavLink to="/admin/monitoring/logs" icon={FileText}>
-              Audit logs
             </NavLink>
           </MenuButton>
 
-          {/* Data Management */}
+          {/* Data Backup & Export */}
           <MenuButton
             icon={Database}
-            title="Backup / Export / Data"
+            title="Backup & Export"
             menuKey="data"
           >
             <NavLink to="/admin/backup" icon={Archive}>
-              Backup & Restore
+              Sao lưu dữ liệu
             </NavLink>
-            <NavLink to="/admin/exports" icon={Download}>
-              Export data (CSV/JSON/XLSX)
-            </NavLink>
-            <NavLink to="/admin/storage/files" icon={HardDrive}>
-              Quản lý Storage (files)
-            </NavLink>
-            <NavLink to="/admin/data/retention" icon={Archive}>
-              Retention policies
-            </NavLink>
-          </MenuButton>
-
-          {/* Recruitment */}
-          <MenuButton
-            icon={Briefcase}
-            title="Tuyển dụng"
-            menuKey="recruitment"
-            badge={<Badge count={counts.pendingApplications} color="bg-green-500" />}
-          >
-            <NavLink to="/admin/recruitment/jobs" icon={Briefcase}>
-              Quản lý job
-            </NavLink>
-            <NavLink to="/admin/recruitment/forms" icon={FileQuestion}>
-              Form builder (mẫu apply)
-            </NavLink>
-            <NavLink 
-              to="/admin/recruitment/applications" 
-              icon={UserCog}
-              badge={<Badge count={counts.pendingApplications} color="bg-green-500" />}
-            >
-              Applications
-            </NavLink>
-            <NavLink to="/admin/recruitment/workflow" icon={Activity}>
-              Luồng phê duyệt
-            </NavLink>
-            <NavLink to="/admin/recruitment/templates" icon={Mail}>
-              Email templates
+            <NavLink to="/admin/export" icon={Database}>
+              Export dữ liệu
             </NavLink>
           </MenuButton>
 
@@ -367,36 +291,19 @@ export default function AdminNav({ counts = {}, isCollapsed, setIsCollapsed }) {
             title="Support & Khiếu nại"
             menuKey="support"
           >
-            <NavLink to="/admin/support/tickets" icon={Ticket}>
+            <NavLink to="/admin/support" icon={Headphones}>
+              Hỗ trợ người dùng
+            </NavLink>
+            <NavLink to="/admin/tickets" icon={AlertTriangle}>
               Tickets & Escalations
-            </NavLink>
-            <NavLink to="/admin/support/escalation-rules" icon={AlertTriangle}>
-              Quy trình Escalate
-            </NavLink>
-            <NavLink to="/admin/support/knowledge" icon={Brain}>
-              Knowledge base
             </NavLink>
           </MenuButton>
 
-          {/* Direct Links */}
-          <DirectNavLink to="/admin/reports" icon={BarChart3}>
-            Báo cáo & Analytics
-          </DirectNavLink>
-
-          <DirectNavLink to="/admin/profile" icon={Settings}>
+          {/* Profile & Settings */}
+          <DirectNavLink to="/admin/profile" icon={User}>
             Hồ sơ & Settings
           </DirectNavLink>
         </nav>
-
-        {/* Footer */}
-        {/* {!isCollapsed && (
-          <div className="p-4 border-t border-gray-100">
-            <div className="text-xs text-gray-500 text-center">
-              <div>Admin Panel v2.1</div>
-              <div>© 2024 Volunteer Platform</div>
-            </div>
-          </div>
-        )} */}
       </div>
     </aside>
   );

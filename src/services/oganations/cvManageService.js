@@ -38,4 +38,6 @@ export default {
   deleteCandidateApplication: (id) => apiCall(`/btc/cv-manage/${id}`, {
     method: 'DELETE',
   }),
+
+  getRecommendedCandidates: () => apiCall('/btc/recommendation-cv'),
 };

@@ -14,5 +14,7 @@ import { CreditCard, Check, X, Plus, Minus, Tag, Truck, ShieldCheck } from 'luci
 // - Mock payment processing + confirmation modal with invoice download
 
 export default function ServicePurchasePage() {
-  
+  return (
+    <div>services</div>
+  )
 }

@@ -24,7 +24,7 @@ const ExploreFeatures = () => {
       title: "Tìm kiếm ứng viên",
       description: "Khám phá cơ sở dữ liệu ứng viên tiềm năng",
       icon: Users,
-      to: "/btc/recommendation-cv",
+      to: "/btc/cv-manage?type=recommend",
       color: "purple",
       action: "Tìm kiếm"
     }

@@ -29,7 +29,6 @@ import { useAuth } from "../../context/AuthContext.jsx";
 import Notification from "../../hook/oganations/Notification.jsx";
 import Account from "../../page/oganations/Account.jsx";
 import VerifyPage from "../../page/oganations/Verify.jsx";
-import CandidateRecommendation from "../../page/oganations/CandidateRecommendation .jsx";
 import PostBoxPage from "../../page/oganations/PostPage.jsx";
 import RecruitmentPostPage from "../../page/oganations/RecruitmentPagePost.jsx";
 import CVManages from "../../page/oganations/CVManages.jsx";
@@ -41,6 +40,7 @@ import Profile from "../../page/common/ProfilePage.jsx";
 import RecruiterSupportPage from "../../page/oganations/RecruiterSupportPage.jsx";
 import MediaToolsDashboard from "../../page/oganations/MediaToolsDashboard.jsx";
 import MyCartsPage from "../../page/oganations/MyCartPage.jsx";
+import OrgProfileManagement from "../../page/oganations/Profile.jsx";
 
 function BtcLayout() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -84,7 +84,7 @@ function BtcLayout() {
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className="p-2 hover:bg-slate-700 rounded-lg transition-colors lg:hidden"
+              className="p-2 hover:bg-slate-700 rounded-lg transition-colors"
             >
               <Menu size={20} />
             </button>
@@ -255,7 +255,7 @@ function BtcLayout() {
         <aside className={`fixed left-0 top-14 bottom-0 bg-white border-r border-gray-200 transition-all duration-300 z-40 ${
           isCollapsed ? 'w-16' : 'w-64'
         } overflow-hidden`}>
-          <div className="flex flex-col h-full">
+          <div className="flex flex-col h-full w-full">
             {/* User Profile Section */}
             <div className={`p-4 border-b border-gray-200 ${isCollapsed ? 'px-2' : ''}`}>
               <div className="flex items-center gap-3">
@@ -358,12 +358,14 @@ function BtcLayout() {
               <Route path="/btc/recruitment-report" element = {<RecruitmentDashboard  />} />
 
               <Route path="/btc/notification-system" element = {<SystemNotificationPage />} />
-              <Route path="/btc/notification-system//detail/:id" element = {<SystemNotificationPage />} />
+              <Route path="/btc/notification-system/detail/:id" element = {<SystemNotificationPage />} />
 
               <Route path="/btc/support" element={<RecruiterSupportPage />} />
 
               <Route path="/btc/media" element={<MediaToolsDashboard />} />
-
+              
+              <Route path="/btc/profile" element ={<OrgProfileManagement />} />
+              <Route path="/btc/services" element ={<ServicePurchasePage />} />
               <Route path="/btc/account" element={<Account />} />
               <Route path="/btc/verify" element={<VerifyPage />} />
               <Route path="/btc/my-cart" element = {<MyCartsPage />} />
