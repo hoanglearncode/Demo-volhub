@@ -46,7 +46,7 @@ const OrgProfileManagement = () => {
   const [orgData, setOrgData] = useState({
     id: 'ORG001',
     name: 'Green Future Foundation',
-    logo: '/api/placeholder/150/150',
+    logo: '/logo.svg',
     description: 'Tổ chức phi lợi nhuận hàng đầu về bảo vệ môi trường và phát triển bền vững tại Việt Nam.',
     industry: 'Môi trường',
     email: 'contact@greenfuture.vn',
@@ -328,7 +328,7 @@ const OrgProfileManagement = () => {
             ) : (
               <button
                 onClick={handleEdit}
-                className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-lg flex items-center gap-2 backdrop-blur-sm"
+                className="bg-white bg-opacity-20 hover:bg-opacity-30 text-gray-700 font-semibold px-4 py-2 rounded-lg flex items-center gap-2 backdrop-blur-sm"
               >
                 <Edit className="w-4 h-4" />
                 Chỉnh sửa
@@ -833,7 +833,7 @@ const OrgProfileManagement = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`text-left flex items-center gap-3 px-3 py-2 rounded-lg w-full ${
+                  className={`text-left flex items-center text-nowrap gap-3 px-3 py-2 rounded-lg w-full ${
                     activeTab === tab.id ? 'bg-blue-50 border border-blue-200' : 'hover:bg-gray-50'
                   }`}
                 >
