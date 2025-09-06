@@ -178,7 +178,7 @@ function AdminLayout() {
             </div>
 
             {/* Alert / Error shortcut */}
-            <button onClick={() => navigate("/admin/error")} className="relative p-2 hover:bg-slate-700 rounded-lg transition-colors" aria-label="Alerts">
+            <button onClick={() => navigate("/admin/system?type=err")} className="relative p-2 hover:bg-slate-700 rounded-lg transition-colors" aria-label="Alerts">
               <TriangleAlert size={18} />
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                 0
@@ -290,7 +290,7 @@ function AdminLayout() {
               </div>
             </nav>
 
-            <div className="w-full py-4 bg-gray-100 flex flex-col items-center space-y-1 font-semibold text-gray-600 text-xs">
+            <div className="w-full hidden md:block text-center py-4 bg-gray-100 flex flex-col items-center space-y-1 font-semibold text-gray-600 text-xs">
               <span>Admin by Volunteer Hub</span>
             </div>
           </div>
@@ -327,9 +327,6 @@ function AdminLayout() {
               <Route path="/admin/settings" element={<RequireAuth><AdminProfile /></RequireAuth>} />
               <Route path="/admin/post-box" element={<RequireAuth><ConnectionQueue /></RequireAuth>} />
               <Route path="/admin/history" element={<RequireAuth><Reports /></RequireAuth>} />
-
-              {/* error / misc */}
-              <Route path="/admin/error" element={<NotFoundPage />} />
 
               {/* Fallback for anything else under admin */}
               <Route path="/admin/*" element={<NotFoundPage />} />

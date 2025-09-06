@@ -1,417 +1,660 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   MessageSquare,
   Users,
-  Shield,
-  AlertTriangle,
+  Clock,
   CheckCircle,
   XCircle,
-  Search,
-  Filter,
+  AlertTriangle,
   Eye,
-  Trash2,
-  Flag,
-  History,
-  Mail,
-  ChevronDown,
+  Filter,
+  Search,
   MoreHorizontal,
-  Clock,
-} from "lucide-react";
-import { Link, Routes, Route, useNavigate, useParams } from "react-router-dom";
+  User,
+  Building2,
+  Calendar,
+  MapPin,
+  Shield,
+  ShieldAlert,
+  Ban,
+  Trash2,
+  Mail,
+  Phone,
+  MessageCircle,
+  Flag,
+  ArrowRight,
+  RefreshCw,
+  Download,
+  Settings,
+  TrendingUp,
+  Activity
+} from 'lucide-react';
 
-/**
- * ConnectionsManagement
- * - /admin/connections (overview)
- * - nested routes handled inside: /queue, /chat, /logs...
- *
- * NOTE: This is a self-contained UI with mock data and stub handlers.
- * Integrate API calls & RBAC logic (RequireAuth/roles) per your backend.
- */
+const ConnectionManagement = () => {
+  const [activeTab, setActiveTab] = useState('pending');
+  const [selectedFilters, setSelectedFilters] = useState({
+    status: '',
+    partner: '',
+    dateRange: '',
+    eventType: ''
+  });
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedConnections, setSelectedConnections] = useState([]);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [selectedConnection, setSelectedConnection] = useState(null);
 
-const now = () => new Date().toISOString();
+  // Mock data for connections
+  const [connections, setConnections] = useState([
+    {
+      id: 'CON001',
+      partnerId: 'BTC001',
+      partnerName: 'UNICEF Việt Nam',
+      partnerAvatar: '/api/placeholder/40/40',
+      partnerStatus: 'verified',
+      volunteerId: 'TNV001',
+      volunteerName: 'Nguyễn Minh Anh',
+      volunteerAvatar: '/api/placeholder/40/40',
+      eventId: 'EVT001',
+      eventTitle: 'Hỗ trợ trẻ em khuyết tật',
+      eventDate: '2025-01-15',
+      location: 'Hà Nội',
+      status: 'pending',
+      priority: 'high',
+      aiFlag: true,
+      aiReason: 'Yêu cầu thông tin cá nhân nhạy cảm',
+      requestDate: '2025-01-10T10:30:00',
+      message: 'Chúng tôi muốn kết nối với tình nguyện viên này cho dự án đặc biệt...',
+      connectionType: 'direct_invite',
+      riskScore: 75
+    },
+    {
+      id: 'CON002',
+      partnerId: 'BTC002',
+      partnerName: 'Samsung Việt Nam',
+      partnerAvatar: '/api/placeholder/40/40',
+      partnerStatus: 'verified',
+      volunteerId: 'TNV002',
+      volunteerName: 'Trần Thị Bình',
+      volunteerAvatar: '/api/placeholder/40/40',
+      eventId: 'EVT002',
+      eventTitle: 'Chương trình Công nghệ cho Cộng đồng',
+      eventDate: '2025-01-20',
+      location: 'TP.HCM',
+      status: 'auto_approved',
+      priority: 'medium',
+      aiFlag: false,
+      requestDate: '2025-01-11T14:20:00',
+      message: 'Mời bạn tham gia workshop về công nghệ...',
+      connectionType: 'event_application',
+      riskScore: 25
+    }
+  ]);
 
-const sampleQueue = [
-  {
-    id: 101,
-    fromOrg: "Samsung Electronics",
-    toVolunteer: { id: 201, name: "Nguyễn Văn A", maskedPhone: "+84•••", maskedEmail: "n.van.a••@mail.com" },
-    event: { id: 11, title: "Tẩy rửa bờ biển", verified: true },
-    submittedAt: "2025-09-01T09:15:00Z",
-    reason: "Request to invite volunteer for event",
-    aiFlags: [],
-    status: "pending", // pending | auto-approved | flagged | approved | rejected
-    adminNote: null,
-  },
-  {
-    id: 102,
-    fromOrg: "Local Community Group",
-    toVolunteer: { id: 202, name: "Trần Thị B", maskedPhone: "+84•••", maskedEmail: "t.thi.b••@mail.com" },
-    event: { id: 12, title: "Phát quà Trung thu", verified: false },
-    submittedAt: "2025-09-03T08:05:00Z",
-    reason: "Mass invite, partner unverified",
-    aiFlags: ["partner_unverified"],
-    status: "flagged",
-    adminNote: null,
-  },
-  {
-    id: 103,
-    fromOrg: "UNICEF Vietnam",
-    toVolunteer: { id: 203, name: "Lê Văn C", maskedPhone: "+84•••", maskedEmail: "l.van.c••@mail.com" },
-    event: { id: 13, title: "Hỗ trợ người cao tuổi", verified: true },
-    submittedAt: "2025-09-04T11:22:00Z",
-    reason: "Verified partner - auto rule expected",
-    aiFlags: [],
-    status: "auto-approved",
-    adminNote: null,
-  },
-];
+  // Mock data for chat messages
+  const [chatMessages, setChatMessages] = useState([
+    {
+      id: 'MSG001',
+      connectionId: 'CON001',
+      sender: 'partner',
+      senderId: 'BTC001',
+      senderName: 'UNICEF Việt Nam',
+      message: 'Chào bạn, chúng tôi rất quan tâm đến hồ sơ của bạn...',
+      timestamp: '2025-01-12T09:15:00',
+      isProxied: true,
+      flagged: false
+    },
+    {
+      id: 'MSG002',
+      connectionId: 'CON001',
+      sender: 'volunteer',
+      senderId: 'TNV001',
+      senderName: 'Nguyễn Minh Anh',
+      message: 'Cảm ơn anh/chị đã quan tâm. Tôi muốn biết thêm về dự án...',
+      timestamp: '2025-01-12T10:30:00',
+      isProxied: true,
+      flagged: false
+    }
+  ]);
 
-const sampleConversations = [
-  {
-    id: "conv-1",
-    participants: [
-      { id: "org-1", name: "Samsung Electronics", type: "org" },
-      { id: 201, name: "Nguyễn Văn A", type: "volunteer", maskedPhone: "+84•••", maskedEmail: "n.van.a••@mail.com" },
-    ],
-    lastMessageAt: "2025-09-04T10:12:00Z",
-    unread: 2,
-    messages: [
-      { id: 1, from: "org-1", text: "Chúng tôi mời bạn tham gia sự kiện...", at: "2025-09-04T09:00:00Z" },
-      { id: 2, from: 201, text: "Cảm ơn, tôi quan tâm. Thông tin chi tiết?", at: "2025-09-04T09:10:00Z" },
-      { id: 3, from: "org-1", text: "Sẽ gửi chi tiết sau khi Admin duyệt connect.", at: "2025-09-04T09:15:00Z" },
-    ],
-    logs: [
-      { at: "2025-09-04T09:00:00Z", action: "invite_sent", by: "Samsung Electronics" },
-      { at: "2025-09-04T09:15:00Z", action: "pending_admin", by: "system" },
-    ],
-  },
-  // more ...
-];
+  // Statistics data
+  const stats = [
+    {
+      title: 'Tổng kết nối',
+      value: '2,847',
+      change: '+12%',
+      trend: 'up',
+      icon: Users,
+      color: 'blue'
+    },
+    {
+      title: 'Chờ kiểm duyệt',
+      value: '23',
+      change: '-5%',
+      trend: 'down',
+      icon: Clock,
+      color: 'yellow'
+    },
+    {
+      title: 'AI cảnh báo',
+      value: '7',
+      change: '+2',
+      trend: 'up',
+      icon: AlertTriangle,
+      color: 'red'
+    },
+    {
+      title: 'Tỷ lệ thành công',
+      value: '87%',
+      change: '+3%',
+      trend: 'up',
+      icon: TrendingUp,
+      color: 'green'
+    }
+  ];
 
-function humanDate(iso) {
-  if (!iso) return "";
-  return new Date(iso).toLocaleString("vi-VN");
-}
+  const tabs = [
+    { id: 'pending', label: 'Chờ duyệt', count: 23, icon: Clock },
+    { id: 'auto_approved', label: 'Tự động duyệt', count: 156, icon: CheckCircle },
+    { id: 'flagged', label: 'AI cảnh báo', count: 7, icon: AlertTriangle },
+    { id: 'chat', label: 'Tin nhắn Proxy', count: 89, icon: MessageCircle },
+    { id: 'reports', label: 'Báo cáo lạm dụng', count: 3, icon: Flag }
+  ];
 
-/* ---------- Queue View Component ---------- */
-function QueueView({ queue, onApprove, onReject, onFlag, onEdit, bulkActionHandler }) {
-  const [filter, setFilter] = useState("all");
-  const [q, setQ] = useState("");
-  const [selected, setSelected] = useState([]);
+  const handleApprove = (connectionId) => {
+    setConnections(prev => prev.map(conn => 
+      conn.id === connectionId 
+        ? { ...conn, status: 'approved' }
+        : conn
+    ));
+  };
 
-  useEffect(() => {
-    setSelected([]); // reset when queue changes
-  }, [queue]);
+  const handleReject = (connectionId) => {
+    setConnections(prev => prev.map(conn => 
+      conn.id === connectionId 
+        ? { ...conn, status: 'rejected' }
+        : conn
+    ));
+  };
 
-  const filtered = queue.filter(item => {
-    const matchesText =
-      !q ||
-      item.fromOrg.toLowerCase().includes(q.toLowerCase()) ||
-      item.toVolunteer.name.toLowerCase().includes(q.toLowerCase()) ||
-      item.event.title.toLowerCase().includes(q.toLowerCase());
-    const matchesFilter = filter === "all" ? true : item.status === filter;
-    return matchesText && matchesFilter;
+  const handleBulkAction = (action) => {
+    // Handle bulk actions
+    console.log('Bulk action:', action, 'for connections:', selectedConnections);
+  };
+
+  const filteredConnections = connections.filter(conn => {
+    const matchesSearch = conn.volunteerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         conn.partnerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         conn.eventTitle.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesTab = activeTab === 'pending' ? conn.status === 'pending' :
+                      activeTab === 'auto_approved' ? conn.status === 'auto_approved' :
+                      activeTab === 'flagged' ? conn.aiFlag :
+                      true;
+    
+    return matchesSearch && matchesTab;
   });
 
-  const toggleSelect = (id) => setSelected(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
-
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Left: Filters & bulk */}
-      <div className="lg:col-span-3 flex flex-col space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+  const ConnectionCard = ({ connection }) => (
+    <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex items-center space-x-4">
+          <input
+            type="checkbox"
+            checked={selectedConnections.includes(connection.id)}
+            onChange={(e) => {
+              if (e.target.checked) {
+                setSelectedConnections(prev => [...prev, connection.id]);
+              } else {
+                setSelectedConnections(prev => prev.filter(id => id !== connection.id));
+              }
+            }}
+            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          />
+          <div className="flex items-center space-x-3">
             <div className="relative">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Tìm theo org / TNV / sự kiện" className="pl-10 pr-3 py-2 border rounded-md w-96" />
+              <img
+                src={connection.partnerAvatar}
+                alt={connection.partnerName}
+                className="w-10 h-10 rounded-full"
+              />
+              {connection.partnerStatus === 'verified' && (
+                <Shield className="absolute -bottom-1 -right-1 w-4 h-4 text-green-500 bg-white rounded-full" />
+              )}
             </div>
-            <select value={filter} onChange={(e) => setFilter(e.target.value)} className="px-3 py-2 border rounded-md">
-              <option value="all">Tất cả</option>
-              <option value="pending">Chờ duyệt</option>
-              <option value="auto-approved">Auto-approve</option>
-              <option value="flagged">Bị gắn cờ</option>
-              <option value="approved">Đã duyệt</option>
-              <option value="rejected">Từ chối</option>
-            </select>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button onClick={() => { bulkActionHandler('approve', selected); setSelected([]); }} disabled={!selected.length} className="px-3 py-2 bg-green-600 text-white rounded-md disabled:opacity-50">Duyệt (bulk)</button>
-            <button onClick={() => { bulkActionHandler('reject', selected); setSelected([]); }} disabled={!selected.length} className="px-3 py-2 bg-red-600 text-white rounded-md disabled:opacity-50">Từ chối (bulk)</button>
-          </div>
-        </div>
-
-        {/* Queue list */}
-        <div className="bg-white border rounded-md shadow-sm overflow-hidden">
-          <div className="divide-y">
-            {filtered.length === 0 && <div className="p-6 text-gray-500">Không có connect yêu cầu phù hợp.</div>}
-            {filtered.map(item => (
-              <div key={item.id} className="p-4 flex items-start justify-between hover:bg-gray-50">
-                <div className="flex items-start gap-3">
-                  <input type="checkbox" checked={selected.includes(item.id)} onChange={() => toggleSelect(item.id)} className="mt-2" />
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-semibold">{item.fromOrg}</h4>
-                      <span className="text-xs text-gray-500">→</span>
-                      <div className="text-sm text-gray-700 font-medium">{item.toVolunteer.name}</div>
-                      <span className="text-xs px-2 py-0.5 rounded-full text-gray-600 border ml-2">{item.event.title}</span>
-                    </div>
-                    <div className="text-xs text-gray-500 mt-1">{humanDate(item.submittedAt)} • {item.reason}</div>
-
-                    {/* AI Flags */}
-                    {item.aiFlags && item.aiFlags.length > 0 && (
-                      <div className="mt-2 flex gap-2">
-                        {item.aiFlags.map((f, i) => (
-                          <span key={i} className="inline-flex items-center gap-1 text-xs px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded">
-                            <AlertTriangle className="w-3 h-3" /> {f}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="text-xs text-gray-500">{item.status}</span>
-                  <button title="Xem chi tiết" onClick={() => onEdit(item)} className="p-1 hover:bg-gray-100 rounded"><Eye className="w-4 h-4" /></button>
-                  <button title="Duyệt" onClick={() => onApprove(item.id)} className="p-1 hover:bg-green-50 rounded text-green-600"><CheckCircle className="w-4 h-4" /></button>
-                  <button title="Từ chối" onClick={() => onReject(item.id)} className="p-1 hover:bg-red-50 rounded text-red-600"><XCircle className="w-4 h-4" /></button>
-                  <button title="Gắn cờ" onClick={() => onFlag(item.id)} className="p-1 hover:bg-yellow-50 rounded text-yellow-800"><Flag className="w-4 h-4" /></button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ---------- Chat / Proxy panel ---------- */
-function ChatOverview({ conversations, onOpen }) {
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-      {/* Left: list */}
-      <div className="lg:col-span-1 bg-white border rounded-md overflow-auto">
-        <div className="p-4 border-b">
-          <div className="flex items-center justify-between">
-            <h4 className="font-semibold">Conversations</h4>
-            <button title="Filter" className="p-1"><Filter className="w-4 h-4" /></button>
-          </div>
-        </div>
-        <div className="divide-y">
-          {conversations.map(c => {
-            const last = c.messages[c.messages.length - 1];
-            return (
-              <div key={c.id} className="p-3 hover:bg-gray-50 cursor-pointer" onClick={() => onOpen(c.id)}>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-medium">{c.participants.find(p => p.type === "org")?.name || "Org"}</div>
-                    <div className="text-xs text-gray-500">{c.participants.find(p => p.type === "volunteer")?.name}</div>
-                  </div>
-                  <div className="text-xs text-gray-400">{c.unread ? <span className="bg-blue-600 text-white px-2 py-0.5 rounded text-xs">{c.unread}</span> : null}</div>
-                </div>
-                <div className="text-xs text-gray-500 mt-1 truncate">{last?.text}</div>
-                <div className="text-xs text-gray-400 mt-1">{humanDate(c.lastMessageAt)}</div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Center: placeholder or conversation */}
-      <div className="lg:col-span-3 bg-white border rounded-md p-4">
-        <div className="text-gray-500">Chọn conversation từ bên trái để mở chat (Proxy Chat). Phần này hỗ trợ masking contact và reveal có thời hạn.</div>
-      </div>
-    </div>
-  );
-}
-
-/* ---------- Chat Conversation Page (route: /admin/connections/chat/:id) ---------- */
-function ConversationPage({ conversations, onReport, onReveal }) {
-  const { id } = useParams();
-  const conv = conversations.find(c => c.id === id);
-  const [revealTimeout, setRevealTimeout] = useState(null);
-  const [revealed, setRevealed] = useState(false);
-
-  useEffect(() => {
-    return () => {
-      if (revealTimeout) clearTimeout(revealTimeout);
-    };
-  }, [revealTimeout]);
-
-  if (!conv) return <div className="p-6 text-gray-500">Conversation không tìm thấy.</div>;
-
-  const volunteer = conv.participants.find(p => p.type === "volunteer");
-
-  const handleReveal = () => {
-    setRevealed(true);
-    if (revealTimeout) clearTimeout(revealTimeout);
-    const t = setTimeout(() => setRevealed(false), 60 * 1000); // reveal for 60s (policy/sample)
-    setRevealTimeout(t);
-    onReveal(conv.id, volunteer.id);
-  };
-
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-      <div className="lg:col-span-3 bg-white border rounded-md p-4">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <div className="font-semibold">{conv.participants.find(p => p.type === "org")?.name} → {volunteer?.name}</div>
-            <div className="text-xs text-gray-500">{humanDate(conv.lastMessageAt)}</div>
-          </div>
-          <div className="flex items-center gap-2">
-            <button onClick={() => onReport(conv.id)} className="px-3 py-1 text-sm bg-red-100 rounded">Report</button>
-            <button onClick={handleReveal} className="px-3 py-1 text-sm bg-blue-600 text-white rounded">Reveal Contact (60s)</button>
-          </div>
-        </div>
-
-        <div className="border rounded-md p-4 h-[50vh] overflow-auto bg-gray-50">
-          {conv.messages.map(m => (
-            <div key={m.id} className={`mb-3 ${typeof m.from === "number" ? "text-left" : "text-right"}`}>
-              <div className={`inline-block p-3 rounded ${typeof m.from === "number" ? "bg-white border" : "bg-blue-600 text-white"}`}>
-                {m.text}
-              </div>
-              <div className="text-xs text-gray-400 mt-1">{humanDate(m.at)}</div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-3 flex gap-2">
-          <input className="flex-1 px-3 py-2 border rounded" placeholder="Gửi tin nhắn (proxy)..." />
-          <button className="px-3 py-2 bg-blue-600 text-white rounded">Gửi</button>
-        </div>
-      </div>
-
-      {/* Right: profile (masked) */}
-      <aside className="bg-white border rounded-md p-4">
-        <div className="text-sm text-gray-600">Thông tin Volunteer (masked)</div>
-        <div className="mt-3">
-          <div className="font-semibold">{volunteer?.name}</div>
-          <div className="text-xs text-gray-500 mt-1">Số điện thoại: {revealed ? "+84 912 345 678" : volunteer?.maskedPhone}</div>
-          <div className="text-xs text-gray-500 mt-1">Email: {revealed ? "real.email@example.com" : volunteer?.maskedEmail}</div>
-          <div className="text-xs text-gray-400 mt-2">Nếu reveal, contact được hiển thị tạm thời và có thể log lại cho audit.</div>
-          <div className="mt-4 space-y-2">
-            <button className="w-full px-3 py-2 bg-red-100 text-red-700 rounded">Request consent (TNV)</button>
-            <button className="w-full px-3 py-2 border rounded">View volunteer profile (masked)</button>
-          </div>
-        </div>
-      </aside>
-    </div>
-  );
-}
-
-/* ---------- Main ConnectionsManagement component (routes inside) ---------- */
-export default function ConnectionsManagement() {
-  const [queue, setQueue] = useState(sampleQueue);
-  const [conversations, setConversations] = useState(sampleConversations);
-  const navigate = useNavigate();
-
-  // handlers
-  const approve = (id) => {
-    setQueue(prev => prev.map(i => i.id === id ? { ...i, status: "approved", adminNote: `approved@${now()}` } : i));
-    // optionally create conversation / open proxy chat
-  };
-  const reject = (id) => setQueue(prev => prev.map(i => i.id === id ? { ...i, status: "rejected", adminNote: `rejected@${now()}` } : i));
-  const flag = (id) => setQueue(prev => prev.map(i => i.id === id ? { ...i, status: "flagged", adminNote: `flagged@${now()}` } : i));
-
-  const bulkActionHandler = (action, selectedIds) => {
-    if (!selectedIds?.length) return;
-    if (action === "approve") selectedIds.forEach(approve);
-    if (action === "reject") selectedIds.forEach(reject);
-    if (action === "flag") selectedIds.forEach(flag);
-  };
-
-  const openQueueEdit = (item) => {
-    // open side panel or modal — for demo use alert
-    alert(`Open detail for Connect ${item.id}\nFrom: ${item.fromOrg}\nTo: ${item.toVolunteer.name}`);
-  };
-
-  const handleReport = (convId) => {
-    // stub reporting
-    alert(`Report conversation ${convId} — logged for moderation`);
-  };
-
-  const handleRevealContact = (convId, volunteerId) => {
-    // audit log stub
-    console.log("Revealed contact", { convId, volunteerId, at: now() });
-  };
-
-  // computed counts for tabs
-  const counts = useMemo(() => {
-    const all = queue.length;
-    const pending = queue.filter(i => i.status === "pending").length;
-    const auto = queue.filter(i => i.status === "auto-approved").length;
-    const flagged = queue.filter(i => i.status === "flagged").length;
-    return { all, pending, auto, flagged };
-  }, [queue]);
-
-  return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
-      <header className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Kết nối & Tin nhắn</h1>
-          <p className="text-sm text-gray-500">Connect Queue + Proxy Chat – Luồng: BTC → Admin → TNV</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Link to="/admin/connections/queue" className="px-3 py-2 border rounded">Queue</Link>
-          <Link to="/admin/connections/chat" className="px-3 py-2 border rounded">Proxy Chat</Link>
-          <Link to="/admin/connections/logs" className="px-3 py-2 border rounded">Logs</Link>
-        </div>
-      </header>
-
-      {/* Router inside page — these are subpages */}
-      <Routes>
-        <Route
-          path="/"
-          element={<div className="bg-white border p-6 rounded text-gray-600">Chọn tab Queue hoặc Chat để bắt đầu — hoặc dùng links phía trên.</div>}
-        />
-        <Route
-          path="queue"
-          element={
-            <QueueView
-              queue={queue}
-              onApprove={(id) => { approve(id); }}
-              onReject={(id) => { if (confirm("Từ chối yêu cầu?")) reject(id); }}
-              onFlag={(id) => flag(id)}
-              onEdit={(item) => openQueueEdit(item)}
-              bulkActionHandler={bulkActionHandler}
+            <ArrowRight className="w-4 h-4 text-gray-400" />
+            <img
+              src={connection.volunteerAvatar}
+              alt={connection.volunteerName}
+              className="w-10 h-10 rounded-full"
             />
-          }
-        />
-        <Route
-          path="chat"
-          element={<ChatOverview conversations={conversations} onOpen={(convId) => navigate(`/admin/connections/chat/${convId}`)} />}
-        />
-        <Route
-          path="chat/:id"
-          element={<ConversationPage conversations={conversations} onReport={handleReport} onReveal={handleRevealContact} />}
-        />
-        <Route
-          path="logs"
-          element={
-            <div className="bg-white border rounded-md p-4">
-              <h3 className="font-semibold">Audit & Activity Logs</h3>
-              <div className="mt-3 text-sm text-gray-600">
-                {/* stubbed list */}
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <div>Admin A approved connect #101</div>
-                    <div className="text-xs text-gray-400">{humanDate(now())}</div>
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          {connection.aiFlag && (
+            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+              <AlertTriangle className="w-3 h-3 mr-1" />
+              AI Cảnh báo
+            </span>
+          )}
+          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+            connection.priority === 'high' ? 'bg-red-100 text-red-800' :
+            connection.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+            'bg-gray-100 text-gray-800'
+          }`}>
+            {connection.priority === 'high' ? 'Cao' : 
+             connection.priority === 'medium' ? 'Trung bình' : 'Thấp'}
+          </span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 mb-4">
+        <div>
+          <div className="flex items-center space-x-2 text-sm text-gray-600 mb-1">
+            <Building2 className="w-4 h-4" />
+            <span>Đối tác</span>
+          </div>
+          <p className="font-medium">{connection.partnerName}</p>
+        </div>
+        <div>
+          <div className="flex items-center space-x-2 text-sm text-gray-600 mb-1">
+            <User className="w-4 h-4" />
+            <span>Tình nguyện viên</span>
+          </div>
+          <p className="font-medium">{connection.volunteerName}</p>
+        </div>
+      </div>
+
+      <div className="mb-4">
+        <div className="flex items-center space-x-2 text-sm text-gray-600 mb-1">
+          <Calendar className="w-4 h-4" />
+          <span>Sự kiện</span>
+        </div>
+        <p className="font-medium">{connection.eventTitle}</p>
+        <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
+          <span className="flex items-center space-x-1">
+            <Calendar className="w-3 h-3" />
+            <span>{new Date(connection.eventDate).toLocaleDateString('vi-VN')}</span>
+          </span>
+          <span className="flex items-center space-x-1">
+            <MapPin className="w-3 h-3" />
+            <span>{connection.location}</span>
+          </span>
+        </div>
+      </div>
+
+      {connection.message && (
+        <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+          <p className="text-sm text-gray-700 line-clamp-2">{connection.message}</p>
+        </div>
+      )}
+
+      {connection.aiFlag && connection.aiReason && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <div className="flex items-start space-x-2">
+            <ShieldAlert className="w-4 h-4 text-red-500 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-red-800">Lý do cảnh báo:</p>
+              <p className="text-sm text-red-700">{connection.aiReason}</p>
+              <div className="flex items-center space-x-2 mt-1">
+                <span className="text-xs text-red-600">Risk Score:</span>
+                <div className="w-20 bg-red-200 rounded-full h-2">
+                  <div 
+                    className="bg-red-500 h-2 rounded-full" 
+                    style={{ width: `${connection.riskScore}%` }}
+                  ></div>
+                </div>
+                <span className="text-xs text-red-600">{connection.riskScore}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+        <span>Yêu cầu lúc: {new Date(connection.requestDate).toLocaleString('vi-VN')}</span>
+        <span>ID: {connection.id}</span>
+      </div>
+
+      <div className="flex items-center justify-between">
+        <button
+          onClick={() => {
+            setSelectedConnection(connection);
+            setShowDetailModal(true);
+          }}
+          className="flex items-center space-x-2 text-blue-600 hover:text-blue-800"
+        >
+          <Eye className="w-4 h-4" />
+          <span>Xem chi tiết</span>
+        </button>
+
+        {connection.status === 'pending' && (
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => handleReject(connection.id)}
+              className="flex items-center space-x-2 px-3 py-2 text-red-600 border border-red-200 rounded-lg hover:bg-red-50"
+            >
+              <XCircle className="w-4 h-4" />
+              <span>Từ chối</span>
+            </button>
+            <button
+              onClick={() => handleApprove(connection.id)}
+              className="flex items-center space-x-2 px-3 py-2 text-white bg-green-600 rounded-lg hover:bg-green-700"
+            >
+              <CheckCircle className="w-4 h-4" />
+              <span>Duyệt</span>
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Kết nối & Tin nhắn</h1>
+          <p className="text-gray-600 mt-1">Quản lý kết nối BTC → TNV và tin nhắn proxy</p>
+        </div>
+        <div className="flex items-center space-x-3">
+          <button className="flex items-center space-x-2 px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
+            <Download className="w-4 h-4" />
+            <span>Xuất báo cáo</span>
+          </button>
+          <button className="flex items-center space-x-2 px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
+            <Settings className="w-4 h-4" />
+            <span>Cài đặt</span>
+          </button>
+          <button className="flex items-center space-x-2 px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+            <RefreshCw className="w-4 h-4" />
+            <span>Làm mới</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Statistics */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {stats.map((stat, index) => {
+          const Icon = stat.icon;
+          return (
+            <div key={index} className="bg-white rounded-xl p-6 border border-gray-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                  <p className="text-2xl font-bold text-gray-900 mt-2">{stat.value}</p>
+                </div>
+                <div className={`p-3 rounded-full ${
+                  stat.color === 'blue' ? 'bg-blue-100 text-blue-600' :
+                  stat.color === 'yellow' ? 'bg-yellow-100 text-yellow-600' :
+                  stat.color === 'red' ? 'bg-red-100 text-red-600' :
+                  'bg-green-100 text-green-600'
+                }`}>
+                  <Icon className="w-6 h-6" />
+                </div>
+              </div>
+              <div className="flex items-center mt-4">
+                <span className={`text-sm font-medium ${
+                  stat.trend === 'up' ? 'text-green-600' : 'text-red-600'
+                }`}>
+                  {stat.change}
+                </span>
+                <span className="text-sm text-gray-500 ml-2">so với tuần trước</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Tabs */}
+      <div className="bg-white rounded-xl border border-gray-200">
+        <div className="border-b border-gray-200">
+          <nav className="flex space-x-8 px-6">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center space-x-2 py-4 border-b-2 font-medium text-sm ${
+                    activeTab === tab.id
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span>{tab.label}</span>
+                  <span className={`px-2 py-1 rounded-full text-xs ${
+                    activeTab === tab.id
+                      ? 'bg-blue-100 text-blue-600'
+                      : 'bg-gray-100 text-gray-600'
+                  }`}>
+                    {tab.count}
+                  </span>
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* Filters and Search */}
+        <div className="p-6 border-b border-gray-200">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <input
+                  type="text"
+                  placeholder="Tìm theo tên TNV, đối tác, sự kiện..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-80"
+                />
+              </div>
+              <button className="flex items-center space-x-2 px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
+                <Filter className="w-4 h-4" />
+                <span>Lọc</span>
+              </button>
+            </div>
+            
+            {selectedConnections.length > 0 && (
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-600">
+                  Đã chọn {selectedConnections.length} kết nối
+                </span>
+                <button
+                  onClick={() => handleBulkAction('approve')}
+                  className="flex items-center space-x-2 px-3 py-2 text-green-600 border border-green-200 rounded-lg hover:bg-green-50"
+                >
+                  <CheckCircle className="w-4 h-4" />
+                  <span>Duyệt tất cả</span>
+                </button>
+                <button
+                  onClick={() => handleBulkAction('reject')}
+                  className="flex items-center space-x-2 px-3 py-2 text-red-600 border border-red-200 rounded-lg hover:bg-red-50"
+                >
+                  <XCircle className="w-4 h-4" />
+                  <span>Từ chối tất cả</span>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6">
+          {activeTab === 'chat' ? (
+            <div className="space-y-6">
+              <div className="text-center py-8">
+                <MessageCircle className="mx-auto h-12 w-12 text-gray-400" />
+                <h3 className="mt-2 text-sm font-medium text-gray-900">Proxy Chat System</h3>
+                <p className="mt-1 text-sm text-gray-500">
+                  Hệ thống tin nhắn proxy đang được phát triển
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {filteredConnections.length === 0 ? (
+                <div className="text-center py-12">
+                  <Users className="mx-auto h-12 w-12 text-gray-400" />
+                  <h3 className="mt-2 text-sm font-medium text-gray-900">Không có kết nối</h3>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Không tìm thấy kết nối nào phù hợp với bộ lọc hiện tại
+                  </p>
+                </div>
+              ) : (
+                <div className="grid gap-6">
+                  {filteredConnections.map((connection) => (
+                    <ConnectionCard key={connection.id} connection={connection} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Detail Modal */}
+      {showDetailModal && selectedConnection && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl max-w-4xl w-full mx-4 max-h-screen overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h2 className="text-xl font-semibold">Chi tiết kết nối {selectedConnection.id}</h2>
+              <button
+                onClick={() => setShowDetailModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <XCircle className="w-6 h-6" />
+              </button>
+            </div>
+            
+            <div className="p-6">
+              <div className="grid grid-cols-2 gap-8">
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-4">Thông tin đối tác</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3">
+                      <img
+                        src={selectedConnection.partnerAvatar}
+                        alt={selectedConnection.partnerName}
+                        className="w-12 h-12 rounded-full"
+                      />
+                      <div>
+                        <p className="font-medium">{selectedConnection.partnerName}</p>
+                        <p className="text-sm text-gray-500">ID: {selectedConnection.partnerId}</p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <div>System auto-approved connect #103 by rule (partner verified)</div>
-                    <div className="text-xs text-gray-400">{humanDate(now())}</div>
+                </div>
+                
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-4">Thông tin TNV (Masked)</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3">
+                      <img
+                        src={selectedConnection.volunteerAvatar}
+                        alt={selectedConnection.volunteerName}
+                        className="w-12 h-12 rounded-full"
+                      />
+                      <div>
+                        <p className="font-medium">{selectedConnection.volunteerName}</p>
+                        <p className="text-sm text-gray-500">ID: {selectedConnection.volunteerId}</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          }
-        />
 
-        {/* fallback */}
-        <Route path="*" element={<div className="text-gray-500 p-6">Không tìm thấy.</div>} />
-      </Routes>
+              <div className="mt-8">
+                <h3 className="font-semibold text-gray-900 mb-4">Thông tin sự kiện</h3>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <p className="font-medium">{selectedConnection.eventTitle}</p>
+                  <div className="flex items-center space-x-4 mt-2 text-sm text-gray-600">
+                    <span className="flex items-center space-x-1">
+                      <Calendar className="w-4 h-4" />
+                      <span>{new Date(selectedConnection.eventDate).toLocaleDateString('vi-VN')}</span>
+                    </span>
+                    <span className="flex items-center space-x-1">
+                      <MapPin className="w-4 h-4" />
+                      <span>{selectedConnection.location}</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {selectedConnection.message && (
+                <div className="mt-6">
+                  <h3 className="font-semibold text-gray-900 mb-4">Nội dung yêu cầu</h3>
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <p className="text-gray-700">{selectedConnection.message}</p>
+                  </div>
+                </div>
+              )}
+
+              {selectedConnection.aiFlag && (
+                <div className="mt-6">
+                  <h3 className="font-semibold text-gray-900 mb-4">Phân tích AI</h3>
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div className="flex items-start space-x-3">
+                      <ShieldAlert className="w-5 h-5 text-red-500 mt-0.5" />
+                      <div className="flex-1">
+                        <p className="font-medium text-red-800">{selectedConnection.aiReason}</p>
+                        <div className="flex items-center space-x-3 mt-2">
+                          <span className="text-sm text-red-600">Risk Score:</span>
+                          <div className="flex-1 max-w-xs bg-red-200 rounded-full h-3">
+                            <div 
+                              className="bg-red-500 h-3 rounded-full" 
+                              style={{ width: `${selectedConnection.riskScore}%` }}
+                            ></div>
+                          </div>
+                          <span className="text-sm font-medium text-red-600">{selectedConnection.riskScore}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center justify-end space-x-4 p-6 border-t border-gray-200 bg-gray-50">
+              <button
+                onClick={() => setShowDetailModal(false)}
+                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100"
+              >
+                Đóng
+              </button>
+              {selectedConnection.status === 'pending' && (
+                <>
+                  <button
+                    onClick={() => {
+                      handleReject(selectedConnection.id);
+                      setShowDetailModal(false);
+                    }}
+                    className="flex items-center space-x-2 px-4 py-2 text-red-600 border border-red-200 rounded-lg hover:bg-red-50"
+                  >
+                    <XCircle className="w-4 h-4" />
+                    <span>Từ chối</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleApprove(selectedConnection.id);
+                      setShowDetailModal(false);
+                    }}
+                    className="flex items-center space-x-2 px-4 py-2 text-white bg-green-600 rounded-lg hover:bg-green-700"
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    <span>Duyệt kết nối</span>
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
-}
+};
+
+export default ConnectionManagement;
