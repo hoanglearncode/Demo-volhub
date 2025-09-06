@@ -41,6 +41,7 @@ import RecruiterSupportPage from "../../page/oganations/RecruiterSupportPage.jsx
 import MediaToolsDashboard from "../../page/oganations/MediaToolsDashboard.jsx";
 import MyCartsPage from "../../page/oganations/MyCartPage.jsx";
 import OrgProfileManagement from "../../page/oganations/Profile.jsx";
+import RecruitmentReport from "../../page/oganations/RecruitmentReport.jsx";
 
 function BtcLayout() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -346,8 +347,9 @@ function BtcLayout() {
             <Routes>
               <Route path="/btc" element={<Dashboard isCollapsed={isCollapsed} />} />
 
-              <Route path="/btc/recruitment" element={<RecruitmentPage />} />
-              <Route path="/btc/recruitment-post" element={<RecruitmentPostPage />} />
+              <Route path="/btc/recruitment" element={<RecruitmentPage />} /> 
+              <Route path="/btc/recruitment-post" element={<RecruitmentPostPage />} /> {/* bao gồm sửa - cập nhật */}
+              <Route path="/btc/recruitment/report/:id" element ={<RecruitmentReport />} /> {/*lấy id từ pram */}
 
               <Route path="/btc/cv-manage" element = {<CVManages />} />
               <Route path="/btc/cv-manage/view-profile/:id" element = {<Profile />}/>

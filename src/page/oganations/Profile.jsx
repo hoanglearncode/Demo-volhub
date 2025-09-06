@@ -1,112 +1,211 @@
-import { useState, useEffect } from 'react';
-import { 
-  Star, 
-  Upload, 
-  Edit, 
-  Save, 
-  X, 
-  Calendar, 
-  MapPin, 
-  Users, 
-  Award, 
-  CheckCircle, 
-  Crown,
-  Heart,
-  MessageSquare,
-  Camera,
+import React, { useState, useEffect } from 'react';
+import {
   Building,
-  Mail,
+  Edit,
+  Save,
+  X,
+  Plus,
+  Trash2,
+  Eye,
+  Calendar,
+  MapPin,
+  Users,
+  CheckCircle,
+  Crown,
+  Star,
   Phone,
-  Globe
+  Mail,
+  Globe,
+  Camera,
+  Package,
+  ShoppingCart,
+  CreditCard,
+  Settings,
+  TrendingUp,
+  Award,
+  Zap,
+  Shield,
+  Megaphone,
+  BarChart3,
+  Clock,
+  AlertTriangle,
+  Check,
+  ArrowRight,
+  Sparkles,
+  Target,
+  Heart
 } from 'lucide-react';
 
-export default function OrgProfileManagement() {
+const OrgProfileManagement = () => {
+  const [activeTab, setActiveTab] = useState('profile');
   const [isEditing, setIsEditing] = useState(false);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [showServiceModal, setShowServiceModal] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
+
+  // Organization data state
   const [orgData, setOrgData] = useState({
-    id: 1,
-    name: "Tech Innovation Hub",
-    logo: "https://via.placeholder.com/150",
-    description: "Tổ chức hàng đầu về đào tạo và phát triển công nghệ, chuyên tổ chức các sự kiện tình nguyện và hackathon.",
-    industry: "Công nghệ thông tin",
-    email: "contact@techhub.vn",
-    phone: "0123456789",
-    website: "https://techhub.vn",
-    address: "123 Đường ABC, Quận 1, TP.HCM",
-    foundedYear: 2020,
-    employeeCount: "50-100",
+    id: 'ORG001',
+    name: 'Green Future Foundation',
+    logo: '/api/placeholder/150/150',
+    description: 'Tổ chức phi lợi nhuận hàng đầu về bảo vệ môi trường và phát triển bền vững tại Việt Nam.',
+    industry: 'Môi trường',
+    email: 'contact@greenfuture.vn',
+    phone: '(+84) 28 3822 5678',
+    website: 'https://greenfuture.vn',
+    address: '123 Đường Nguyễn Huệ, Quận 1, TP.HCM',
+    foundedYear: 2018,
+    employeeCount: '50-100',
     verified: true,
     premium: true,
-    followers: 1250,
-    averageRating: 4.5,
-    totalReviews: 156,
-    socialLinks: {
-      facebook: "https://facebook.com/techhub",
-      linkedin: "https://linkedin.com/company/techhub"
-    }
+    tier: 'gold',
+    followers: 2847,
+    averageRating: 4.7,
+    totalReviews: 284,
+    eventsCreated: 45,
+    activeEvents: 8
   });
 
-  const [events, setEvents] = useState([
-    {
-      id: 1,
-      title: "Hackathon for Green Future 2024",
-      date: "2024-03-15",
-      location: "TP.HCM",
-      participants: 200,
-      image: "https://via.placeholder.com/300x200",
-      status: "completed"
-    },
-    {
-      id: 2,
-      title: "Workshop AI & Machine Learning",
-      date: "2024-02-20",
-      location: "Hà Nội",
-      participants: 150,
-      image: "https://via.placeholder.com/300x200",
-      status: "completed"
-    },
-    {
-      id: 3,
-      title: "Tech Volunteer Day",
-      date: "2024-04-10",
-      location: "Đà Nẵng",
-      participants: 100,
-      image: "https://via.placeholder.com/300x200",
-      status: "upcoming"
-    }
-  ]);
-
-  const [reviews, setReviews] = useState([
-    {
-      id: 1,
-      user: "Nguyễn Văn A",
-      avatar: "https://via.placeholder.com/40",
-      rating: 5,
-      comment: "Sự kiện được tổ chức rất chuyên nghiệp, học được nhiều kiến thức bổ ích!",
-      date: "2024-03-20",
-      event: "Hackathon for Green Future 2024"
-    },
-    {
-      id: 2,
-      user: "Trần Thị B",
-      avatar: "https://via.placeholder.com/40",
-      rating: 4,
-      comment: "Môi trường làm việc tuyệt vời, mọi người rất hỗ trợ và nhiệt tình.",
-      date: "2024-03-18",
-      event: "Workshop AI & Machine Learning"
-    },
-    {
-      id: 3,
-      user: "Lê Văn C",
-      avatar: "https://via.placeholder.com/40",
-      rating: 5,
-      comment: "Ý nghĩa và bổ ích. Sẽ tiếp tục tham gia các sự kiện của tổ chức.",
-      date: "2024-03-15",
-      event: "Hackathon for Green Future 2024"
-    }
-  ]);
-
   const [formData, setFormData] = useState({...orgData});
+
+  // Services data
+  const [purchasedServices, setPurchasedServices] = useState([
+    {
+      id: 'SV001',
+      name: 'Premium Account',
+      category: 'account',
+      status: 'active',
+      purchaseDate: '2025-01-15',
+      expiryDate: '2026-01-15',
+      price: '2,500,000 VND',
+      description: 'Tài khoản cao cấp với nhiều tính năng nâng cao',
+      features: ['Ưu tiên hiển thị sự kiện', 'Thống kê chi tiết', 'Hỗ trợ 24/7', 'Không giới hạn số sự kiện'],
+      usage: {
+        current: 8,
+        limit: 'Unlimited'
+      }
+    },
+    {
+      id: 'SV002',
+      name: 'Featured Events Package',
+      category: 'promotion',
+      status: 'active',
+      purchaseDate: '2025-02-01',
+      expiryDate: '2025-05-01',
+      price: '1,200,000 VND',
+      description: 'Gói đẩy sự kiện lên trang chủ trong 3 tháng',
+      features: ['Hiển thị trên banner', 'Email marketing', 'Social media boost'],
+      usage: {
+        current: 12,
+        limit: 20
+      }
+    },
+    {
+      id: 'SV003',
+      name: 'Advanced Analytics',
+      category: 'analytics',
+      status: 'expired',
+      purchaseDate: '2024-06-01',
+      expiryDate: '2024-12-01',
+      price: '800,000 VND',
+      description: 'Báo cáo và phân tích chuyên sâu',
+      features: ['Dashboard chi tiết', 'Export reports', 'Trend analysis'],
+      usage: {
+        current: 0,
+        limit: 0
+      }
+    }
+  ]);
+
+  const [availableServices, setAvailableServices] = useState([
+    {
+      id: 'NEW001',
+      name: 'AI Assistant Pro',
+      category: 'ai',
+      price: '1,500,000 VND',
+      period: '6 tháng',
+      description: 'Trợ lý AI giúp tối ưu hóa tuyển dụng tình nguyện viên',
+      features: ['Gợi ý tình nguyện viên phù hợp', 'Tự động soạn thảo email', 'Phân tích hiệu quả sự kiện'],
+      icon: Sparkles,
+      color: 'purple',
+      popular: true,
+      discount: '20%'
+    },
+    {
+      id: 'NEW002',
+      name: 'Multi-Channel Marketing',
+      category: 'marketing',
+      price: '2,000,000 VND',
+      period: '12 tháng',
+      description: 'Quảng bá sự kiện trên nhiều kênh đồng thời',
+      features: ['Facebook Ads tự động', 'Google Ads', 'Influencer network', 'Email campaigns'],
+      icon: Megaphone,
+      color: 'blue',
+      popular: false,
+      discount: null
+    },
+    {
+      id: 'NEW003',
+      name: 'Enterprise Security',
+      category: 'security',
+      price: '3,000,000 VND',
+      period: '12 tháng',
+      description: 'Bảo mật cấp doanh nghiệp cho dữ liệu tổ chức',
+      features: ['SSL certificate', 'Data encryption', 'Backup tự động', '2FA bắt buộc'],
+      icon: Shield,
+      color: 'green',
+      popular: false,
+      discount: '15%'
+    },
+    {
+      id: 'NEW004',
+      name: 'Event Live Streaming',
+      category: 'streaming',
+      price: '500,000 VND',
+      period: 'Per event',
+      description: 'Live stream sự kiện chuyên nghiệp',
+      features: ['HD streaming', 'Multi-platform', 'Recording', 'Chat moderation'],
+      icon: Target,
+      color: 'red',
+      popular: false,
+      discount: null
+    }
+  ]);
+
+  const tabs = [
+    { id: 'profile', label: 'Thông tin cơ bản', icon: Building },
+    { id: 'services', label: 'Dịch vụ đã mua', icon: Package },
+    { id: 'marketplace', label: 'Mua thêm dịch vụ', icon: ShoppingCart },
+    { id: 'billing', label: 'Thanh toán', icon: CreditCard },
+    { id: 'settings', label: 'Cài đặt', icon: Settings }
+  ];
+
+  const serviceCategories = {
+    account: { label: 'Tài khoản', color: 'blue', icon: Crown },
+    promotion: { label: 'Quảng bá', color: 'purple', icon: TrendingUp },
+    analytics: { label: 'Phân tích', color: 'green', icon: BarChart3 },
+    ai: { label: 'AI/Automation', color: 'purple', icon: Sparkles },
+    marketing: { label: 'Marketing', color: 'blue', icon: Megaphone },
+    security: { label: 'Bảo mật', color: 'green', icon: Shield },
+    streaming: { label: 'Live Stream', color: 'red', icon: Target }
+  };
+
+  const tierConfig = {
+    basic: { label: 'Cơ bản', color: 'gray', bgColor: 'bg-gray-100', iconColor: 'text-gray-600' },
+    silver: { label: 'Bạc', color: 'gray', bgColor: 'bg-gray-200', iconColor: 'text-gray-600' },
+    gold: { label: 'Vàng', color: 'yellow', bgColor: 'bg-yellow-100', iconColor: 'text-yellow-600' },
+    platinum: { label: 'Bạch kim', color: 'purple', bgColor: 'bg-purple-100', iconColor: 'text-purple-600' }
+  };
+
+  // Helper for safe class names for colors (Tailwind needs static classes in production;
+  // for demo/sample we keep these simple).
+  const colorMap = {
+    blue: 'bg-blue-100 text-blue-600',
+    green: 'bg-green-100 text-green-600',
+    purple: 'bg-purple-100 text-purple-600',
+    red: 'bg-red-100 text-red-600',
+    yellow: 'bg-yellow-100 text-yellow-600',
+    gray: 'bg-gray-100 text-gray-600'
+  };
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -116,6 +215,7 @@ export default function OrgProfileManagement() {
   const handleSave = () => {
     setOrgData({...formData});
     setIsEditing(false);
+    // TODO: API call to save data
   };
 
   const handleCancel = () => {
@@ -130,466 +230,710 @@ export default function OrgProfileManagement() {
     }));
   };
 
-  const handleLogoUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        handleInputChange('logo', e.target.result);
-      };
-      reader.readAsDataURL(file);
+  const handlePurchaseService = (service) => {
+    const newService = {
+      id: `SV${Date.now()}`,
+      name: service.name,
+      category: service.category,
+      status: 'active',
+      purchaseDate: new Date().toISOString().split('T')[0],
+      expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      price: service.price,
+      description: service.description,
+      features: service.features,
+      usage: { current: 0, limit: 100 }
+    };
+    
+    setPurchasedServices(prev => [...prev, newService]);
+    setShowServiceModal(false);
+    setSelectedService(null);
+    
+    // TODO: API call to purchase service
+    alert('Dịch vụ đã được mua thành công!');
+  };
+
+  const handleDeleteService = (serviceId) => {
+    if (window.confirm('Bạn có chắc muốn hủy dịch vụ này?')) {
+      setPurchasedServices(prev => prev.filter(s => s.id !== serviceId));
+      // TODO: API call to cancel service
     }
   };
 
-  const renderStars = (rating) => {
-    return [...Array(5)].map((_, index) => (
-      <Star
-        key={index}
-        className={`w-4 h-4 ${index < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
-      />
-    ));
-  };
-
-  return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm mb-6">
-          <div className="relative h-48 bg-gradient-to-r from-blue-600 to-purple-600 rounded-t-lg">
-            <div className="absolute bottom-6 left-6 flex items-end space-x-6">
-              <div className="relative">
-                {isEditing ? (
-                  <div className="relative">
-                    <img
-                      src={formData.logo}
-                      alt="Logo"
-                      className="w-24 h-24 rounded-lg border-4 border-white shadow-lg object-cover"
-                    />
-                    <label className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-lg cursor-pointer hover:bg-opacity-70 transition-colors">
-                      <Camera className="w-6 h-6 text-white" />
-                      <input
-                        type="file"
-                        className="hidden"
-                        accept="image/*"
-                        onChange={handleLogoUpload}
-                      />
-                    </label>
+  const renderProfileTab = () => (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="h-32 bg-gradient-to-r from-green-500 to-blue-600 relative">
+          <div className="absolute bottom-4 left-6 flex items-end gap-4">
+            <div className="relative">
+              <img
+                src={isEditing ? formData.logo : orgData.logo}
+                alt="Logo"
+                className="w-20 h-20 rounded-lg border-4 border-white shadow-lg object-cover bg-white"
+              />
+              {isEditing && (
+                <label className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-lg cursor-pointer hover:bg-opacity-70">
+                  <Camera className="w-5 h-5 text-white" />
+                  <input type="file" className="hidden" accept="image/*" />
+                </label>
+              )}
+            </div>
+            <div className="text-white pb-2">
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  className="text-xl font-bold bg-transparent border-b border-white text-white placeholder-white focus:outline-none"
+                />
+              ) : (
+                <div className="flex items-center gap-3">
+                  <h1 className="text-xl font-bold">{orgData.name}</h1>
+                  <div className="flex gap-2">
+                    {orgData.verified && (
+                      <div className="bg-blue-500 p-1 rounded-full">
+                        <CheckCircle className="w-4 h-4 text-white" />
+                      </div>
+                    )}
+                    {orgData.premium && (
+                      <div className="bg-yellow-500 p-1 rounded-full">
+                        <Crown className="w-4 h-4 text-white" />
+                      </div>
+                    )}
                   </div>
+                </div>
+              )}
+              <p className="text-green-100 text-sm">{orgData.industry}</p>
+            </div>
+          </div>
+          
+          <div className="absolute bottom-4 right-6">
+            {isEditing ? (
+              <div className="flex gap-2">
+                <button
+                  onClick={handleSave}
+                  className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+                >
+                  <Save className="w-4 h-4" />
+                  Lưu
+                </button>
+                <button
+                  onClick={handleCancel}
+                  className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+                >
+                  <X className="w-4 h-4" />
+                  Hủy
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={handleEdit}
+                className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-lg flex items-center gap-2 backdrop-blur-sm"
+              >
+                <Edit className="w-4 h-4" />
+                Chỉnh sửa
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="p-6 bg-gray-50 grid grid-cols-4 gap-4">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-gray-900">{orgData.followers}</div>
+            <div className="text-sm text-gray-500">Người theo dõi</div>
+          </div>
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-1">
+              <span className="text-2xl font-bold text-gray-900">{orgData.averageRating}</span>
+              <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+            </div>
+            <div className="text-sm text-gray-500">Đánh giá TB</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-gray-900">{orgData.eventsCreated}</div>
+            <div className="text-sm text-gray-500">Sự kiện đã tạo</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-gray-900">{orgData.activeEvents}</div>
+            <div className="text-sm text-gray-500">Đang hoạt động</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Organization Details */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <h3 className="text-lg font-semibold mb-4">Thông tin cơ bản</h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Mô tả tổ chức</label>
+              {isEditing ? (
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 resize-none"
+                  rows={4}
+                />
+              ) : (
+                <p className="text-gray-700">{orgData.description}</p>
+              )}
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Lĩnh vực</label>
+                {isEditing ? (
+                  <select
+                    value={formData.industry}
+                    onChange={(e) => handleInputChange('industry', e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option>Môi trường</option>
+                    <option>Giáo dục</option>
+                    <option>Y tế</option>
+                    <option>Công nghệ</option>
+                    <option>Xã hội</option>
+                  </select>
                 ) : (
-                  <img
-                    src={orgData.logo}
-                    alt="Logo"
-                    className="w-24 h-24 rounded-lg border-4 border-white shadow-lg object-cover"
-                  />
+                  <p className="text-gray-900 font-medium">{orgData.industry}</p>
                 )}
               </div>
               
-              <div className="text-white pb-2">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Năm thành lập</label>
                 {isEditing ? (
                   <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => handleInputChange('name', e.target.value)}
-                    className="text-2xl font-bold bg-transparent border-b border-white text-white placeholder-white focus:outline-none"
+                    type="number"
+                    value={formData.foundedYear}
+                    onChange={(e) => handleInputChange('foundedYear', parseInt(e.target.value))}
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   />
                 ) : (
-                  <div className="flex items-center space-x-3">
-                    <h1 className="text-2xl font-bold">{orgData.name}</h1>
-                    <div className="flex space-x-2">
-                      {orgData.verified && (
-                        <div className="bg-blue-500 p-1 rounded-full" title="Tài khoản đã xác thực">
-                          <CheckCircle className="w-5 h-5 text-white" />
-                        </div>
-                      )}
-                      {orgData.premium && (
-                        <div className="bg-yellow-500 p-1 rounded-full" title="Tài khoản Premium">
-                          <Crown className="w-5 h-5 text-white" />
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                  <p className="text-gray-900 font-medium">{orgData.foundedYear}</p>
                 )}
-                <p className="text-blue-100 mt-1">{orgData.industry}</p>
               </div>
-            </div>
-
-            <div className="absolute bottom-6 right-6">
-              {isEditing ? (
-                <div className="flex space-x-2">
-                  <button
-                    onClick={handleSave}
-                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-                  >
-                    <Save className="w-4 h-4" />
-                    <span>Lưu</span>
-                  </button>
-                  <button
-                    onClick={handleCancel}
-                    className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                    <span>Hủy</span>
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={handleEdit}
-                  className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors backdrop-blur-sm"
-                >
-                  <Edit className="w-4 h-4" />
-                  <span>Chỉnh sửa</span>
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Stats Bar */}
-          <div className="px-6 py-4 bg-gray-50 grid grid-cols-4 gap-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">{orgData.followers}</div>
-              <div className="text-sm text-gray-500">Người theo dõi</div>
-            </div>
-            <div className="text-center">
-              <div className="flex items-center justify-center space-x-1">
-                <span className="text-2xl font-bold text-gray-900">{orgData.averageRating}</span>
-                <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-              </div>
-              <div className="text-sm text-gray-500">Đánh giá trung bình</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">{orgData.totalReviews}</div>
-              <div className="text-sm text-gray-500">Lượt đánh giá</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">{events.length}</div>
-              <div className="text-sm text-gray-500">Sự kiện đã tổ chức</div>
             </div>
           </div>
         </div>
 
-        {/* Navigation Tabs */}
-        <div className="bg-white rounded-lg shadow-sm mb-6">
-          <div className="flex border-b border-gray-200">
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <h3 className="text-lg font-semibold mb-4">Thông tin liên hệ</h3>
+          <div className="space-y-4">
             {[
-              { id: 'overview', label: 'Tổng quan', icon: Building },
-              { id: 'events', label: 'Sự kiện', icon: Calendar },
-              { id: 'reviews', label: 'Đánh giá', icon: MessageSquare },
-              { id: 'followers', label: 'Người theo dõi', icon: Heart }
-            ].map(tab => {
+              { field: 'email', label: 'Email', icon: Mail, type: 'email' },
+              { field: 'phone', label: 'Điện thoại', icon: Phone, type: 'tel' },
+              { field: 'website', label: 'Website', icon: Globe, type: 'url' },
+              { field: 'address', label: 'Địa chỉ', icon: MapPin, type: 'text' }
+            ].map(({ field, label, icon: Icon, type }) => (
+              <div key={field} className="flex items-center gap-3">
+                <Icon className="w-5 h-5 text-gray-400" />
+                {isEditing ? (
+                  <input
+                    type={type}
+                    value={formData[field]}
+                    onChange={(e) => handleInputChange(field, e.target.value)}
+                    placeholder={label}
+                    className="flex-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  />
+                ) : (
+                  <span className="text-gray-700">{orgData[field]}</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Tier & Badges */}
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <h3 className="text-lg font-semibold mb-4">Cấp độ & Huy hiệu</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className={`p-4 rounded-lg ${tierConfig[orgData.tier]?.bgColor || 'bg-gray-100'}`}>
+            <div className="flex items-center gap-3">
+              <Award className={`${tierConfig[orgData.tier]?.iconColor || 'text-gray-600'} w-8 h-8`} />
+              <div>
+                <h4 className="font-semibold">Cấp độ {tierConfig[orgData.tier]?.label}</h4>
+                <p className="text-sm text-gray-600">Tổ chức uy tín</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="p-4 rounded-lg bg-blue-50">
+            <div className="flex items-center gap-3">
+              <CheckCircle className="w-8 h-8 text-blue-600" />
+              <div>
+                <h4 className="font-semibold">Đã xác thực</h4>
+                <p className="text-sm text-gray-600">Admin đã duyệt</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="p-4 rounded-lg bg-yellow-50">
+            <div className="flex items-center gap-3">
+              <Crown className="w-8 h-8 text-yellow-600" />
+              <div>
+                <h4 className="font-semibold">Premium</h4>
+                <p className="text-sm text-gray-600">Tính năng cao cấp</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderServicesTab = () => (
+    <div className="space-y-6">
+      {/* Services Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
+          <div className="flex items-center gap-3 mb-2">
+            <Package className="w-6 h-6 text-blue-600" />
+            <span className="text-lg font-semibold text-blue-900">
+              {purchasedServices.filter(s => s.status === 'active').length}
+            </span>
+          </div>
+          <p className="text-blue-700 font-medium">Dịch vụ đang hoạt động</p>
+        </div>
+        
+        <div className="bg-green-50 p-6 rounded-lg border border-green-200">
+          <div className="flex items-center gap-3 mb-2">
+            <TrendingUp className="w-6 h-6 text-green-600" />
+            <span className="text-lg font-semibold text-green-900">Premium</span>
+          </div>
+          <p className="text-green-700 font-medium">Gói hiện tại</p>
+        </div>
+        
+        <div className="bg-yellow-50 p-6 rounded-lg border border-yellow-200">
+          <div className="flex items-center gap-3 mb-2">
+            <Clock className="w-6 h-6 text-yellow-600" />
+            <span className="text-lg font-semibold text-yellow-900">
+              {purchasedServices.filter(s => 
+                new Date(s.expiryDate) - new Date() < 30 * 24 * 60 * 60 * 1000
+              ).length}
+            </span>
+          </div>
+          <p className="text-yellow-700 font-medium">Sắp hết hạn</p>
+        </div>
+      </div>
+
+      {/* Active Services */}
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <h3 className="text-lg font-semibold mb-4">Dịch vụ đã mua</h3>
+        <div className="space-y-4">
+          {purchasedServices.map((service) => {
+            const category = serviceCategories[service.category] || { label: 'Khác', color: 'gray', icon: Package };
+            const CategoryIcon = category.icon;
+            const catColor = colorMap[category.color] || colorMap.gray;
+            const isExpiring = new Date(service.expiryDate) - new Date() < 30 * 24 * 60 * 60 * 1000;
+            
+            return (
+              <div key={service.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-start gap-4">
+                    <div className={`${catColor.split(' ')[0]} p-3 rounded-lg`}>
+                      <CategoryIcon className={`${catColor.split(' ')[1]} w-6 h-6`} />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-1">
+                        <h4 className="font-semibold text-gray-900">{service.name}</h4>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          service.status === 'active' ? 'bg-green-100 text-green-800' :
+                          service.status === 'expired' ? 'bg-red-100 text-red-800' :
+                          'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {service.status === 'active' ? 'Đang hoạt động' :
+                           service.status === 'expired' ? 'Đã hết hạn' : 'Tạm dừng'}
+                        </span>
+                        {isExpiring && service.status === 'active' && (
+                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 flex items-center gap-1">
+                            <AlertTriangle size={10} />
+                            Sắp hết hạn
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-gray-600 text-sm mb-2">{service.description}</p>
+                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <span>Mua: {service.purchaseDate}</span>
+                        <span>Hết hạn: {service.expiryDate}</span>
+                        <span className="font-medium text-gray-900">{service.price}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <button className="p-2 text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-100">
+                      <Eye className="w-4 h-4" />
+                    </button>
+                    <button className="p-2 text-blue-600 hover:text-blue-800 rounded-lg hover:bg-blue-50">
+                      <Settings className="w-4 h-4" />
+                    </button>
+                    {service.status !== 'active' && (
+                      <button 
+                        onClick={() => handleDeleteService(service.id)}
+                        className="p-2 text-red-600 hover:text-red-800 rounded-lg hover:bg-red-50"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Usage Stats */}
+                {service.usage && service.status === 'active' && (
+                  <div className="mt-4 pt-4 border-t border-gray-100">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-gray-600">Sử dụng trong tháng</span>
+                      <span className="text-sm font-medium">
+                        {service.usage.current}/{service.usage.limit === 'Unlimited' ? '∞' : service.usage.limit}
+                      </span>
+                    </div>
+                    {service.usage.limit !== 'Unlimited' && (
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-blue-600 h-2 rounded-full" 
+                          style={{ width: `${(service.usage.current / (service.usage.limit || 1)) * 100}%` }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Features */}
+                <div className="mt-4 pt-4 border-t border-gray-100">
+                  <div className="flex flex-wrap gap-2">
+                    {service.features.map((feature, idx) => (
+                      <span key={idx} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
+                        {feature}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderMarketplaceTab = () => (
+    <div className="space-y-6">
+      {/* Service Categories Filter */}
+      <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <div className="flex flex-wrap gap-3">
+          <button className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-medium">
+            Tất cả dịch vụ
+          </button>
+          {Object.entries(serviceCategories).map(([key, category]) => {
+            const Icon = category.icon;
+            return (
+              <button key={key} className="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                <Icon className="w-4 h-4" />
+                {category.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Recommended Services */}
+      <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-200 p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <Zap className="w-6 h-6 text-purple-600" />
+          <h3 className="text-lg font-semibold text-purple-900">Gợi ý cho bạn</h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {availableServices.filter(s => s.popular).map((service) => {
+            const Icon = service.icon;
+            const serviceColor = colorMap[service.color] || colorMap.gray;
+            return (
+              <div key={service.id} className="bg-white rounded-lg border border-purple-200 p-4 relative">
+                {service.discount && (
+                  <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                    -{service.discount}
+                  </div>
+                )}
+
+                <div className="flex items-start gap-4">
+                  <div className={`${serviceColor.split(' ')[0]} p-3 rounded-lg`}>
+                    <Icon className={`${serviceColor.split(' ')[1]} w-6 h-6`} />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-semibold">{service.name}</h4>
+                        <p className="text-sm text-gray-600">{service.description}</p>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm text-gray-500">{service.period}</div>
+                        <div className="font-semibold text-gray-900">{service.price}</div>
+                      </div>
+                    </div>
+
+                    <div className="mt-3 flex items-center gap-2">
+                      {service.features.slice(0, 3).map((f, i) => (
+                        <span key={i} className="text-xs bg-gray-100 px-2 py-1 rounded-full">{f}</span>
+                      ))}
+                    </div>
+
+                    <div className="mt-4 flex items-center gap-2">
+                      <button
+                        onClick={() => { setSelectedService(service); setShowServiceModal(true); }}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center gap-2"
+                      >
+                        <Plus className="w-4 h-4" />
+                        Mua ngay
+                      </button>
+                      <button
+                        onClick={() => { setSelectedService(service); setShowServiceModal(true); }}
+                        className="px-4 py-2 border border-gray-200 rounded-lg flex items-center gap-2"
+                      >
+                        <ArrowRight className="w-4 h-4" />
+                        Xem chi tiết
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Show other available services */}
+          {availableServices.filter(s => !s.popular).map((service) => {
+            const Icon = service.icon;
+            const serviceColor = colorMap[service.color] || colorMap.gray;
+            return (
+              <div key={service.id} className="bg-white rounded-lg border border-gray-200 p-4">
+                <div className="flex items-start gap-4">
+                  <div className={`${serviceColor.split(' ')[0]} p-3 rounded-lg`}>
+                    <Icon className={`${serviceColor.split(' ')[1]} w-6 h-6`} />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-semibold">{service.name}</h4>
+                        <p className="text-sm text-gray-600">{service.description}</p>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm text-gray-500">{service.period}</div>
+                        <div className="font-semibold text-gray-900">{service.price}</div>
+                      </div>
+                    </div>
+
+                    <div className="mt-3 flex items-center gap-2">
+                      <button
+                        onClick={() => { setSelectedService(service); setShowServiceModal(true); }}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center gap-2"
+                      >
+                        <Plus className="w-4 h-4" />
+                        Mua ngay
+                      </button>
+                      <button
+                        onClick={() => { setSelectedService(service); setShowServiceModal(true); }}
+                        className="px-4 py-2 border border-gray-200 rounded-lg flex items-center gap-2"
+                      >
+                        <ArrowRight className="w-4 h-4" />
+                        Xem chi tiết
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderBillingTab = () => (
+    <div className="space-y-6">
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <h3 className="text-lg font-semibold mb-4">Thanh toán</h3>
+        <p className="text-sm text-gray-600 mb-4">Quản lý phương thức thanh toán và lịch sử hóa đơn.</p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-4 border border-gray-100 rounded-lg">
+            <h4 className="font-semibold mb-2">Phương thức thanh toán</h4>
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-sm text-gray-700">Visa **** 4242</div>
+                <div className="text-xs text-gray-500">Hết hạn 08/2026</div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button className="px-3 py-2 border rounded-lg text-sm">Chỉnh sửa</button>
+                <button className="px-3 py-2 bg-red-600 text-white rounded-lg text-sm">Xóa</button>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-4 border border-gray-100 rounded-lg">
+            <h4 className="font-semibold mb-2">Lịch sử hóa đơn</h4>
+            <ul className="text-sm text-gray-600 space-y-2">
+              <li className="flex items-center justify-between">
+                <span>Featured Events Package</span>
+                <span className="font-medium">1,200,000 VND</span>
+              </li>
+              <li className="flex items-center justify-between">
+                <span>Premium Account</span>
+                <span className="font-medium">2,500,000 VND</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderSettingsTab = () => (
+    <div className="space-y-6">
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <h3 className="text-lg font-semibold mb-4">Cài đặt tổ chức</h3>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="font-medium">Cho phép người dùng gửi sự kiện</h4>
+              <p className="text-sm text-gray-500">Bật/tắt việc cho phép người dùng tạo sự kiện cho tổ chức.</p>
+            </div>
+            <label className="inline-flex relative items-center cursor-pointer">
+              <input type="checkbox" className="sr-only peer" defaultChecked />
+              <div className="w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-blue-600 peer-focus:ring-4 peer-focus:ring-blue-200 transition" />
+              <span className="ml-3 text-sm font-medium text-gray-900">Bật</span>
+            </label>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="font-medium">Yêu cầu xác thực 2 bước</h4>
+              <p className="text-sm text-gray-500">Bắt buộc quản trị viên bật 2FA khi đăng nhập.</p>
+            </div>
+            <label className="inline-flex relative items-center cursor-pointer">
+              <input type="checkbox" className="sr-only peer" defaultChecked />
+              <div className="w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-blue-600 transition" />
+              <span className="ml-3 text-sm font-medium text-gray-900">Bật</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // main render
+  return (
+    <div className="flex flex-col gap-6 p-6">
+      {/* Sidebar Tabs */}
+      <aside className="w-64 flex w-full ">
+        <div className="bg-white flex w-full justify-between rounded-lg border border-gray-200 p-4">
+          <nav className="flex gap-2">
+            {tabs.map(tab => {
               const Icon = tab.icon;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-2 px-6 py-4 font-medium transition-colors ${
-                    activeTab === tab.id
-                      ? 'border-b-2 border-blue-500 text-blue-600'
-                      : 'text-gray-500 hover:text-gray-700'
+                  className={`text-left flex items-center gap-3 px-3 py-2 rounded-lg w-full ${
+                    activeTab === tab.id ? 'bg-blue-50 border border-blue-200' : 'hover:bg-gray-50'
                   }`}
                 >
-                  <Icon className="w-5 h-5" />
-                  <span>{tab.label}</span>
+                  <Icon className="w-5 h-5 text-gray-600" />
+                  <span className="font-medium">{tab.label}</span>
                 </button>
               );
             })}
+          </nav>
+          
+          <div className="mt-4">
+            <button className="w-full px-3 py-2 bg-green-600 text-white rounded-lg flex items-center justify-center gap-2">
+              <Plus className="w-4 h-4" /> Tạo sự kiện mới
+            </button>
           </div>
         </div>
+      </aside>
 
-        {/* Content */}
+      {/* Main Content */}
+      <main className="flex-1">
         <div className="space-y-6">
-          {/* Overview Tab */}
-          {activeTab === 'overview' && (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2 space-y-6">
-                {/* About Section */}
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                  <h2 className="text-xl font-semibold mb-4">Giới thiệu</h2>
-                  {isEditing ? (
-                    <textarea
-                      value={formData.description}
-                      onChange={(e) => handleInputChange('description', e.target.value)}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
-                      rows="4"
-                      placeholder="Mô tả về tổ chức..."
-                    />
-                  ) : (
-                    <p className="text-gray-700 leading-relaxed">{orgData.description}</p>
-                  )}
-                </div>
-
-                {/* Contact Information */}
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                  <h2 className="text-xl font-semibold mb-4">Thông tin liên hệ</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex items-center space-x-3">
-                      <Mail className="w-5 h-5 text-gray-400" />
-                      {isEditing ? (
-                        <input
-                          type="email"
-                          value={formData.email}
-                          onChange={(e) => handleInputChange('email', e.target.value)}
-                          className="flex-1 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                          placeholder="Email"
-                        />
-                      ) : (
-                        <span className="text-gray-700">{orgData.email}</span>
-                      )}
-                    </div>
-                    
-                    <div className="flex items-center space-x-3">
-                      <Phone className="w-5 h-5 text-gray-400" />
-                      {isEditing ? (
-                        <input
-                          type="text"
-                          value={formData.phone}
-                          onChange={(e) => handleInputChange('phone', e.target.value)}
-                          className="flex-1 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                          placeholder="Số điện thoại"
-                        />
-                      ) : (
-                        <span className="text-gray-700">{orgData.phone}</span>
-                      )}
-                    </div>
-                    
-                    <div className="flex items-center space-x-3">
-                      <Globe className="w-5 h-5 text-gray-400" />
-                      {isEditing ? (
-                        <input
-                          type="url"
-                          value={formData.website}
-                          onChange={(e) => handleInputChange('website', e.target.value)}
-                          className="flex-1 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                          placeholder="Website"
-                        />
-                      ) : (
-                        <a href={orgData.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                          {orgData.website}
-                        </a>
-                      )}
-                    </div>
-                    
-                    <div className="flex items-center space-x-3">
-                      <MapPin className="w-5 h-5 text-gray-400" />
-                      {isEditing ? (
-                        <input
-                          type="text"
-                          value={formData.address}
-                          onChange={(e) => handleInputChange('address', e.target.value)}
-                          className="flex-1 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                          placeholder="Địa chỉ"
-                        />
-                      ) : (
-                        <span className="text-gray-700">{orgData.address}</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Sidebar */}
-              <div className="space-y-6">
-                {/* Organization Info */}
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                  <h3 className="text-lg font-semibold mb-4">Thông tin tổ chức</h3>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="text-sm text-gray-500">Lĩnh vực hoạt động</label>
-                      {isEditing ? (
-                        <select
-                          value={formData.industry}
-                          onChange={(e) => handleInputChange('industry', e.target.value)}
-                          className="w-full mt-1 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        >
-                          <option>Công nghệ thông tin</option>
-                          <option>Giáo dục</option>
-                          <option>Y tế</option>
-                          <option>Môi trường</option>
-                          <option>Xã hội</option>
-                        </select>
-                      ) : (
-                        <div className="font-medium text-gray-900">{orgData.industry}</div>
-                      )}
-                    </div>
-                    
-                    <div>
-                      <label className="text-sm text-gray-500">Năm thành lập</label>
-                      {isEditing ? (
-                        <input
-                          type="number"
-                          value={formData.foundedYear}
-                          onChange={(e) => handleInputChange('foundedYear', parseInt(e.target.value))}
-                          className="w-full mt-1 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                      ) : (
-                        <div className="font-medium text-gray-900">{orgData.foundedYear}</div>
-                      )}
-                    </div>
-                    
-                    <div>
-                      <label className="text-sm text-gray-500">Quy mô nhân sự</label>
-                      {isEditing ? (
-                        <select
-                          value={formData.employeeCount}
-                          onChange={(e) => handleInputChange('employeeCount', e.target.value)}
-                          className="w-full mt-1 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        >
-                          <option>1-10</option>
-                          <option>11-50</option>
-                          <option>50-100</option>
-                          <option>100-500</option>
-                          <option>500+</option>
-                        </select>
-                      ) : (
-                        <div className="font-medium text-gray-900">{orgData.employeeCount}</div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Badges */}
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                  <h3 className="text-lg font-semibold mb-4">Huy hiệu</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <CheckCircle className="w-6 h-6 text-blue-500" />
-                        <div>
-                          <div className="font-medium text-blue-900">Đã xác thực</div>
-                          <div className="text-sm text-blue-700">Tài khoản đã được Admin xác thực</div>
-                        </div>
-                      </div>
-                      <div className={`w-3 h-3 rounded-full ${orgData.verified ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-                    </div>
-                    
-                    <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <Crown className="w-6 h-6 text-yellow-500" />
-                        <div>
-                          <div className="font-medium text-yellow-900">Premium</div>
-                          <div className="text-sm text-yellow-700">Gói dịch vụ cao cấp</div>
-                        </div>
-                      </div>
-                      <div className={`w-3 h-3 rounded-full ${orgData.premium ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+          {/* Mobile tabs */}
+          <div className="lg:hidden">
+            <div className="flex gap-2 overflow-auto">
+              {tabs.map(tab => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
+                      activeTab === tab.id ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span className="text-sm">{tab.label}</span>
+                  </button>
+                );
+              })}
             </div>
-          )}
+          </div>
 
-          {/* Events Tab */}
-          {activeTab === 'events' && (
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold">Sự kiện tiêu biểu</h2>
-                <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
-                  <Calendar className="w-4 h-4" />
-                  <span>Tạo sự kiện mới</span>
-                </button>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {events.map(event => (
-                  <div key={event.id} className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
-                    <img src={event.image} alt={event.title} className="w-full h-48 object-cover" />
-                    <div className="p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          event.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
-                        }`}>
-                          {event.status === 'completed' ? 'Đã hoàn thành' : 'Sắp diễn ra'}
-                        </span>
-                      </div>
-                      <h3 className="font-semibold text-gray-900 mb-2">{event.title}</h3>
-                      <div className="space-y-1 text-sm text-gray-500">
-                        <div className="flex items-center space-x-2">
-                          <Calendar className="w-4 h-4" />
-                          <span>{new Date(event.date).toLocaleDateString('vi-VN')}</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <MapPin className="w-4 h-4" />
-                          <span>{event.location}</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Users className="w-4 h-4" />
-                          <span>{event.participants} người tham gia</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Reviews Tab */}
-          {activeTab === 'reviews' && (
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <div className="mb-6">
-                <h2 className="text-xl font-semibold mb-4">Đánh giá từ tình nguyện viên</h2>
-                <div className="flex items-center space-x-6">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-3xl font-bold text-gray-900">{orgData.averageRating}</span>
-                    <div className="flex space-x-1">
-                      {renderStars(Math.floor(orgData.averageRating))}
-                    </div>
-                  </div>
-                  <div className="text-gray-600">
-                    <span className="font-medium">{orgData.totalReviews}</span> đánh giá
-                  </div>
-                </div>
-              </div>
-              
-              <div className="space-y-4">
-                {reviews.map(review => (
-                  <div key={review.id} className="border border-gray-200 rounded-lg p-4">
-                    <div className="flex items-start space-x-4">
-                      <img src={review.avatar} alt={review.user} className="w-10 h-10 rounded-full" />
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between mb-2">
-                          <div>
-                            <h4 className="font-medium text-gray-900">{review.user}</h4>
-                            <p className="text-sm text-gray-500">{review.event}</p>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <div className="flex space-x-1">
-                              {renderStars(review.rating)}
-                            </div>
-                            <span className="text-sm text-gray-500">
-                              {new Date(review.date).toLocaleDateString('vi-VN')}
-                            </span>
-                          </div>
-                        </div>
-                        <p className="text-gray-700">{review.comment}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Followers Tab */}
-          {activeTab === 'followers' && (
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold">Người theo dõi ({orgData.followers})</h2>
-                <div className="flex items-center space-x-2">
-                  <Heart className="w-5 h-5 text-red-500" />
-                  <span className="text-gray-600">Tổng: {orgData.followers} người</span>
-                </div>
-              </div>
-              
-              <div className="text-center py-12">
-                <Heart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Danh sách người theo dõi</h3>
-                <p className="text-gray-500">Chức năng này đang được phát triển...</p>
-              </div>
-            </div>
-          )}
+          {/* Content based on tab */}
+          <div>
+            {activeTab === 'profile' && renderProfileTab()}
+            {activeTab === 'services' && renderServicesTab()}
+            {activeTab === 'marketplace' && renderMarketplaceTab()}
+            {activeTab === 'billing' && renderBillingTab()}
+            {activeTab === 'settings' && renderSettingsTab()}
+          </div>
         </div>
-      </div>
+      </main>
+
+      {/* Service Modal */}
+      {showServiceModal && selectedService && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black opacity-40" onClick={() => { setShowServiceModal(false); setSelectedService(null); }} />
+          <div className="relative bg-white rounded-lg w-full max-w-2xl p-6 z-10 shadow-xl">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-4">
+                <div className={`${(colorMap[selectedService.color] || colorMap.gray).split(' ')[0]} p-3 rounded-lg`}>
+                  <selectedService.icon className={`${(colorMap[selectedService.color] || colorMap.gray).split(' ')[1]} w-6 h-6`} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold">{selectedService.name}</h3>
+                  <div className="text-sm text-gray-500">{selectedService.period} • {selectedService.price}</div>
+                </div>
+              </div>
+
+              <button onClick={() => { setShowServiceModal(false); setSelectedService(null); }} className="p-2 rounded-lg text-gray-600 hover:bg-gray-100">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="text-gray-700 mb-4">{selectedService.description}</p>
+
+            <div className="mb-4">
+              <h4 className="font-medium mb-2">Tính năng</h4>
+              <div className="flex flex-wrap gap-2">
+                {selectedService.features.map((f, i) => (
+                  <span key={i} className="px-3 py-1 bg-gray-100 rounded-full text-sm">{f}</span>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3">
+              <button onClick={() => { setShowServiceModal(false); setSelectedService(null); }} className="px-4 py-2 border rounded-lg">Đóng</button>
+              <button
+                onClick={() => handlePurchaseService(selectedService)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center gap-2"
+              >
+                <ShoppingCart className="w-4 h-4" />
+                Mua {selectedService.price}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
-}
+};
+
+export default OrgProfileManagement;
