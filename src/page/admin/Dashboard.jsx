@@ -292,7 +292,11 @@ const Dashboard = () => {
                 </div>
               </div>
             )}
-
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <button onClick={()=> navigate('/admin/analytics/platform')} className="w-full text-center text-sm text-blue-600 hover:text-blue-800 font-medium">
+                Xem Phân tích nền tảng →
+              </button>
+            </div>  
           </div>
 
           {/* Recent Activity */}
@@ -344,7 +348,7 @@ const Dashboard = () => {
                       <div className="flex items-center space-x-3 flex-1">
                         <TypeIcon className="h-5 w-5 text-gray-600 flex-shrink-0" />
                         <div className="min-w-0 flex-1">
-                          <Link to={item.slug} className="text-sm font-medium text-gray-900 truncate hover:underline">{item.title}</Link>
+                          <Link to={`/admin/${item.slug}`} className="text-sm font-medium text-gray-900 truncate hover:underline">{item.title}</Link>
                           <div className="flex items-center space-x-2 mt-1">
                             <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(item.status)}`}>
                               {item.status}

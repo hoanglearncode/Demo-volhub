@@ -706,85 +706,85 @@ function AdminLayout() {
           </div>
 
           {/* Page Content */}
-          <div className="p-6">
-            <Routes>
-              {/* Dashboard */}
-              <Route path="/admin" element={<RequireAuth><Dashboard /></RequireAuth>} />
-              <Route path="/admin/analytics/platform" element={<RequireAuth><PlatformAnalytics /></RequireAuth>} />
-              <Route path="/admin/alerts" element={<RequireAuth><SystemAlerts /></RequireAuth>} />
+            <div className="p-6">
+              <Routes>
+                {/* Dashboard */}
+                <Route path="/admin" element={<RequireAuth><Dashboard /></RequireAuth>} />
+                <Route path="/admin/analytics/platform" element={<RequireAuth><PlatformAnalytics /></RequireAuth>} />
+                <Route path="/admin/alerts" element={<RequireAuth><SystemAlerts /></RequireAuth>} />
 
-              {/* Event Management Routes */}
-              <Route path="/admin/events" element={<RequireAuth><EventManagement /></RequireAuth>} />
-              <Route path="/admin/events/create" element={<RequireAuth><EventCreatePage /></RequireAuth>} />
-              <Route path="/admin/events/detail/:id" element={<RequireAuth><EventDetailPage /></RequireAuth>} />
-              <Route path="/admin/events/approval-queue" element={<RequireAuth><EventApprovalQueue /></RequireAuth>} />
-              <Route path="/admin/events/quality-control" element={<RequireAuth><EventQualityControl /></RequireAuth>} />
-              <Route path="/admin/events/analytics" element={<RequireAuth><EventAnalytics /></RequireAuth>} />
+                {/* Event Management Routes */}
+                <Route path="/admin/events" element={<RequireAuth><EventManagement /></RequireAuth>} />
+                <Route path="/admin/events/create" element={<RequireAuth><EventCreatePage /></RequireAuth>} />
+                <Route path="/admin/events/detail/:id" element={<RequireAuth><EventDetailPage /></RequireAuth>} />
+                <Route path="/admin/events/approval-queue" element={<RequireAuth><EventApprovalQueue /></RequireAuth>} />
+                <Route path="/admin/events/quality-control" element={<RequireAuth><EventQualityControl /></RequireAuth>} />
+                <Route path="/admin/events/analytics" element={<RequireAuth><EventAnalytics /></RequireAuth>} />
 
-              {/* Volunteer Management Routes */}
-              <Route path="/admin/volunteers" element={<RequireAuth><VolunteerManagement /></RequireAuth>} />
-              <Route path="/admin/volunteers/detail/:id" element={<RequireAuth><VolunteerDetailPage /></RequireAuth>} />
-              <Route path="/admin/volunteers/verification" element={<RequireAuth><VolunteerVerification /></RequireAuth>} />
-              <Route path="/admin/volunteers/violations" element={<RequireAuth><VolunteerViolationManagement /></RequireAuth>} />
-              <Route path="/admin/volunteers/certifications" element={<RequireAuth><VolunteerCertificationSystem /></RequireAuth>} />
+                {/* Volunteer Management Routes */}
+                <Route path="/admin/volunteers" element={<RequireAuth><VolunteerManagement /></RequireAuth>} />
+                <Route path="/admin/volunteers/detail/:id" element={<RequireAuth><VolunteerDetailPage /></RequireAuth>} />
+                <Route path="/admin/volunteers/verification" element={<RequireAuth><VolunteerVerification /></RequireAuth>} />
+                <Route path="/admin/volunteers/violations" element={<RequireAuth><VolunteerViolationManagement /></RequireAuth>} />
+                <Route path="/admin/volunteers/certifications" element={<RequireAuth><VolunteerCertificationSystem /></RequireAuth>} />
 
-              {/* Partner Management Routes */}
-              <Route path="/admin/partners" element={<RequireAuth><PartnerManagement /></RequireAuth>} />
-              <Route path="/admin/partners/verification" element={<RequireAuth><PartnerVerification /></RequireAuth>} />
-              <Route path="/admin/partners/tiers" element={<RequireAuth><PartnerTierManagement /></RequireAuth>} />
-              <Route path="/admin/partners/analytics" element={<RequireAuth><PartnerAnalytics /></RequireAuth>} />
+                {/* Partner Management Routes */}
+                <Route path="/admin/partners" element={<RequireAuth><PartnerManagement /></RequireAuth>} />
+                <Route path="/admin/partners/verification" element={<RequireAuth><PartnerVerification /></RequireAuth>} />
+                <Route path="/admin/partners/tiers" element={<RequireAuth><PartnerTierManagement /></RequireAuth>} />
+                <Route path="/admin/partners/analytics" element={<RequireAuth><PartnerAnalytics /></RequireAuth>} />
 
-              {/* Connection Management Routes */}
-              <Route path="/admin/connections" element={<RequireAuth><ConnectionQueue /></RequireAuth>} />
-              <Route path="/admin/connections/approval-queue" element={<RequireAuth><ConnectionApprovalQueue /></RequireAuth>} />
-              <Route path="/admin/connections/proxy-chat" element={<RequireAuth><ProxyChatSystem /></RequireAuth>} />
-              <Route path="/admin/connections/abuse-reports" element={<RequireAuth><AbuseReportManagement /></RequireAuth>} />
+                {/* Connection Management Routes */}
+                <Route path="/admin/connections" element={<RequireAuth><ConnectionQueue /></RequireAuth>} />
+                <Route path="/admin/connections/approval-queue" element={<RequireAuth><ConnectionApprovalQueue /></RequireAuth>} />
+                <Route path="/admin/connections/proxy-chat" element={<RequireAuth><ProxyChatSystem /></RequireAuth>} />
+                <Route path="/admin/connections/abuse-reports" element={<RequireAuth><AbuseReportManagement /></RequireAuth>} />
 
-              {/* Content Management Routes */}
-              <Route path="/admin/content" element={<RequireAuth><ContentModeration /></RequireAuth>} />
-              <Route path="/admin/content/queue" element={<RequireAuth><ContentQueue /></RequireAuth>} />
-              <Route path="/admin/content/spotlight" element={<RequireAuth><ContentSpotlight /></RequireAuth>} />
-              <Route path="/admin/content/community-feed" element={<RequireAuth><CommunityFeedManagement /></RequireAuth>} />
+                {/* Content Management Routes */}
+                <Route path="/admin/content" element={<RequireAuth><ContentModeration /></RequireAuth>} />
+                <Route path="/admin/content/queue" element={<RequireAuth><ContentQueue /></RequireAuth>} />
+                <Route path="/admin/content/spotlight" element={<RequireAuth><ContentSpotlight /></RequireAuth>} />
+                <Route path="/admin/content/community-feed" element={<RequireAuth><CommunityFeedManagement /></RequireAuth>} />
 
-              {/* Services Management Routes */}
-              <Route path="/admin/services" element={<RequireAuth><ServicesPage /></RequireAuth>} />
+                {/* Services Management Routes */}
+                <Route path="/admin/services" element={<RequireAuth><ServicesPage /></RequireAuth>} />
 
-              {/* Reports & Analytics Routes */}
-              <Route path="/admin/report" element={<RequireAuth><Reports /></RequireAuth>} />
-              <Route path="/admin/report/comparison" element={<RequireAuth><ComparisonReports /></RequireAuth>} />
-              <Route path="/admin/report/connection-funnel" element={<RequireAuth><ConnectionFunnelAnalytics /></RequireAuth>} />
+                {/* Reports & Analytics Routes */}
+                <Route path="/admin/report" element={<RequireAuth><Reports /></RequireAuth>} />
+                <Route path="/admin/report/comparison" element={<RequireAuth><ComparisonReports /></RequireAuth>} />
+                <Route path="/admin/report/connection-funnel" element={<RequireAuth><ConnectionFunnelAnalytics /></RequireAuth>} />
 
-              {/* System Management Routes */}
-              <Route path="/admin/system" element={<RequireAuth><SystemMonitoring /></RequireAuth>} />
-              <Route path="/admin/system/alerts" element={<RequireAuth><SystemAlerts /></RequireAuth>} />
-              <Route path="/admin/system/audit-log" element={<RequireAuth><AuditLog /></RequireAuth>} />
-              <Route path="/admin/system/roles" element={<RequireAuth><RoleManagement /></RequireAuth>} />
-              <Route path="/admin/system/integrations" element={<RequireAuth><IntegrationManagement /></RequireAuth>} />
+                {/* System Management Routes */}
+                <Route path="/admin/system" element={<RequireAuth><SystemMonitoring /></RequireAuth>} />
+                <Route path="/admin/system/alerts" element={<RequireAuth><SystemAlerts /></RequireAuth>} />
+                <Route path="/admin/system/audit-log" element={<RequireAuth><AuditLog /></RequireAuth>} />
+                <Route path="/admin/system/roles" element={<RequireAuth><RoleManagement /></RequireAuth>} />
+                <Route path="/admin/system/integrations" element={<RequireAuth><IntegrationManagement /></RequireAuth>} />
 
-              {/* Backup & Export Routes */}
-              <Route path="/admin/backup" element={<RequireAuth><DataBackup /></RequireAuth>} />
-              <Route path="/admin/backup/export" element={<RequireAuth><DataExport /></RequireAuth>} />
+                {/* Backup & Export Routes */}
+                <Route path="/admin/backup" element={<RequireAuth><DataBackup /></RequireAuth>} />
+                <Route path="/admin/backup/export" element={<RequireAuth><DataExport /></RequireAuth>} />
 
-              {/* Support Routes */}
-              <Route path="/admin/support" element={<RequireAuth><Support /></RequireAuth>} />
-              <Route path="/admin/support/tickets" element={<RequireAuth><TicketManagement /></RequireAuth>} />
-              <Route path="/admin/support/complaints" element={<RequireAuth><ComplaintResolution /></RequireAuth>} />
+                {/* Support Routes */}
+                <Route path="/admin/support" element={<RequireAuth><Support /></RequireAuth>} />
+                <Route path="/admin/support/tickets" element={<RequireAuth><TicketManagement /></RequireAuth>} />
+                <Route path="/admin/support/complaints" element={<RequireAuth><ComplaintResolution /></RequireAuth>} />
 
-              {/* Settings Routes */}
-              <Route path="/admin/profile" element={<RequireAuth><AdminProfile /></RequireAuth>} />
-              <Route path="/admin/settings" element={<RequireAuth><AdminSettings /></RequireAuth>} />
-              <Route path="/admin/notifications/manage" element={<RequireAuth><NotificationManagement /></RequireAuth>} />
+                {/* Settings Routes */}
+                <Route path="/admin/profile" element={<RequireAuth><AdminProfile /></RequireAuth>} />
+                <Route path="/admin/settings" element={<RequireAuth><AdminSettings /></RequireAuth>} />
+                <Route path="/admin/notifications/manage" element={<RequireAuth><NotificationManagement /></RequireAuth>} />
 
-              {/* Legacy Routes */}
-              <Route path="/admin/account" element={<RequireAuth><AdminProfile /></RequireAuth>} />
-              <Route path="/admin/post-box" element={<RequireAuth><ConnectionQueue /></RequireAuth>} />
-              <Route path="/admin/history" element={<RequireAuth><AuditLog /></RequireAuth>} />
+                {/* Legacy Routes */}
+                <Route path="/admin/account" element={<RequireAuth><AdminProfile /></RequireAuth>} />
+                <Route path="/admin/post-box" element={<RequireAuth><ConnectionQueue /></RequireAuth>} />
+                <Route path="/admin/history" element={<RequireAuth><AuditLog /></RequireAuth>} />
 
-              <Route path="/admin/queue" element={<RequireAuth><QueuePage /></RequireAuth>} />
+                <Route path="/admin/queue" element={<RequireAuth><QueuePage /></RequireAuth>} />
 
-              {/* Fallback */}
-              <Route path="/admin/*" element={<NotFoundPage />} />
-            </Routes>
+                {/* Fallback */}
+                <Route path="/admin/*" element={<NotFoundPage />} />
+              </Routes>
           </div>
         </main>
       </div>
