@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, version } from "react";
+import axios from 'axios';
+import env from 'dotenv'
 import {
   Link,
   Route,
@@ -78,8 +80,12 @@ import {
   Share2,
   ThumbsUp,
   ThumbsDown,
-  MessageSquareMore
+  MessageSquareMore,
+  Factory
 } from "lucide-react";
+
+// Auth 
+import RequireAuth from "../../hook/system/RequireAuth.jsx";
 
 // Import existing pages
 import Dashboard from "../../page/admin/Dashboard.jsx";
@@ -98,6 +104,7 @@ import ServicesPage from "../../page/admin/ServicesPage.jsx";
 
 // Import new pages that need to be created
 import EventDetailPage from "../../page/admin/EventDetailPage.jsx"; // Chi tiết sự kiện
+import EventCreatePage from '../../page/admin/EventCreatePage.jsx'
 import EventApprovalQueue from "../../page/admin/EventApprovalQueue.jsx"; // Hàng đợi duyệt sự kiện
 import EventQualityControl from "../../page/admin/EventQualityControl.jsx"; // Kiểm soát chất lượng sự kiện
 import EventAnalytics from "../../page/admin/EventAnalytics.jsx"; // Phân tích sự kiện
@@ -138,6 +145,8 @@ import AdminSettings from "../../page/admin/AdminSettings.jsx"; // Cài đặt a
 import SystemConfiguration from "../../page/admin/SystemConfiguration.jsx"; // Cấu hình hệ thống
 import NotificationManagement from "../../page/admin/NotificationManagement.jsx"; // Quản lý thông báo
 
+import QueuePage from "../../page/admin/QueuePage.jsx"; // quản lý các hàng đợi thông tin
+
 import { useAuth } from "../../context/AuthContext.jsx";
 
 function AdminLayout() {
@@ -145,14 +154,9 @@ function AdminLayout() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [notificationMenuOpen, setNotificationMenuOpen] = useState(false);
   const [notification, setNotification] = useState([]);
-  const [pendingQueue, setPendingQueue] = useState({
-    events: 12,
-    connections: 8,
-    content: 15,
-    reports: 3
-  });
-  const [systemAlerts, setSystemAlerts] = useState(2);
-
+  const [pendingQueue, setPendingQueue] = useState({});
+  const [statusSystem, setStatusSystem] = useState(true);
+  const [version, setVersion] = useState('1.1.0')
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -166,7 +170,7 @@ function AdminLayout() {
         to: "/admin", 
         title: "Dashboard Tổng quan", 
         Icon: ChartColumn, 
-        badge: null,
+        badge: getNumber(pendingQueue.admin) || null,
         submenu: [
           { to: "/admin/analytics/platform", title: "Phân tích nền tảng", Icon: TrendingUp },
           { to: "/admin/alerts", title: "Cảnh báo hệ thống", Icon: AlertTriangle }
@@ -176,7 +180,7 @@ function AdminLayout() {
         to: "/admin/events", 
         title: "Quản lý sự kiện", 
         Icon: Calendar, 
-        badge: pendingQueue.events || null,
+        badge: getNumber(pendingQueue.events) || null,
         submenu: [
           { to: "/admin/events", title: "Danh sách sự kiện", Icon: Calendar },
           { to: "/admin/events/approval-queue", title: "Hàng đợi duyệt", Icon: Clock },
@@ -188,7 +192,7 @@ function AdminLayout() {
         to: "/admin/volunteers", 
         title: "Quản lý TNV", 
         Icon: Users, 
-        badge: null,
+        badge: getNumber(pendingQueue.user) || null,
         submenu: [
           { to: "/admin/volunteers", title: "Danh sách TNV", Icon: Users },
           { to: "/admin/volunteers/verification", title: "Xác minh hồ sơ", Icon: UserCheck },
@@ -200,7 +204,7 @@ function AdminLayout() {
         to: "/admin/partners", 
         title: "Quản lý đối tác", 
         Icon: Building, 
-        badge: null,
+        badge: getNumber(pendingQueue.partners) || null,
         submenu: [
           { to: "/admin/partners", title: "Danh sách đối tác", Icon: Building },
           { to: "/admin/partners/verification", title: "Xác minh đối tác", Icon: Shield },
@@ -212,7 +216,7 @@ function AdminLayout() {
         to: "/admin/connections", 
         title: "Kết nối & Tin nhắn", 
         Icon: MessageSquare, 
-        badge: pendingQueue.connections || null,
+        badge: getNumber(pendingQueue.connections) || null,
         submenu: [
           { to: "/admin/connections", title: "Hàng đợi kết nối", Icon: MessageSquare },
           { to: "/admin/connections/approval-queue", title: "Duyệt kết nối", Icon: CheckCircle },
@@ -224,7 +228,7 @@ function AdminLayout() {
         to: "/admin/content", 
         title: "Kiểm duyệt nội dung", 
         Icon: BookText, 
-        badge: pendingQueue.content || null,
+        badge: getNumber(pendingQueue.content) || null,
         submenu: [
           { to: "/admin/content", title: "Hàng đợi kiểm duyệt", Icon: BookText },
           { to: "/admin/content/queue", title: "Nội dung chờ duyệt", Icon: Clock },
@@ -236,7 +240,7 @@ function AdminLayout() {
         to: "/admin/services", 
         title: "Quản lý dịch vụ", 
         Icon: Chromium, 
-        badge: null,
+        badge: getNumber(pendingQueue.services),
         submenu: [
           { to: "/admin/services", title: "Danh sách dịch vụ", Icon: Chromium },
           { to: "/admin/services/pricing", title: "Quản lý giá", Icon: CreditCard },
@@ -247,7 +251,7 @@ function AdminLayout() {
         to: "/admin/report", 
         title: "Báo cáo & Phân tích", 
         Icon: ChartLine, 
-        badge: null,
+        badge: getNumber(pendingQueue.reports) || null,
         submenu: [
           { to: "/admin/report", title: "Báo cáo tổng quan", Icon: ChartLine },
           { to: "/admin/report/comparison", title: "So sánh kỳ", Icon: TrendingUp },
@@ -259,7 +263,7 @@ function AdminLayout() {
         to: "/admin/system", 
         title: "Hệ thống & Giám sát", 
         Icon: Monitor, 
-        badge: systemAlerts || null,
+        badge: getNumber(pendingQueue.systemAlerts) || null,
         submenu: [
           { to: "/admin/system", title: "Giám sát hệ thống", Icon: Monitor },
           { to: "/admin/system/alerts", title: "Cảnh báo", Icon: AlertTriangle },
@@ -272,7 +276,7 @@ function AdminLayout() {
         to: "/admin/backup", 
         title: "Backup & Export", 
         Icon: Database, 
-        badge: null,
+        badge: getNumber(pendingQueue.backup) || null,
         submenu: [
           { to: "/admin/backup", title: "Quản lý Backup", Icon: Database },
           { to: "/admin/backup/export", title: "Xuất dữ liệu", Icon: Download },
@@ -283,7 +287,7 @@ function AdminLayout() {
         to: "/admin/support", 
         title: "Hỗ trợ & Khiếu nại", 
         Icon: CircleQuestionMark, 
-        badge: pendingQueue.reports || null,
+        badge: getNumber(pendingQueue.support) || null,
         submenu: [
           { to: "/admin/support", title: "Trung tâm hỗ trợ", Icon: CircleQuestionMark },
           { to: "/admin/support/tickets", title: "Quản lý Ticket", Icon: Tag },
@@ -294,7 +298,7 @@ function AdminLayout() {
         to: "/admin/settings", 
         title: "Cài đặt & Hồ sơ", 
         Icon: Settings, 
-        badge: null,
+        badge: getNumber(pendingQueue.setting) || null,
         submenu: [
           { to: "/admin/profile", title: "Hồ sơ Admin", Icon: User2 },
           { to: "/admin/settings", title: "Cài đặt hệ thống", Icon: Settings },
@@ -302,26 +306,29 @@ function AdminLayout() {
         ]
       },
     ]);
+  }, [pendingQueue]);
 
-    // Simulate loading notifications
-    setNotification([
-      {
-        title: "Sự kiện mới chờ duyệt",
-        body: "3 sự kiện mới cần được xét duyệt",
-        time: "5 phút trước",
-        read: false,
-        link: "/admin/events/approval-queue"
-      },
-      {
-        title: "Báo cáo lạm dụng",
-        body: "Có báo cáo mới về vi phạm nội dung",
-        time: "10 phút trước",
-        read: false,
-        link: "/admin/connections/abuse-reports"
+  useEffect (() => {
+    const loaded  =  async () => {
+      try {
+        const data = await axios.get(`http://localhost:8080/admin/layout`);
+        if(data.data.success) {
+          setPendingQueue(data.data.pendingQueue);
+          setNotification(data.data.notification);
+          setVersion(data.data.version);
+          setStatusSystem(data.data.systemStatus);
+        }
+      } catch (error) { 
+        alert("Có lỗi xảy ra trong quá trình lấy dữ liệu!");
       }
-    ]);
-  }, [pendingQueue, systemAlerts]);
+    }
+    loaded ();
+  }, []);
 
+  const getNumber = (number) => {
+    if(number > 100) return 99;
+    return number;
+  }
   const getCurrentPageTitle = () => {
     // Check for exact matches first
     const exactMatch = navData.find(nav => nav.to === location.pathname);
@@ -383,14 +390,6 @@ function AdminLayout() {
     return actions;
   };
 
-  // Simple auth guard
-  const RequireAuth = ({ children }) => {
-    if (!isAuthenticated) {
-      return <Navigate to="/login" replace />;
-    }
-    return children;
-  };
-
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       {/* Header */}
@@ -414,20 +413,10 @@ function AdminLayout() {
             </Link>
           </div>
 
-          {/* Center - Search */}
-          <div className="hidden md:flex items-center bg-slate-700 rounded-lg px-3 py-2 min-w-[300px]">
-            <Search size={16} className="text-slate-400 mr-2" />
-            <input 
-              type="text" 
-              placeholder="Tìm kiếm sự kiện, TNV, đối tác..."
-              className="bg-transparent text-white placeholder-slate-400 text-sm outline-none flex-1"
-            />
-          </div>
-
           {/* Right section */}
           <div className="flex items-center gap-3">
             {/* System Status */}
-            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-green-600 rounded-lg">
+            <div className={`hidden lg:flex items-center gap-2 px-3 py-1.5 ${statusSystem ? "bg-green-600" : "bg-red-600"}  rounded-lg`}>
               <div className="w-2 h-2 bg-green-300 rounded-full animate-pulse"></div>
               <span className="text-xs font-medium">Hệ thống ổn định</span>
             </div>
@@ -507,9 +496,9 @@ function AdminLayout() {
               title="Cảnh báo hệ thống"
             >
               <TriangleAlert size={18} />
-              {systemAlerts > 0 && (
+              {pendingQueue?.systemAlerts > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {systemAlerts}
+                  {pendingQueue?.systemAlerts}
                 </span>
               )}
             </button>
@@ -667,16 +656,12 @@ function AdminLayout() {
                 <div className="text-center space-y-2">
                   <div className="text-xs text-gray-500">
                     <div className="flex justify-between">
-                      <span>Uptime:</span>
-                      <span className="text-green-600 font-mono">99.9%</span>
-                    </div>
-                    <div className="flex justify-between">
                       <span>Version:</span>
-                      <span className="font-mono">v2.1.0</span>
+                      <span className="font-mono">{version}</span>
                     </div>
                   </div>
                   <div className="text-xs text-gray-400">
-                    <p>© 2024 VolunteerHub Admin</p>
+                    <p>© {new Date().getFullYear()} VolunteerHub Admin</p>
                     <p>All rights reserved</p>
                   </div>
                 </div>
@@ -730,6 +715,7 @@ function AdminLayout() {
 
               {/* Event Management Routes */}
               <Route path="/admin/events" element={<RequireAuth><EventManagement /></RequireAuth>} />
+              <Route path="/admin/events/create" element={<RequireAuth><EventCreatePage /></RequireAuth>} />
               <Route path="/admin/events/detail/:id" element={<RequireAuth><EventDetailPage /></RequireAuth>} />
               <Route path="/admin/events/approval-queue" element={<RequireAuth><EventApprovalQueue /></RequireAuth>} />
               <Route path="/admin/events/quality-control" element={<RequireAuth><EventQualityControl /></RequireAuth>} />
@@ -793,6 +779,8 @@ function AdminLayout() {
               <Route path="/admin/account" element={<RequireAuth><AdminProfile /></RequireAuth>} />
               <Route path="/admin/post-box" element={<RequireAuth><ConnectionQueue /></RequireAuth>} />
               <Route path="/admin/history" element={<RequireAuth><AuditLog /></RequireAuth>} />
+
+              <Route path="/admin/queue" element={<RequireAuth><QueuePage /></RequireAuth>} />
 
               {/* Fallback */}
               <Route path="/admin/*" element={<NotFoundPage />} />
