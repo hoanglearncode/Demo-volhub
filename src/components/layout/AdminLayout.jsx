@@ -712,6 +712,7 @@ function AdminLayout() {
                 <Route path="/admin/alerts" element={<RequireAuth><SystemAlerts /></RequireAuth>} />
 
                 {/* Event Management Routes */}
+                {/** 2 */}
                 <Route path="/admin/events" element={<RequireAuth><EventManagement /></RequireAuth>} />
                 <Route path="/admin/events/create" element={<RequireAuth><EventCreatePage /></RequireAuth>} />
                 <Route path="/admin/events/detail/:id" element={<RequireAuth><EventDetailPage /></RequireAuth>} />
@@ -720,6 +721,7 @@ function AdminLayout() {
                 <Route path="/admin/events/analytics" element={<RequireAuth><EventAnalytics /></RequireAuth>} />
 
                 {/* Volunteer Management Routes */}
+                {/** 3 */}
                 <Route path="/admin/volunteers" element={<RequireAuth><VolunteerManagement /></RequireAuth>} />
                 <Route path="/admin/volunteers/detail/:id" element={<RequireAuth><VolunteerDetailPage /></RequireAuth>} />
                 <Route path="/admin/volunteers/verification" element={<RequireAuth><VolunteerVerification /></RequireAuth>} />
@@ -727,24 +729,28 @@ function AdminLayout() {
                 <Route path="/admin/volunteers/certifications" element={<RequireAuth><VolunteerCertificationSystem /></RequireAuth>} />
 
                 {/* Partner Management Routes */}
+                {/** 1 */}
                 <Route path="/admin/partners" element={<RequireAuth><PartnerManagement /></RequireAuth>} />
                 <Route path="/admin/partners/verification" element={<RequireAuth><PartnerVerification /></RequireAuth>} />
                 <Route path="/admin/partners/tiers" element={<RequireAuth><PartnerTierManagement /></RequireAuth>} />
                 <Route path="/admin/partners/analytics" element={<RequireAuth><PartnerAnalytics /></RequireAuth>} />
 
                 {/* Connection Management Routes */}
+                {/** 4 */}
                 <Route path="/admin/connections" element={<RequireAuth><ConnectionQueue /></RequireAuth>} />
                 <Route path="/admin/connections/approval-queue" element={<RequireAuth><ConnectionApprovalQueue /></RequireAuth>} />
                 <Route path="/admin/connections/proxy-chat" element={<RequireAuth><ProxyChatSystem /></RequireAuth>} />
                 <Route path="/admin/connections/abuse-reports" element={<RequireAuth><AbuseReportManagement /></RequireAuth>} />
 
                 {/* Content Management Routes */}
+                {/** 5 */}
                 <Route path="/admin/content" element={<RequireAuth><ContentModeration /></RequireAuth>} />
                 <Route path="/admin/content/queue" element={<RequireAuth><ContentQueue /></RequireAuth>} />
                 <Route path="/admin/content/spotlight" element={<RequireAuth><ContentSpotlight /></RequireAuth>} />
                 <Route path="/admin/content/community-feed" element={<RequireAuth><CommunityFeedManagement /></RequireAuth>} />
 
-                {/* Services Management Routes */}
+                {/* Services Management Routes  - 1*/}
+                {/* 1 */}
                 <Route path="/admin/services" element={<RequireAuth><ServicesPage /></RequireAuth>} />
 
                 {/* Reports & Analytics Routes */}
