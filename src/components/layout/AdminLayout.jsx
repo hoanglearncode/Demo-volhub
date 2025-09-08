@@ -135,14 +135,12 @@ import AuditLog from "../../page/admin/AuditLog.jsx"; // Nhật ký hoạt độ
 import RoleManagement from "../../page/admin/RoleManagement.jsx"; // Phân quyền
 import IntegrationManagement from "../../page/admin/IntegrationManagement.jsx"; // Tích hợp hệ thống
 
-import BackupManagement from "../../page/admin/BackupManagement.jsx"; // Quản lý backup
 import DataExport from "../../page/admin/DataExport.jsx"; // Xuất dữ liệu
 
 import TicketManagement from "../../page/admin/TicketManagement.jsx"; // Quản lý ticket
 import ComplaintResolution from "../../page/admin/ComplaintResolution.jsx"; // Xử lý khiếu nại
 
 import AdminSettings from "../../page/admin/AdminSettings.jsx"; // Cài đặt admin
-import SystemConfiguration from "../../page/admin/SystemConfiguration.jsx"; // Cấu hình hệ thống
 import NotificationManagement from "../../page/admin/NotificationManagement.jsx"; // Quản lý thông báo
 
 import QueuePage from "../../page/admin/QueuePage.jsx"; // quản lý các hàng đợi thông tin
