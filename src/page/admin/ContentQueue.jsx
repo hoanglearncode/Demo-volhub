@@ -756,7 +756,7 @@ function ContentDetailModal({ item, onClose, onApprove, onReject, onToggleSpotli
         <div className="flex items-center justify-between p-4 border-b">
           <div>
             <h3 className="text-lg font-semibold">{item.title}</h3>
-            <div className="text-sm text-gray-500">{item.authorName} • {formatDate(item.createdAt)}</div>
+            <div className="text-sm text-gray-500">{item.authorName} • {item.createdAt}</div>
           </div>
           <div className="flex items-center space-x-2">
             <button onClick={() => { onToggleSpotlight(); }} className={`px-3 py-2 rounded-md ${item.isSpotlight ? 'bg-purple-50 text-purple-700' : 'border'}`} title="Toggle spotlight">

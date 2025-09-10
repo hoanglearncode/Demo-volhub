@@ -523,9 +523,9 @@ function BtcLayout() {
               <Route path="/btc/events" element={<RecruitmentPage />} />
               <Route path="/btc/events/calendar" element={<EventCalendarPage />} />
               <Route path="/btc/events/detail/:id" element={<EventDetailPage />} />
-              <Route path="/btc/events/edit/:id" element={<EventEditPage />} />
-              <Route path="/btc/events/clone/:id" element={<EventClonePage />} />
-              <Route path="/btc/recruitment-post" element={<RecruitmentPostPage />} />
+              <Route path="/btc/events/edit/:id" element={<RecruitmentPostPage />} />
+              <Route path="/btc/events/clone/:id" element={<RecruitmentPostPage />} />
+              <Route path="/btc/events/recruitment-post" element={<RecruitmentPostPage />} />
 
               {/* Volunteer Management Routes */}
               <Route path="/btc/volunteers" element={<VolunteerManagementPage />} />

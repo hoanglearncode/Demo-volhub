@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 
 export default function EventCreatePage() {
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(4);
   const [formData, setFormData] = useState({
     // Basic Info
     title: '',
@@ -46,8 +46,10 @@ export default function EventCreatePage() {
       certificate: true,
       allowance: false,
       allowanceAmount: 0,
+      descriptionBenfits : "",
       uniform: false,
-      training: false
+      training: false,
+      another: false,
     },
     
     // Media & Documents
@@ -98,6 +100,17 @@ export default function EventCreatePage() {
     { id: 6, title: 'Cài đặt nâng cao', icon: Settings }
   ];
 
+  const interest = [
+                  { key: 'meals', label: 'Bữa ăn', icon: '🍽️' },
+                  { key: 'transportation', label: 'Hỗ trợ đi lại', icon: '🚌' },
+                  { key: 'accommodation', label: 'Chỗ ở', icon: '🏠' },
+                  { key: 'insurance', label: 'Bảo hiểm', icon: '🛡️' },
+                  { key: 'certificate', label: 'Chứng nhận', icon: '🏆' },
+                  { key: 'uniform', label: 'Trang phục', icon: '👕' },
+                  { key: 'training', label: 'Đào tạo', icon: '📚' },
+                  { key: 'allowance', label: 'Phụ cấp', icon: '💰' },
+                  { key: 'another', label: 'Khác', icon: '💰' }
+                ]
   const handleInputChange = useCallback((field, value) => {
     setFormData(prev => ({
       ...prev,
@@ -553,16 +566,7 @@ export default function EventCreatePage() {
             <div>
               <h3 className="text-lg font-medium text-gray-900 mb-4">Quyền lợi cho tình nguyện viên</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                  { key: 'meals', label: 'Bữa ăn', icon: '🍽️' },
-                  { key: 'transportation', label: 'Hỗ trợ đi lại', icon: '🚌' },
-                  { key: 'accommodation', label: 'Chỗ ở', icon: '🏠' },
-                  { key: 'insurance', label: 'Bảo hiểm', icon: '🛡️' },
-                  { key: 'certificate', label: 'Chứng nhận', icon: '🏆' },
-                  { key: 'uniform', label: 'Trang phục', icon: '👕' },
-                  { key: 'training', label: 'Đào tạo', icon: '📚' },
-                  { key: 'allowance', label: 'Phụ cấp', icon: '💰' }
-                ].map((benefit) => (
+                {interest?.map((benefit) => (
                   <label key={benefit.key} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50">
                     <input
                       type="checkbox"
@@ -570,7 +574,6 @@ export default function EventCreatePage() {
                       onChange={(e) => handleNestedInputChange('benefits', benefit.key, e.target.checked)}
                       className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                     />
-                    <span className="text-lg">{benefit.icon}</span>
                     <span className="text-sm font-medium text-gray-700">{benefit.label}</span>
                   </label>
                 ))}
@@ -593,6 +596,20 @@ export default function EventCreatePage() {
               </div>
             )}
 
+            {formData.benefits.another && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Mô tả về quyền lợi:
+                </label>
+                <input
+                  type="text"
+                  value={formData.benefits.descriptionBenfits}
+                  onChange={(e) => handleNestedInputChange('benefits', 'descriptionBenfits', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Mô tả quyền lợi"
+                />
+              </div>
+            )}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <div className="flex">
                 <Info className="w-5 h-5 text-blue-600 mr-3 mt-0.5" />
@@ -896,106 +913,10 @@ export default function EventCreatePage() {
     }
   };
 
-  if (previewMode) {
-    return (
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-xl shadow-sm p-8">
-            <div className="flex items-center justify-between mb-6">
-              <h1 className="text-2xl font-bold text-gray-900">Preview Sự kiện</h1>
-              <button
-                onClick={() => setPreviewMode(false)}
-                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
-              >
-                Quay lại chỉnh sửa
-              </button>
-            </div>
-
-            {/* Event Preview */}
-            <div className="space-y-6">
-              {formData.coverImage && (
-                <img
-                  src={URL.createObjectURL(formData.coverImage)}
-                  alt="Event cover"
-                  className="w-full h-64 object-cover rounded-lg"
-                />
-              )}
-
-              <div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">{formData.title}</h2>
-                <span className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
-                  {formData.category}
-                </span>
-              </div>
-
-              <div className="prose max-w-none">
-                <p className="text-gray-700">{formData.description}</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Calendar className="w-5 h-5 text-gray-500" />
-                    <span>{formData.startDate} {formData.startTime}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <MapPin className="w-5 h-5 text-gray-500" />
-                    <span>{formData.isOnline ? 'Online' : formData.location}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Users className="w-5 h-5 text-gray-500" />
-                    <span>Cần {formData.volunteersNeeded} tình nguyện viên</span>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Phone className="w-5 h-5 text-gray-500" />
-                    <span>{formData.contactInfo.phone}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Mail className="w-5 h-5 text-gray-500" />
-                    <span>{formData.contactInfo.email}</span>
-                  </div>
-                </div>
-              </div>
-
-              {formData.skillsRequired.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold mb-3">Kỹ năng yêu cầu</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {formData.skillsRequired.map((skill) => (
-                      <span key={skill} className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div>
-                <h3 className="text-lg font-semibold mb-3">Quyền lợi</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  {Object.entries(formData.benefits)
-                    .filter(([key, value]) => value === true)
-                    .map(([key]) => (
-                      <div key={key} className="flex items-center space-x-2 p-2 bg-green-50 rounded-lg">
-                        <CheckCircle className="w-4 h-4 text-green-600" />
-                        <span className="text-sm capitalize">{key.replace(/([A-Z])/g, ' $1')}</span>
-                      </div>
-                    ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-4xl mx-auto">
+      <div className="mx-auto">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Tạo sự kiện tình nguyện</h1>

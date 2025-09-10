@@ -1,1013 +1,1037 @@
-import React, { useState, useRef, useEffect } from 'react';
-import recruitmentService from '../../services/oganations/recruitmentService.js';
+import React, { useState, useCallback, useEffect } from 'react';
 import { 
-  Calendar, Users, MapPin, Clock, DollarSign, Briefcase, Star, Copy, Download, Edit,
-  Heart, Globe, Award, Coffee, Zap, Target, BookOpen, Camera, Music, Utensils,
-  Save, X, CheckCircle, Loader2, Filter, Search, Eye, AlertCircle, Check
+  Calendar, Clock, MapPin, Users, Award, DollarSign, 
+  Camera, FileText, Settings, Eye, Save, Send, X, Plus,
+  AlertCircle, Info, CheckCircle, Upload, Tag, Shield,
+  Heart, Star, Building, Phone, Mail, Globe, Image
 } from 'lucide-react';
 
-import { useSearchParams } from "react-router-dom";
+import axios from 'axios';
+import {toast, ToastContainer} from 'react-toastify';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
-export default function VolunteerRecruitmentPlatform() {
-    const [searchParams] = useSearchParams();
-    const eventId = searchParams.get('eventId');
-    const type = searchParams.get('type');
+export default function RecruitmentPostPage() {
+  const navigate = useNavigate();
+  const [currentStep, setCurrentStep] = useState(1);
+  const [formData, setFormData] = useState({
+    // Basic Info
+    title: '',
+    description: '',
+    category: '',
+    eventType: 'volunteer', // volunteer, charity, community
+    organizerType: 'partner', // partner, individual, organization
     
-    // Loading states
-    const [isLoading, setIsLoading] = useState(false);
-    const [isSaving, setIsSaving] = useState(false);
-    const [isPublishing, setIsPublishing] = useState(false);
-
-    // Form data and validation
-    const [formData, setFormData] = useState({
-        // Thông tin cơ bản
-        organizationName: '',
-        activityTitle: '',
-        activityType: 'volunteer',
-        profitType: 'nonprofit',
-        category: 'community',
-        
-        // Thông tin chi tiết
-        skillRequired: [],
-        description: '',
-        volunteerRequired: '',
-        interest: '',
-        local: '',
-        timeStart: '',
-        timeEnd: '',
-        deadline: '',
-        
-        // Thông tin bổ sung
-        benefits: [],
-        benefitsDescription: '',
-        requirements: [],
-        requirements_description: '',
-        contactInfo: '',
-        isRemote: false,
-        compensation: '',
-        commitment: 'flexible'
-    });
-
-    const [errors, setErrors] = useState({});
-    const [touched, setTouched] = useState({});
-    const [showErrors, setShowErrors] = useState(false);
-
-    // Other states
-    const [quillLoaded, setQuillLoaded] = useState(false);
-    const [newRequirement, setNewRequirement] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
+    // Schedule & Location
+    startDate: '',
+    endDate: '',
+    startTime: '',
+    endTime: '',
+    timezone: 'Asia/Ho_Chi_Minh',
+    location: '',
+    address: '',
+    coordinates: null,
+    isOnline: false,
+    onlineLink: '',
     
-    const quillRef = useRef(null);
-    const editorRef = useRef(null);
+    // Volunteer Requirements
+    minAge: 16,
+    maxAge: 65,
+    genderRequirement: 'any', // any, male, female
+    skillsRequired: [],
+    experienceLevel: 'beginner', // beginner, intermediate, advanced
+    volunteersNeeded: 10,
+    registrationDeadline: '',
+    
+    // Benefits & Support
+    benefits: {
+      meals: false,
+      transportation: false,
+      accommodation: false,
+      insurance: false,
+      certificate: true,
+      allowance: false,
+      allowanceAmount: 0,
+      descriptionBenfits : "",
+      uniform: false,
+      training: false,
+      another: false,
+    },
+    
+    // Media & Documents
+    coverImage: null,
+    additionalImages: [],
+    documents: [],
+    contactInfo: {
+      coordinatorName: '',
+      phone: '',
+      email: '',
+      alternateContact: ''
+    },
+    
+    // Advanced Settings
+    autoApprove: false,
+    requireBackground: false,
+    isPublic: true,
+    tags: [],
+    customFields: [],
+    
+    // Approval Settings
+    needsApproval: true,
+    priority: 'normal', // low, normal, high, urgent
+    targetAudience: 'general' // general, students, professionals, seniors
+  });
+  const {token} = useAuth();
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [skillOptions, setSkillOptions] = useState([]);
+  const [interest, setInterest] = useState([]);
 
-    // Required fields based on activity type
-    const getRequiredFields = () => {
-        const baseRequired = [
-            'organizationName',
-            'activityTitle',
-            'category',
-            'local',
-            'timeStart',
-            'timeEnd',
-            'deadline',
-            'volunteerRequired',
-            'description',
-            'contactInfo'
-        ];
+  const steps = [
+    { id: 1, title: 'Thông tin cơ bản', icon: FileText },
+    { id: 2, title: 'Thời gian & Địa điểm', icon: Calendar },
+    { id: 3, title: 'Yêu cầu TNV', icon: Users },
+    { id: 4, title: 'Quyền lợi & Hỗ trợ', icon: Award },
+    { id: 5, title: 'Media & Liên hệ', icon: Camera },
+    { id: 6, title: 'Cài đặt nâng cao', icon: Settings }
+  ];
 
-        if (formData.profitType === 'profit' || formData.activityType === 'collaborator') {
-            baseRequired.push('compensation');
+  useEffect(()=> {
+    const loaded = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_URL}/btc/events/post-events`);
+        console.log(res);
+        if(res.data.success) {
+          setCategories(res.data.data.categories);
+          setSkillOptions(res.data.data.skillOptions);
+          setInterest(res.data.data.interest);
         }
-
-        return baseRequired;
-    };
-
-    // Validation rules
-    const validateField = (name, value) => {
-        const requiredFields = getRequiredFields();
-        let error = '';
-
-        if (requiredFields.includes(name) && (!value || value.toString().trim() === '')) {
-            error = 'Trường này là bắt buộc';
-        }
-
-        // Specific validations
-        switch (name) {
-            case 'organizationName':
-                if (value && value.length < 2) {
-                    error = 'Tên tổ chức phải có ít nhất 2 ký tự';
-                }
-                break;
-            case 'activityTitle':
-                if (value && value.length < 5) {
-                    error = 'Tên hoạt động phải có ít nhất 5 ký tự';
-                }
-                break;
-            case 'timeStart':
-            case 'timeEnd':
-            case 'deadline':
-                if (value) {
-                    const selectedDate = new Date(value);
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-                    
-                    if (name === 'deadline' && selectedDate < today) {
-                        error = 'Hạn đăng ký không thể là ngày trong quá khứ';
-                    }
-                    if (name === 'timeStart' && selectedDate < today) {
-                        error = 'Ngày bắt đầu không thể là ngày trong quá khứ';
-                    }
-                    if (name === 'timeEnd' && formData.timeStart && selectedDate < new Date(formData.timeStart)) {
-                        error = 'Ngày kết thúc phải sau ngày bắt đầu';
-                    }
-                }
-                break;
-            case 'volunteerRequired':
-                if (value && !/^\d+(-\d+)?( người)?$/.test(value.trim())) {
-                    error = 'Định dạng: "10" hoặc "10-15" hoặc "10 người"';
-                }
-                break;
-            case 'contactInfo':
-                if (value) {
-                    const hasEmail = /\S+@\S+\.\S+/.test(value);
-                    const hasPhone = /[\d\-\+\(\)]{8,}/.test(value);
-                    if (!hasEmail && !hasPhone) {
-                        error = 'Phải có ít nhất email hoặc số điện thoại';
-                    }
-                }
-                break;
-            case 'description':
-                if (value && value.replace(/<[^>]*>/g, '').trim().length < 20) {
-                    error = 'Mô tả phải có ít nhất 20 ký tự';
-                }
-                break;
-        }
-
-        return error;
-    };
-
-    // Validate all fields
-    const validateForm = () => {
-        const newErrors = {};
-        const requiredFields = getRequiredFields();
-
-        requiredFields.forEach(field => {
-            const error = validateField(field, formData[field]);
-            if (error) {
-                newErrors[field] = error;
-            }
-        });
-
-        // Cross-field validations
-        if (formData.timeStart && formData.deadline) {
-            const startDate = new Date(formData.timeStart);
-            const deadlineDate = new Date(formData.deadline);
-            if (deadlineDate >= startDate) {
-                newErrors.deadline = 'Hạn đăng ký phải trước ngày bắt đầu';
-            }
-        }
-
-        if (formData.requirements.length === 0 && formData.activityType === 'collaborator') {
-            newErrors.requirements = 'Cộng tác viên cần có ít nhất một kỹ năng yêu cầu';
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    // Categories for activities
-    const categories = [
-        { value: 'community', label: '🏘️ Cộng đồng', icon: Users },
-        { value: 'environment', label: '🌱 Môi trường', icon: Globe },
-        { value: 'education', label: '📚 Giáo dục', icon: BookOpen },
-        { value: 'healthcare', label: '🏥 Y tế', icon: Heart },
-        { value: 'culture', label: '🎭 Văn hóa', icon: Music },
-        { value: 'sports', label: '⚽ Thể thao', icon: Award },
-        { value: 'technology', label: '💻 Công nghệ', icon: Zap },
-        { value: 'media', label: '📸 Truyền thông', icon: Camera },
-        { value: 'food', label: '🍽️ Ẩm thực', icon: Utensils },
-        { value: 'other', label: '📋 Khác', icon: Target }
-    ];
-
-    // Load existing data for edit mode
-    useEffect(() => {
-        const loadData = async () => {
-            if (type === 'edit' && eventId) {
-                setIsLoading(true);
-                try {
-                    const res = await recruitmentService.getRecruitmentsById(eventId);
-                    if (res.success) {
-                        setFormData(res.data);
-                        // Set description in editor after it's loaded
-                        if (quillRef.current && res.data.description) {
-                            quillRef.current.clipboard.dangerouslyPasteHTML(`<div>${res.data.description}</div>`);
-                        }
-                    } else {
-                        setErrorMessage('Không thể tải dữ liệu. Vui lòng thử lại.');
-                    }
-                } catch (err) {
-                    setErrorMessage('Lỗi kết nối. Vui lòng kiểm tra mạng và thử lại.');
-                    console.error(err);
-                } finally {
-                    setIsLoading(false);
-                }
-            }
-        };
-        loadData();
-    }, [eventId, type, quillLoaded]);
-
-    // Load Quill.js
-    useEffect(() => {
-        const loadQuill = async () => {
-            if (window.Quill) {
-                initializeEditor();
-                return;
-            }
-
-            const quillCss = document.createElement('link');
-            quillCss.rel = 'stylesheet';
-            quillCss.href = 'https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.min.css';
-            document.head.appendChild(quillCss);
-
-            const quillScript = document.createElement('script');
-            quillScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js';
-            quillScript.onload = () => {
-                setQuillLoaded(true);
-                initializeEditor();
-            };
-            document.body.appendChild(quillScript);
-        };
-
-        loadQuill();
-    }, []);
-
-    const initializeEditor = () => {
-        if (editorRef.current && window.Quill && !quillRef.current) {
-            const toolbarOptions = [
-                ['bold', 'italic', 'underline'],
-                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                [{ 'header': [1, 2, 3, false] }],
-                ['link'],
-                ['clean']
-            ];
-
-            quillRef.current = new window.Quill(editorRef.current, {
-                theme: 'snow',
-                modules: {
-                    toolbar: toolbarOptions
-                },
-                placeholder: 'Mô tả chi tiết về hoạt động, nhiệm vụ và mục tiêu...'
-            });
-
-            quillRef.current.on('text-change', () => {
-                const html = quillRef.current.root.innerHTML;
-                const text = quillRef.current.getText();
-                const value = text.trim() === '' ? '' : html;
-                
-                setFormData(prev => ({
-                    ...prev,
-                    description: value
-                }));
-                
-                // Validate description field
-                if (touched.description) {
-                    const error = validateField('description', value);
-                    setErrors(prev => ({ ...prev, description: error }));
-                }
-            });
-        }
-    };
-
-    // Handle input changes with validation
-    const handleInputChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        const newValue = type === 'checkbox' ? checked : value;
-        
-        setFormData(prev => ({
-            ...prev,
-            [name]: newValue
-        }));
-
-        // Mark field as touched
-        setTouched(prev => ({ ...prev, [name]: true }));
-
-        // Validate field
-        const error = validateField(name, newValue);
-        setErrors(prev => ({ ...prev, [name]: error }));
-
-        // Clear success/error messages
-        if (successMessage) setSuccessMessage('');
-        if (errorMessage) setErrorMessage('');
-    };
-
-    // Handle field blur
-    const handleBlur = (fieldName) => {
-        setTouched(prev => ({ ...prev, [fieldName]: true }));
-        const error = validateField(fieldName, formData[fieldName]);
-        setErrors(prev => ({ ...prev, [fieldName]: error }));
-    };
-
-    // Add requirement with validation
-    const addRequirement = () => {
-        if (!newRequirement.trim()) {
-            setErrors(prev => ({ ...prev, newRequirement: 'Vui lòng nhập kỹ năng' }));
-            return;
-        }
-
-        const requirements = newRequirement.split(',')
-            .map(req => req.trim())
-            .filter(req => req.length > 0);
-
-        if (requirements.length === 0) {
-            setErrors(prev => ({ ...prev, newRequirement: 'Kỹ năng không hợp lệ' }));
-            return;
-        }
-
-        setFormData(prev => ({
-            ...prev, 
-            requirements: [...new Set([...prev.requirements, ...requirements])]
-        }));
-        setNewRequirement('');
-        setErrors(prev => ({ ...prev, newRequirement: '', requirements: '' }));
-    };
-
-    const removeRequirement = (index) => {
-        setFormData(prev => ({
-            ...prev,
-            requirements: prev.requirements.filter((_, i) => i !== index)
-        }));
-    };
-
-    // Save draft
-    const saveDraft = async () => {
-        setIsSaving(true);
-        setErrorMessage('');
-        setSuccessMessage('');
-
-        try {
-            const draftData = { ...formData, isDraft: true };
-            const res = type === 'edit' 
-                ? await recruitmentService.updateRecruitment(eventId, draftData)
-                : await recruitmentService.createRecruitment(draftData);
-
-            if (res.success) {
-                setSuccessMessage('✅ Đã lưu bản nháp thành công!');
-                setTimeout(() => setSuccessMessage(''), 3000);
-            } else {
-                setErrorMessage(res.message || 'Có lỗi xảy ra khi lưu bản nháp');
-            }
-        } catch (err) {
-            setErrorMessage('Lỗi kết nối. Vui lòng thử lại.');
-            console.error('Save draft error:', err);
-        } finally {
-            setIsSaving(false);
-        }
-    };
-
-    // Publish
-    const publish = async () => {
-        setShowErrors(true);
-        
-        if (!validateForm()) {
-            setErrorMessage('❌ Vui lòng điền đầy đủ thông tin bắt buộc và sửa các lỗi.');
-            return;
-        }
-
-        setIsPublishing(true);
-        setErrorMessage('');
-        setSuccessMessage('');
-
-        try {
-            const publishData = { ...formData, isDraft: false, isPublished: true };
-            const res = type === 'edit'
-                ? await recruitmentService.updateRecruitment(eventId, publishData)
-                : await recruitmentService.createRecruitment(publishData);
-
-            if (res.success) {
-                setSuccessMessage(`🎉 ${type === 'edit' ? 'Cập nhật' : 'Đăng tuyển'} thành công!`);
-                setTimeout(() => setSuccessMessage(''), 5000);
-            } else {
-                setErrorMessage(res.message || `Có lỗi xảy ra khi ${type === 'edit' ? 'cập nhật' : 'đăng tuyển'}`);
-            }
-        } catch (err) {
-            setErrorMessage('Lỗi kết nối. Vui lòng thử lại.');
-            console.error('Publish error:', err);
-        } finally {
-            setIsPublishing(false);
-        }
-    };
-
-    // Reset form
-    const resetForm = () => {
-        if (window.confirm('Bạn có chắc chắn muốn xóa tất cả dữ liệu đã nhập?')) {
-            setFormData({
-                organizationName: '',
-                activityTitle: '',
-                activityType: 'volunteer',
-                profitType: 'nonprofit',
-                category: 'community',
-                skillRequired: [],
-                description: '',
-                volunteerRequired: '',
-                interest: '',
-                local: '',
-                timeStart: '',
-                timeEnd: '',
-                deadline: '',
-                benefits: [],
-                benefitsDescription: '',
-                requirements: [],
-                requirements_description: '',
-                contactInfo: '',
-                isRemote: false,
-                compensation: '',
-                commitment: 'flexible'
-            });
-            
-            setErrors({});
-            setTouched({});
-            setShowErrors(false);
-            setErrorMessage('');
-            setSuccessMessage('');
-
-            if (quillRef.current) {
-                quillRef.current.setText('');
-            }
-        }
-    };
-
-    // Generate preview (placeholder)
-    const generatePreviewHtml = () => {
-        if (!validateForm()) {
-            setShowErrors(true);
-            setErrorMessage('❌ Vui lòng hoàn thành form trước khi xem trước.');
-            return;
-        }
-        // TODO: Implement preview functionality
-        alert('Chức năng xem trước sẽ được triển khai sau.');
-    };
-
-    // Helper function to render field error
-    const renderFieldError = (fieldName) => {
-        const error = errors[fieldName];
-        const isVisible = (touched[fieldName] || showErrors) && error;
-        
-        if (!isVisible) return null;
-        
-        return (
-            <div className="flex items-center gap-1 text-red-600 text-sm mt-1">
-                <AlertCircle size={14} />
-                <span>{error}</span>
-            </div>
-        );
-    };
-
-    // Helper function to get input className based on error state
-    const getInputClassName = (fieldName, baseClassName = '') => {
-        const error = errors[fieldName];
-        const isError = (touched[fieldName] || showErrors) && error;
-        const baseClasses = baseClassName || 'w-full p-3 border-2 rounded-lg focus:outline-none transition-colors';
-        
-        return `${baseClasses} ${isError 
-            ? 'border-red-300 focus:border-red-500 bg-red-50' 
-            : 'border-gray-200 focus:border-blue-500'
-        }`;
-    };
-
-    if (isLoading) {
-        return (
-            <div className="min-h-screen bg-green-50 rounded-lg p-5 flex items-center justify-center">
-                <div className="text-center">
-                    <Loader2 size={48} className="animate-spin text-blue-500 mx-auto mb-4" />
-                    <p className="text-gray-600">Đang tải dữ liệu...</p>
-                </div>
-            </div>
-        );
+      } catch (error) {
+        console.log(error.message);
+      }
     }
+    loaded();
+  }, []);
 
-    return (
-        <div className="min-h-screen bg-green-50 rounded-lg p-5 flex flex-col gap-3">
-            {/* Success/Error Messages */}
-            {successMessage && (
-                <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg flex items-center gap-2">
-                    <CheckCircle size={20} />
-                    <span>{successMessage}</span>
-                </div>
-            )}
-            
-            {errorMessage && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg flex items-center gap-2">
-                    <AlertCircle size={20} />
-                    <span>{errorMessage}</span>
-                </div>
-            )}
+  const handleInputChange = useCallback((field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({
+        ...prev,
+        [field]: null
+      }));
+    }
+  }, [errors]);
 
-            {/* Header Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 text-center hover:border border-gray-200 transition-all duration-200 delay-200">
-                    <Heart size={48} className="mx-auto text-red-500 mb-4" />
-                    <h3 className="text-xl font-bold text-gray-800 mb-2">Tình Nguyện</h3>
-                    <p className="text-gray-600">Kết nối với các hoạt động phi lợi nhuận ý nghĩa</p>
-                </div>
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 text-center hover:border border-gray-200 transition-all duration-200 delay-200">
-                    <Briefcase size={48} className="mx-auto text-blue-600 mb-4" />
-                    <h3 className="text-xl font-bold text-gray-800 mb-2">Cộng Tác</h3>
-                    <p className="text-gray-600">Tìm cơ hội cộng tác với thù lao hấp dẫn</p>
-                </div>
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 text-center hover:border border-gray-200 transition-all duration-200 delay-200">
-                    <Users size={48} className="mx-auto text-green-600 mb-4" />
-                    <h3 className="text-xl font-bold text-gray-800 mb-2">Cộng Đồng</h3>
-                    <p className="text-gray-600">Xây dựng mạng lưới và kết nối có ý nghĩa</p>
-                </div>
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 text-center hover:border border-gray-200 transition-all duration-200 delay-200">
-                    <Award size={48} className="mx-auto text-purple-600 mb-4" />
-                    <h3 className="text-xl font-bold text-gray-800 mb-2">Phát Triển</h3>
-                    <p className="text-gray-600">Nâng cao kỹ năng và tích lũy kinh nghiệm</p>
-                </div>
+  const handleNestedInputChange = useCallback((section, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [section]: {
+        ...prev[section],
+        [field]: value
+      }
+    }));
+  }, []);
+
+  const handleArrayAdd = useCallback((field, value) => {
+    if (value && !formData[field].includes(value)) {
+      setFormData(prev => ({
+        ...prev,
+        [field]: [...prev[field], value]
+      }));
+    }
+  }, [formData]);
+
+  const handleArrayRemove = useCallback((field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: prev[field].filter(item => item !== value)
+    }));
+  }, []);
+
+  const validateStep = (step) => {
+    const newErrors = {};
+    
+    switch (step) {
+      case 1:
+        if (!formData.title) newErrors.title = 'Tên sự kiện là bắt buộc';
+        if (!formData.description) newErrors.description = 'Mô tả sự kiện là bắt buộc';
+        if (!formData.category) newErrors.category = 'Danh mục là bắt buộc';
+        break;
+      case 2:
+        if (!formData.startDate) newErrors.startDate = 'Ngày bắt đầu là bắt buộc';
+        if (!formData.startTime) newErrors.startTime = 'Giờ bắt đầu là bắt buộc';
+        if (!formData.isOnline && !formData.location) newErrors.location = 'Địa điểm là bắt buộc';
+        break;
+      case 3:
+        if (formData.volunteersNeeded < 1) newErrors.volunteersNeeded = 'Cần ít nhất 1 tình nguyện viên';
+        break;
+      case 5:
+        if (!formData.contactInfo.coordinatorName) newErrors.coordinatorName = 'Tên điều phối viên là bắt buộc';
+        if (!formData.contactInfo.phone) newErrors.phone = 'Số điện thoại là bắt buộc';
+        if (!formData.contactInfo.email) newErrors.email = 'Email là bắt buộc';
+        break;
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const nextStep = () => {
+    if (validateStep(currentStep)) {
+      setCurrentStep(prev => Math.min(prev + 1, steps.length));
+    }
+  };
+
+  const prevStep = () => {
+    setCurrentStep(prev => Math.max(prev - 1, 1));
+  };
+
+  const handleSubmit = async (asDraft = false) => {
+    setIsSubmitting(true);
+    try {
+      const res = async () => {
+          const data = await axios.post(`${import.meta.env.VITE_URL}/btc/events/post-events`, formData, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              accept: 'application/json',
+            },
+            timeout: 4000
+          });
+          if(data.data.success) {
+            toast.success("Gửi dữ liệu thành công");
+            navigate('/btc/events')
+          }
+      }
+      res();
+    } catch (error) {
+      toast.error("Thất bại! Không thể gửi dữ liệu đi");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Tên sự kiện <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={formData.title}
+                onChange={(e) => handleInputChange('title', e.target.value)}
+                placeholder="VD: Làm sạch bờ biển Vũng Tàu"
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  errors.title ? 'border-red-500' : 'border-gray-300'
+                }`}
+              />
+              {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title}</p>}
             </div>
 
-            {/* Main Form */}
-            <div className='bg-white rounded-lg p-4 w-full'>
-                <h1 className='flex items-center gap-3 text-xl font-semibold mb-5'>
-                    <Edit size={30} className='text-blue-600' /> 
-                    Chi tiết thông tin
-                    <span className="text-sm font-normal text-red-600">* Trường bắt buộc</span>
-                </h1>
-                
-                <div className='w-full space-y-4 border-b-2 pb-4 border-gray-500'>
-                    {/* Activity Type & Profit Type */}
-                    <div className='flex gap-5 w-full'>
-                        <div className='w-1/2 space-y-2'>
-                            <label className="block text-sm font-semibold text-gray-700">
-                                Loại Hoạt Động <span className="text-red-500">*</span>
-                            </label>
-                            <select 
-                                name="activityType" 
-                                value={formData.activityType} 
-                                onChange={handleInputChange}
-                                onBlur={() => handleBlur('activityType')}
-                                className={getInputClassName('activityType')}
-                            >
-                                <option value="volunteer">Tình nguyện viên</option>
-                                <option value="collaborator">Cộng tác viên</option>
-                            </select>
-                            {renderFieldError('activityType')}
-                        </div>
-                        <div className='w-1/2 space-y-2'>
-                            <label className="block text-sm font-semibold text-gray-700">
-                                Tính Chất <span className="text-red-500">*</span>
-                            </label>
-                            <select
-                                name="profitType"
-                                value={formData.profitType}
-                                onChange={handleInputChange}
-                                onBlur={() => handleBlur('profitType')}
-                                className={getInputClassName('profitType')}
-                            >
-                                <option value="nonprofit">🤝 Phi lợi nhuận</option>
-                                <option value="profit">💰 Lợi nhuận</option>
-                            </select>
-                            {renderFieldError('profitType')}
-                        </div>
-                    </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Mô tả sự kiện <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                rows={6}
+                value={formData.description}
+                onChange={(e) => handleInputChange('description', e.target.value)}
+                placeholder="Mô tả chi tiết về sự kiện, mục đích, ý nghĩa..."
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  errors.description ? 'border-red-500' : 'border-gray-300'
+                }`}
+              />
+              {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
+            </div>
 
-                    {/* Organization Name */}
-                    <div className='space-y-2'>
-                        <label htmlFor="organizationName" className='block text-sm font-semibold text-gray-700'>
-                            Tên tổ chức <span className="text-red-500">*</span>
-                        </label>
-                        <input 
-                            type="text" 
-                            value={formData.organizationName} 
-                            name="organizationName" 
-                            onChange={handleInputChange}
-                            onBlur={() => handleBlur('organizationName')}
-                            id="organizationName" 
-                            placeholder='Nhập tên tổ chức' 
-                            className={getInputClassName('organizationName', 'w-full border-2 px-3 py-2 rounded-lg focus:outline-none')}
-                        />
-                        {renderFieldError('organizationName')}
-                    </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Danh mục <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={formData.category}
+                  onChange={(e) => handleInputChange('category', e.target.value)}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    errors.category ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                >
+                  <option value="">Chọn danh mục</option>
+                  {categories.map((cat, idx) => (
+                    <option key={idx} value={cat.value}>{cat.label}</option>
+                  ))}
+                </select>
+                {errors.category && <p className="mt-1 text-sm text-red-600">{errors.category}</p>}
+              </div>
 
-                    {/* Activity Title */}
-                    <div className='space-y-2'>
-                        <label htmlFor="activityTitle" className='block text-sm font-semibold text-gray-700'>
-                            Tên hoạt động <span className="text-red-500">*</span>
-                        </label>
-                        <input 
-                            type="text" 
-                            value={formData.activityTitle} 
-                            name="activityTitle" 
-                            onChange={handleInputChange}
-                            onBlur={() => handleBlur('activityTitle')}
-                            id="activityTitle" 
-                            placeholder='Nhập tên hoạt động' 
-                            className={getInputClassName('activityTitle', 'w-full border-2 px-3 py-2 rounded-lg focus:outline-none')}
-                        />
-                        {renderFieldError('activityTitle')}
-                    </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Loại sự kiện
+                </label>
+                <select
+                  value={formData.eventType}
+                  onChange={(e) => handleInputChange('eventType', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="volunteer">Tình nguyện</option>
+                  <option value="charity">Từ thiện</option>
+                  <option value="community">Cộng đồng</option>
+                  <option value="profit">Lợi nhuận</option>
+                  <option value="nonprofit">Phi lợi nhuận</option>
+                </select>
+              </div>
+            </div>
 
-                    {/* Category & Location */}
-                    <div className='flex gap-5'>
-                        <div className='w-1/2 space-y-2'>
-                            <label className="block text-sm font-semibold text-gray-700">
-                                Lĩnh vực <span className="text-red-500">*</span>
-                            </label>
-                            <select 
-                                name="category" 
-                                value={formData.category} 
-                                onChange={handleInputChange}
-                                onBlur={() => handleBlur('category')}
-                                className={getInputClassName('category')}
-                            >
-                                {categories.map((item, idx) => (
-                                    <option key={idx} value={item.value}>{item.label}</option>
-                                ))}
-                            </select>
-                            {renderFieldError('category')}
-                        </div>
-                        <div className='w-1/2 space-y-2'>
-                            <label htmlFor='local' className="block text-sm font-semibold text-gray-700">
-                                Địa điểm <span className="text-red-500">*</span>
-                            </label>
-                            <input 
-                                type="text" 
-                                name="local" 
-                                onChange={handleInputChange}
-                                onBlur={() => handleBlur('local')}
-                                value={formData.local} 
-                                id="local" 
-                                placeholder='Nhập địa chỉ diễn ra hoạt động' 
-                                className={getInputClassName('local', 'w-full border-2 px-3 py-2 rounded-lg focus:outline-none')}
-                            />
-                            {renderFieldError('local')}
-                        </div>
-                    </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Đối tượng mục tiêu
+              </label>
+              <select
+                value={formData.targetAudience}
+                onChange={(e) => handleInputChange('targetAudience', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="general">Tất cả mọi người</option>
+                <option value="students">Sinh viên</option>
+                <option value="professionals">Người đi làm</option>
+                <option value="seniors">Người cao tuổi</option>
+              </select>
+            </div>
+          </div>
+        );
 
-                    {/* Remote Option */}
-                    <div className="flex items-center gap-3">
-                        <input
-                            type="checkbox"
-                            name="isRemote"
-                            checked={formData.isRemote}
-                            onChange={handleInputChange}
-                            className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
-                        />
-                        <label className="text-sm font-semibold text-gray-700">
-                            💻 Có thể thực hiện từ xa
-                        </label>
-                    </div>
+      case 2:
+        return (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Ngày bắt đầu <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  value={formData.startDate}
+                  onChange={(e) => handleInputChange('startDate', e.target.value)}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    errors.startDate ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                />
+                {errors.startDate && <p className="mt-1 text-sm text-red-600">{errors.startDate}</p>}
+              </div>
 
-                    {/* Dates */}
-                    <div className="grid md:grid-cols-3 gap-4">
-                        <div className="space-y-2">
-                            <label className="block text-sm font-semibold text-gray-700">
-                                Ngày Bắt Đầu <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                                type="date"
-                                name="timeStart"
-                                value={formData.timeStart}
-                                onChange={handleInputChange}
-                                onBlur={() => handleBlur('timeStart')}
-                                className={getInputClassName('timeStart')}
-                            />
-                            {renderFieldError('timeStart')}
-                        </div>
-                        <div className="space-y-2">
-                            <label className="block text-sm font-semibold text-gray-700">
-                                Ngày Kết Thúc <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                                type="date"
-                                name="timeEnd"
-                                value={formData.timeEnd}
-                                onChange={handleInputChange}
-                                onBlur={() => handleBlur('timeEnd')}
-                                className={getInputClassName('timeEnd')}
-                            />
-                            {renderFieldError('timeEnd')}
-                        </div>
-                        <div className="space-y-2">
-                            <label className="block text-sm font-semibold text-gray-700">
-                                Hạn Đăng Ký <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                                type="date"
-                                name="deadline"
-                                value={formData.deadline}
-                                onChange={handleInputChange}
-                                onBlur={() => handleBlur('deadline')}
-                                className={getInputClassName('deadline')}
-                            />
-                            {renderFieldError('deadline')}
-                        </div>
-                    </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Giờ bắt đầu <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="time"
+                  value={formData.startTime}
+                  onChange={(e) => handleInputChange('startTime', e.target.value)}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    errors.startTime ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                />
+                {errors.startTime && <p className="mt-1 text-sm text-red-600">{errors.startTime}</p>}
+              </div>
+            </div>
 
-                    {/* Volunteer Required & Commitment */}
-                    <div className="grid md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <label className="block text-sm font-semibold text-gray-700">
-                                Số Lượng Cần Tuyển <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                                type="text"
-                                name="volunteerRequired"
-                                value={formData.volunteerRequired}
-                                onChange={handleInputChange}
-                                onBlur={() => handleBlur('volunteerRequired')}
-                                className={getInputClassName('volunteerRequired')}
-                                placeholder="VD: 10-15 người"
-                            />
-                            {renderFieldError('volunteerRequired')}
-                        </div>
-                        <div className="space-y-2">
-                            <label className="block text-sm font-semibold text-gray-700">
-                                Mức Độ Cam Kết <span className="text-red-500">*</span>
-                            </label>
-                            <select
-                                name="commitment"
-                                value={formData.commitment}
-                                onChange={handleInputChange}
-                                onBlur={() => handleBlur('commitment')}
-                                className={getInputClassName('commitment')}
-                            >
-                                <option value="flexible">⏰ Linh hoạt</option>
-                                <option value="part-time">📅 Bán thời gian</option>
-                                <option value="full-time">🕒 Toàn thời gian</option>
-                            </select>
-                            {renderFieldError('commitment')}
-                        </div>
-                    </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Ngày kết thúc
+                </label>
+                <input
+                  type="date"
+                  value={formData.endDate}
+                  onChange={(e) => handleInputChange('endDate', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
 
-                    {/* Compensation (for collaborators) */}
-                    {(formData.profitType === 'profit' || formData.activityType === 'collaborator') && (
-                        <div className="space-y-2">
-                            <label className="block text-sm font-semibold text-gray-700 flex items-center gap-1">
-                                <DollarSign size={16} className="text-green-500" />
-                                Hỗ Trợ / Thù Lao <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                                type="text"
-                                name="compensation"
-                                value={formData.compensation}
-                                onChange={handleInputChange}
-                                onBlur={() => handleBlur('compensation')}
-                                className={getInputClassName('compensation')}
-                                placeholder="VD: 500k-1M VNĐ, Hỗ trợ ăn uống, Certificate..."
-                            />
-                            {renderFieldError('compensation')}
-                        </div>
-                    )}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Giờ kết thúc
+                </label>
+                <input
+                  type="time"
+                  value={formData.endTime}
+                  onChange={(e) => handleInputChange('endTime', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            </div>
 
-                    {/* Description */}
-                    <div className="space-y-2">
-                        <label className="block text-sm font-semibold text-gray-700 flex items-center gap-1">
-                            <Edit size={16} className="text-purple-500" />
-                            Mô Tả Chi Tiết Hoạt Động <span className="text-red-500">*</span>
-                        </label>
-                        <div className={`border-2 rounded-lg overflow-hidden transition-colors ${
-                            (touched.description || showErrors) && errors.description
-                                ? 'border-red-300 bg-red-50'
-                                : 'border-gray-200 focus-within:border-blue-500'
-                        }`}>
-                            <div ref={editorRef} className="min-h-[200px]" onBlur={() => handleBlur('description')}></div>
-                        </div>
-                        {renderFieldError('description')}
-                    </div>
+            <div className="flex items-center space-x-3">
+              <input
+                type="checkbox"
+                id="isOnline"
+                checked={formData.isOnline}
+                onChange={(e) => handleInputChange('isOnline', e.target.checked)}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label htmlFor="isOnline" className="text-sm font-medium text-gray-700">
+                Sự kiện trực tuyến
+              </label>
+            </div>
 
-                    {/* Skills Required */}
-                    <div>
-                        <div className="space-y-4">
-                            <label className="block text-sm font-semibold text-gray-700 flex items-center gap-1">
-                                Kỹ năng cần thiết
-                                {formData.activityType === 'collaborator' && <span className="text-red-500">*</span>}
-                            </label>
-
-                            <div className="flex gap-3 items-start">
-                                <input
-                                    type="text"
-                                    value={newRequirement}
-                                    onChange={(e) => {
-                                        setNewRequirement(e.target.value);
-                                        if (errors.newRequirement) {
-                                            setErrors(prev => ({ ...prev, newRequirement: '' }));
-                                        }
-                                    }}
-                                    onKeyPress={(e) => e.key === 'Enter' && addRequirement()}
-                                    className={`flex-1 min-w-0 p-3 border-2 rounded-lg focus:outline-none transition-colors ${
-                                        errors.newRequirement
-                                            ? 'border-red-300 focus:border-red-500 bg-red-50'
-                                            : 'border-gray-200 focus:border-blue-500'
-                                    }`}
-                                    placeholder="Nhập các kĩ năng cần thiết (cách nhau bằng dấu ',')"
-                                    aria-label="Kỹ năng cần thiết"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={addRequirement}
-                                    className="px-5 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-semibold"
-                                    aria-label="Thêm kỹ năng"
-                                >
-                                    Thêm
-                                </button>
-                            </div>
-                            {errors.newRequirement && (
-                                <div className="flex items-center gap-1 text-red-600 text-sm">
-                                    <AlertCircle size={14} />
-                                    <span>{errors.newRequirement}</span>
-                                </div>
-                            )}
-
-                            <div className="mt-2">
-                                <div className="text-xs text-gray-500 mb-2">Các kỹ năng đã thêm</div>
-                                <div
-                                    className="max-h-32 overflow-y-auto flex flex-wrap gap-2 py-2"
-                                    role="list"
-                                    aria-label="Danh sách kỹ năng"
-                                >
-                                    {formData.requirements.map((req, index) => (
-                                        <div
-                                            key={index}
-                                            className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-100 rounded-full text-sm max-w-full"
-                                            role="listitem"
-                                        >
-                                            <span className="truncate">{req}</span>
-                                            <button
-                                                onClick={() => removeRequirement(index)}
-                                                className="flex items-center justify-center p-1 rounded hover:bg-red-50"
-                                                aria-label={`Xóa ${req}`}
-                                                title={`Xóa ${req}`}
-                                            >
-                                                <X size={16} />
-                                            </button>
-                                        </div>
-                                    ))}
-                                    {formData.requirements.length === 0 && (
-                                        <div className="text-sm text-gray-400">Chưa có kỹ năng nào — hãy thêm vào.</div>
-                                    )}
-                                </div>
-                            </div>
-                            {renderFieldError('requirements')}
-
-                            <div className="space-y-2">
-                                <label className="block text-sm font-semibold text-gray-700 flex items-center gap-2">
-                                    <Edit size={16} className="text-purple-500" />
-                                    Mô tả yêu cầu ứng viên
-                                </label>
-                                <textarea
-                                    name="requirements_description"
-                                    value={formData.requirements_description}
-                                    onChange={handleInputChange}
-                                    onBlur={() => handleBlur('requirements_description')}
-                                    placeholder="Mô tả chi tiết các yêu cầu (ví dụ: kinh nghiệm, bằng cấp, kỹ năng mềm…)"
-                                    className={getInputClassName('requirements_description', 'w-full min-h-[120px] p-3 border-2 rounded-lg resize-vertical focus:outline-none transition-colors')}
-                                    aria-label="Mô tả yêu cầu ứng viên"
-                                />
-                                {renderFieldError('requirements_description')}
-                            </div>
-                        </div>
-
-                        <div className="mt-6 space-y-2">
-                            <label className="block text-sm font-semibold text-gray-700 flex items-center gap-2">
-                                <Edit size={16} className="text-purple-500" />
-                                Mô tả quyền lợi & lợi ích ứng viên sẽ nhận được
-                            </label>
-                            <textarea
-                                name="benefitsDescription"
-                                value={formData.benefitsDescription}
-                                onChange={handleInputChange}
-                                onBlur={() => handleBlur('benefitsDescription')}
-                                placeholder="Liệt kê quyền lợi: lương, thưởng, bảo hiểm, môi trường làm việc, cơ hội thăng tiến..."
-                                className={getInputClassName('benefitsDescription', 'w-full min-h-[100px] p-3 border-2 rounded-lg resize-vertical focus:outline-none transition-colors')}
-                                aria-label="Mô tả quyền lợi"
-                            />
-                            {renderFieldError('benefitsDescription')}
-                        </div>
-
-                        <div className="mt-6 space-y-2">
-                            <label className="block text-sm font-semibold text-gray-700 flex items-center gap-2">
-                                <Edit size={16} className="text-purple-500" />
-                                Thông tin liên hệ <span className="text-red-500">*</span>
-                            </label>
-                            <div className="flex gap-3">
-                                <textarea
-                                    name="contactInfo"
-                                    value={formData.contactInfo}
-                                    onChange={handleInputChange}
-                                    onBlur={() => handleBlur('contactInfo')}
-                                    rows={3}
-                                    className={getInputClassName('contactInfo', 'w-full p-3 border-2 rounded-lg focus:outline-none transition-colors resize-none')}
-                                    placeholder="Email: contact@org.com&#10;Phone: 0123456789&#10;Facebook: fb.com/orgname"
-                                />
-                            </div>
-                            {renderFieldError('contactInfo')}
-                            <div className="text-xs text-gray-500">
-                                💡 Vui lòng cung cấp ít nhất một email hoặc số điện thoại
-                            </div>
-                        </div>
-                    </div>
+            {!formData.isOnline ? (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Địa điểm <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.location}
+                    onChange={(e) => handleInputChange('location', e.target.value)}
+                    placeholder="VD: Bãi biển Bãi Trước, Vũng Tàu"
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      errors.location ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  />
+                  {errors.location && <p className="mt-1 text-sm text-red-600">{errors.location}</p>}
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex flex-wrap gap-3 mt-8 pt-6 border-t border-gray-200">
-                    <button 
-                        onClick={saveDraft}
-                        disabled={isSaving}
-                        className="px-6 py-3 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-                        💾 {isSaving ? 'Đang lưu...' : 'Lưu nháp'}
-                    </button>
-                    
-                    <button 
-                        onClick={generatePreviewHtml}
-                        className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition flex items-center gap-2"
-                    >
-                        <Eye size={16} />
-                        🔍 Xem trước
-                    </button>
-                    
-                    <button 
-                        onClick={publish}
-                        disabled={isPublishing}
-                        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2 ml-auto disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        {isPublishing ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle size={16} />}
-                        {isPublishing 
-                            ? 'Đang xử lý...' 
-                            : type === 'edit' ? "Cập nhật" : "🚀 Đăng tuyển"
-                        }
-                    </button>
-                    
-                    <button 
-                        onClick={resetForm}
-                        className="px-6 py-3 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition flex items-center gap-2"
-                    >
-                        <X size={16} />
-                        🧹 Reset
-                    </button>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Địa chỉ chi tiết
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={formData.address}
+                    onChange={(e) => handleInputChange('address', e.target.value)}
+                    placeholder="Địa chỉ cụ thể, hướng dẫn đường đi..."
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
                 </div>
+              </>
+            ) : (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Link tham gia online
+                </label>
+                <input
+                  type="url"
+                  value={formData.onlineLink}
+                  onChange={(e) => handleInputChange('onlineLink', e.target.value)}
+                  placeholder="https://meet.google.com/..."
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            )}
+          </div>
+        );
 
-                {/* Form Validation Summary */}
-                {showErrors && Object.keys(errors).length > 0 && (
-                    <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                        <h4 className="font-semibold text-red-800 mb-2 flex items-center gap-2">
-                            <AlertCircle size={16} />
-                            Vui lòng kiểm tra các trường sau:
-                        </h4>
-                        <ul className="text-sm text-red-600 space-y-1">
-                            {Object.entries(errors).map(([field, error]) => (
-                                error && (
-                                    <li key={field}>
-                                        • {field === 'organizationName' ? 'Tên tổ chức' :
-                                           field === 'activityTitle' ? 'Tên hoạt động' :
-                                           field === 'category' ? 'Lĩnh vực' :
-                                           field === 'local' ? 'Địa điểm' :
-                                           field === 'timeStart' ? 'Ngày bắt đầu' :
-                                           field === 'timeEnd' ? 'Ngày kết thúc' :
-                                           field === 'deadline' ? 'Hạn đăng ký' :
-                                           field === 'volunteerRequired' ? 'Số lượng cần tuyển' :
-                                           field === 'description' ? 'Mô tả hoạt động' :
-                                           field === 'contactInfo' ? 'Thông tin liên hệ' :
-                                           field === 'compensation' ? 'Hỗ trợ/Thù lao' :
-                                           field === 'requirements' ? 'Kỹ năng yêu cầu' :
-                                           field}: {error}
-                                    </li>
-                                )
-                            ))}
-                        </ul>
-                    </div>
+      case 3:
+        return (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Số lượng TNV cần tuyển <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  value={formData.volunteersNeeded}
+                  onChange={(e) => handleInputChange('volunteersNeeded', parseInt(e.target.value) || 0)}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    errors.volunteersNeeded ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                />
+                {errors.volunteersNeeded && <p className="mt-1 text-sm text-red-600">{errors.volunteersNeeded}</p>}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Hạn đăng ký
+                </label>
+                <input
+                  type="date"
+                  value={formData.registrationDeadline}
+                  onChange={(e) => handleInputChange('registrationDeadline', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tuổi tối thiểu
+                </label>
+                <input
+                  type="number"
+                  min="16"
+                  max="65"
+                  value={formData.minAge}
+                  onChange={(e) => handleInputChange('minAge', parseInt(e.target.value) || 16)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tuổi tối đa
+                </label>
+                <input
+                  type="number"
+                  min="16"
+                  max="99"
+                  value={formData.maxAge}
+                  onChange={(e) => handleInputChange('maxAge', parseInt(e.target.value) || 65)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Yêu cầu giới tính
+                </label>
+                <select
+                  value={formData.genderRequirement}
+                  onChange={(e) => handleInputChange('genderRequirement', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="any">Không yêu cầu</option>
+                  <option value="male">Nam</option>
+                  <option value="female">Nữ</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Mức độ kinh nghiệm
+              </label>
+              <select
+                value={formData.experienceLevel}
+                onChange={(e) => handleInputChange('experienceLevel', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="beginner">Người mới bắt đầu</option>
+                <option value="intermediate">Có kinh nghiệm</option>
+                <option value="advanced">Chuyên nghiệp</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Kỹ năng yêu cầu
+              </label>
+              <div className="flex flex-wrap gap-2 mb-3">
+                {formData.skillsRequired.map((skill) => (
+                  <span
+                    key={skill}
+                    className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full"
+                  >
+                    {skill}
+                    <button
+                      type="button"
+                      onClick={() => handleArrayRemove('skillsRequired', skill)}
+                      className="ml-2 text-blue-600 hover:text-blue-800"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <select
+                onChange={(e) => {
+                  if (e.target.value) {
+                    handleArrayAdd('skillsRequired', e.target.value);
+                    e.target.value = '';
+                  }
+                }}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="">Chọn kỹ năng</option>
+                {skillOptions.filter(skill => !formData.skillsRequired.includes(skill)).map(skill => (
+                  <option key={skill} value={skill}>{skill}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        );
+
+      case 4:
+        return (
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Quyền lợi cho tình nguyện viên</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {interest?.map((benefit) => (
+                  <label key={benefit.key} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50">
+                    <input
+                      type="checkbox"
+                      checked={formData.benefits[benefit.key]}
+                      onChange={(e) => handleNestedInputChange('benefits', benefit.key, e.target.checked)}
+                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <span className="text-sm font-medium text-gray-700">{benefit.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {formData.benefits.allowance && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Mức phụ cấp (VNĐ)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={formData.benefits.allowanceAmount}
+                  onChange={(e) => handleNestedInputChange('benefits', 'allowanceAmount', parseInt(e.target.value) || 0)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="VD: 200000"
+                />
+              </div>
+            )}
+
+            {formData.benefits.another && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Mô tả về quyền lợi:
+                </label>
+                <input
+                  type="text"
+                  value={formData.benefits.descriptionBenfits}
+                  onChange={(e) => handleNestedInputChange('benefits', 'descriptionBenfits', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Mô tả quyền lợi"
+                />
+              </div>
+            )}
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex">
+                <Info className="w-5 h-5 text-blue-600 mr-3 mt-0.5" />
+                <div>
+                  <h4 className="text-sm font-medium text-blue-900">Lưu ý về quyền lợi</h4>
+                  <p className="text-sm text-blue-700 mt-1">
+                    Việc cung cấp quyền lợi tốt sẽ giúp thu hút nhiều tình nguyện viên chất lượng hơn và tăng tỷ lệ hoàn thành sự kiện.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 5:
+        return (
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Ảnh bìa sự kiện
+              </label>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
+                {formData.coverImage ? (
+                  <div className="relative">
+                    <img
+                      src={URL.createObjectURL(formData.coverImage)}
+                      alt="Cover"
+                      className="mx-auto h-48 w-auto rounded-lg"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleInputChange('coverImage', null)}
+                      className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                    <p className="text-sm text-gray-500">Click để tải lên ảnh bìa</p>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleInputChange('coverImage', e.target.files[0])}
+                      className="hidden"
+                      id="coverImage"
+                    />
+                    <label
+                      htmlFor="coverImage"
+                      className="mt-2 inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer"
+                    >
+                      Chọn ảnh
+                    </label>
+                  </div>
                 )}
-
-                {/* Progress Indicator */}
-                <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-blue-800">Tiến độ hoàn thành</span>
-                        <span className="text-sm text-blue-600">
-                            {Math.round((Object.keys(formData).filter(key => 
-                                formData[key] && formData[key] !== '' && 
-                                (Array.isArray(formData[key]) ? formData[key].length > 0 : true)
-                            ).length / Object.keys(formData).length) * 100)}%
-                        </span>
-                    </div>
-                    <div className="w-full bg-blue-200 rounded-full h-2">
-                        <div 
-                            className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
-                            style={{
-                                width: `${Math.round((Object.keys(formData).filter(key => 
-                                    formData[key] && formData[key] !== '' && 
-                                    (Array.isArray(formData[key]) ? formData[key].length > 0 : true)
-                                ).length / Object.keys(formData).length) * 100)}%`
-                            }}
-                        ></div>
-                    </div>
-                    <p className="text-xs text-blue-600 mt-1">
-                        Hoàn thành đầy đủ thông tin để tăng hiệu quả tuyển dụng
-                    </p>
-                </div>
+              </div>
             </div>
+
+            <div>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Thông tin liên hệ</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Tên điều phối viên <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.contactInfo.coordinatorName}
+                    onChange={(e) => handleNestedInputChange('contactInfo', 'coordinatorName', e.target.value)}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      errors.coordinatorName ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="Tên người phụ trách sự kiện"
+                  />
+                  {errors.coordinatorName && <p className="mt-1 text-sm text-red-600">{errors.coordinatorName}</p>}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Số điện thoại <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="tel"
+                    value={formData.contactInfo.phone}
+                    onChange={(e) => handleNestedInputChange('contactInfo', 'phone', e.target.value)}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      errors.phone ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="0901234567"
+                  />
+                  {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone}</p>}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    value={formData.contactInfo.email}
+                    onChange={(e) => handleNestedInputChange('contactInfo', 'email', e.target.value)}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      errors.email ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="contact@example.com"
+                  />
+                  {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Liên hệ dự phòng
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.contactInfo.alternateContact}
+                    onChange={(e) => handleNestedInputChange('contactInfo', 'alternateContact', e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Số điện thoại hoặc email dự phòng"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Ảnh bổ sung
+              </label>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {formData.additionalImages.map((image, index) => (
+                  <div key={index} className="relative">
+                    <img
+                      src={URL.createObjectURL(image)}
+                      alt={`Additional ${index + 1}`}
+                      className="w-full h-24 object-cover rounded-lg"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newImages = [...formData.additionalImages];
+                        newImages.splice(index, 1);
+                        handleInputChange('additionalImages', newImages);
+                      }}
+                      className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+                {formData.additionalImages.length < 8 && (
+                  <label className="flex items-center justify-center h-24 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 cursor-pointer">
+                    <Plus className="w-6 h-6 text-gray-400" />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={(e) => {
+                        const newImages = [...formData.additionalImages, ...Array.from(e.target.files)];
+                        handleInputChange('additionalImages', newImages.slice(0, 8));
+                      }}
+                      className="hidden"
+                    />
+                  </label>
+                )}
+              </div>
+              <p className="text-sm text-gray-500 mt-2">Tối đa 8 ảnh bổ sung</p>
+            </div>
+          </div>
+        );
+
+      case 6:
+        return (
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Cài đặt phê duyệt</h3>
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <input
+                    type="checkbox"
+                    id="autoApprove"
+                    checked={formData.autoApprove}
+                    onChange={(e) => handleInputChange('autoApprove', e.target.checked)}
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <label htmlFor="autoApprove" className="text-sm font-medium text-gray-700">
+                    Tự động phê duyệt đăng ký (chỉ với TNV đã xác minh)
+                  </label>
+                </div>
+
+                <div className="flex items-center space-x-3">
+                  <input
+                    type="checkbox"
+                    id="requireBackground"
+                    checked={formData.requireBackground}
+                    onChange={(e) => handleInputChange('requireBackground', e.target.checked)}
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <label htmlFor="requireBackground" className="text-sm font-medium text-gray-700">
+                    Yêu cầu kiểm tra lý lịch
+                  </label>
+                </div>
+
+                <div className="flex items-center space-x-3">
+                  <input
+                    type="checkbox"
+                    id="isPublic"
+                    checked={formData.isPublic}
+                    onChange={(e) => handleInputChange('isPublic', e.target.checked)}
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <label htmlFor="isPublic" className="text-sm font-medium text-gray-700">
+                    Công khai trên trang chủ
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Mức độ ưu tiên
+              </label>
+              <select
+                value={formData.priority}
+                onChange={(e) => handleInputChange('priority', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="low">Thấp</option>
+                <option value="normal">Bình thường</option>
+                <option value="high">Cao</option>
+                <option value="urgent">Khẩn cấp</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Tags
+              </label>
+              <div className="flex flex-wrap gap-2 mb-3">
+                {formData.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full"
+                  >
+                    <Tag className="w-3 h-3 mr-1" />
+                    {tag}
+                    <button
+                      type="button"
+                      onClick={() => handleArrayRemove('tags', tag)}
+                      className="ml-2 text-green-600 hover:text-green-800"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Thêm tag mới..."
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && e.target.value.trim()) {
+                      handleArrayAdd('tags', e.target.value.trim());
+                      e.target.value = '';
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    const input = e.target.previousElementSibling;
+                    if (input.value.trim()) {
+                      handleArrayAdd('tags', input.value.trim());
+                      input.value = '';
+                    }
+                  }}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <div className="flex">
+                <AlertCircle className="w-5 h-5 text-yellow-600 mr-3 mt-0.5" />
+                <div>
+                  <h4 className="text-sm font-medium text-yellow-900">Lưu ý về phê duyệt</h4>
+                  <p className="text-sm text-yellow-700 mt-1">
+                    Sự kiện sẽ được gửi đến Admin để phê duyệt trước khi công bố. Thời gian phê duyệt thông thường là 24-48 giờ.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="mx-auto">
+{/* Progress Steps */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            {steps.map((step) => {
+              const StepIcon = step.icon;
+              return (
+                <div
+                  key={step.id}
+                  className={`flex items-center ${step.id < steps.length ? 'flex-1' : ''}`}
+                >
+                  <div className="flex items-center">
+                    <div
+                      className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                        currentStep >= step.id
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-200 text-gray-500'
+                      }`}
+                    >
+                      {currentStep > step.id ? (
+                        <CheckCircle className="w-5 h-5" />
+                      ) : (
+                        <StepIcon className="w-5 h-5" />
+                      )}
+                    </div>
+                    <div className="ml-3">
+                      <p className={`text-sm font-medium ${
+                        currentStep >= step.id ? 'text-blue-600' : 'text-gray-500'
+                      }`}>
+                        Step {step.id}
+                      </p>
+                      <p className={`text-xs ${
+                        currentStep >= step.id ? 'text-blue-600' : 'text-gray-500'
+                      }`}>
+                        {step.title}
+                      </p>
+                    </div>
+                  </div>
+                  {step.id < steps.length && (
+                    <div
+                      className={`flex-1 h-1 mx-4 ${
+                        currentStep > step.id ? 'bg-blue-600' : 'bg-gray-200'
+                      }`}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
-    );
+
+        {/* Form Content */}
+        <div className="bg-white rounded-xl shadow-sm p-8">
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold text-gray-900">
+              {steps.find(s => s.id === currentStep)?.title}
+            </h2>
+          </div>
+
+          {renderStepContent()}
+
+          {/* Navigation Buttons */}
+          <div className="flex items-center justify-between mt-8 pt-6 border-t">
+            <button
+              onClick={prevStep}
+              disabled={currentStep === 1}
+              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Quay lại
+            </button>
+
+            <div className="flex space-x-3">
+              {currentStep === steps.length ? (
+                <>
+                  <button
+                    onClick={() => handleSubmit(true)}
+                    disabled={isSubmitting}
+                    className="flex items-center px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50"
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    {isSubmitting ? 'Đang lưu...' : 'Lưu nháp'}
+                  </button>
+                  <button
+                    onClick={() => handleSubmit(false)}
+                    disabled={isSubmitting}
+                    className="flex items-center px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    <Send className="w-4 h-4 mr-2" />
+                    {isSubmitting ? 'Đang gửi...' : 'Gửi phê duyệt'}
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={nextStep}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  Tiếp tục
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="light"
+      />
+    </div>
+  );
 }

@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { 
   Search, Filter, MoreHorizontal, Eye, Shield, AlertTriangle, 
   CheckCircle, XCircle, Clock, Star, MapPin, Calendar, Award,
+  CheckCircle2,
   User, Phone, Mail, Camera, Edit, Ban, Trash2, FileText,
   TrendingUp, Users, Activity, Target, ChevronDown, Download,
   MessageSquare, Flag, History, Settings, ArrowLeft, Share2,
@@ -325,7 +326,7 @@ export default function VolunteerCertificationSystem() {
                 <div className="bg-white rounded p-6">
                   <div className="text-center">
                     <div className="inline-flex items-center justify-center w-14 h-14 bg-blue-600 rounded-full mb-3">
-                      <Certificate className="w-6 h-6 text-white" />
+                      <CheckCircle2 className="w-6 h-6 text-white" />
                     </div>
                     <h3 className="text-2xl font-bold text-gray-900 mb-1">CHỨNG CHỈ TÌNH NGUYỆN</h3>
                     <p className="text-gray-600">VHub | {getCertificateTypeLabel(certificate.certificateType)}</p>

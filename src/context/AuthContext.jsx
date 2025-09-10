@@ -93,7 +93,6 @@ function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(true);
 
 
-
   const contextValue = { user, token, isAuthenticated, setUser, setToken,setIsAuthenticated };
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
