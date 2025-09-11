@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 
 export default function RecruitmentPostPage() {
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(6);
   const [formData, setFormData] = useState({
     // Basic Info
     title: '',
@@ -87,6 +87,7 @@ export default function RecruitmentPostPage() {
   const [categories, setCategories] = useState([]);
   const [skillOptions, setSkillOptions] = useState([]);
   const [interest, setInterest] = useState([]);
+  const [task, setTask] = useState([]);
 
   const steps = [
     { id: 1, title: 'Thông tin cơ bản', icon: FileText },
@@ -101,11 +102,11 @@ export default function RecruitmentPostPage() {
     const loaded = async () => {
       try {
         const res = await axios.get(`${import.meta.env.VITE_URL}/btc/events/post-events`);
-        console.log(res);
         if(res.data.success) {
           setCategories(res.data.data.categories);
           setSkillOptions(res.data.data.skillOptions);
           setInterest(res.data.data.interest);
+          setTask(res.data.data.tasks);
         }
       } catch (error) {
         console.log(error.message);
@@ -800,7 +801,7 @@ export default function RecruitmentPostPage() {
                     className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                   />
                   <label htmlFor="autoApprove" className="text-sm font-medium text-gray-700">
-                    Tự động phê duyệt đăng ký (chỉ với TNV đã xác minh)
+                    Tự động phê duyệt đăng ký
                   </label>
                 </div>
 
@@ -817,18 +818,6 @@ export default function RecruitmentPostPage() {
                   </label>
                 </div>
 
-                <div className="flex items-center space-x-3">
-                  <input
-                    type="checkbox"
-                    id="isPublic"
-                    checked={formData.isPublic}
-                    onChange={(e) => handleInputChange('isPublic', e.target.checked)}
-                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                  />
-                  <label htmlFor="isPublic" className="text-sm font-medium text-gray-700">
-                    Công khai trên trang chủ
-                  </label>
-                </div>
               </div>
             </div>
 
@@ -870,31 +859,18 @@ export default function RecruitmentPostPage() {
                   </span>
                 ))}
               </div>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Thêm tag mới..."
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter' && e.target.value.trim()) {
-                      handleArrayAdd('tags', e.target.value.trim());
-                      e.target.value = '';
-                    }
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    const input = e.target.previousElementSibling;
-                    if (input.value.trim()) {
-                      handleArrayAdd('tags', input.value.trim());
-                      input.value = '';
-                    }
-                  }}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                {task?.map((item) => (
+                  <button
+                    key={item?.id}
+                    type="button"
+                    onClick={() => handleArrayAdd('tags', item.label)}
+                    className="flex items-center justify-center px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-blue-50 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <Tag className="w-4 h-4 mr-2 text-blue-600" />
+                    {item?.label}
+                  </button>
+                ))}
               </div>
             </div>
 
