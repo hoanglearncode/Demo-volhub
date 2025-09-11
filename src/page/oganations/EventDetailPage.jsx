@@ -12,7 +12,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   LineChart, Line, PieChart, Pie, Cell, AreaChart, Area
 } from 'recharts';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 
 export default function EventDetailPage() {
     const {id} = useParams();
@@ -118,6 +118,7 @@ Chúng tôi sẽ cùng nhau thu gom rác thải, phân loại và tái chế, đ
     {
       id: 1,
       volunteer: {
+        id: 1,
         name: 'Trần Văn Minh',
         avatar: '/api/placeholder/40/40',
         age: 24,
@@ -135,6 +136,7 @@ Chúng tôi sẽ cùng nhau thu gom rác thải, phân loại và tái chế, đ
     {
       id: 2,
       volunteer: {
+        id: 2,
         name: 'Lê Thị Hoa',
         avatar: '/api/placeholder/40/40',
         age: 28,
@@ -626,7 +628,7 @@ Chúng tôi sẽ cùng nhau thu gom rác thải, phân loại và tái chế, đ
                       />
                       <div className="flex-1">
                         <div className="flex items-center space-x-3 mb-2">
-                          <h4 className="font-semibold text-gray-900">{application.volunteer.name}</h4>
+                          <Link to={`/btc/volunteers/detail/${application.volunteer.id}`} className="font-semibold text-gray-900">{application.volunteer.name}</Link>
                           <span className="text-sm text-gray-500">({application.volunteer.age} tuổi)</span>
                           {application.volunteer.verificationStatus === 'verified' && (
                             <Shield className="w-4 h-4 text-blue-500" />
