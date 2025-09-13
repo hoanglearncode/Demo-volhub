@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -76,7 +77,7 @@ const Dashboard = () => {
           setData(res.data);
         }
       } catch (error) {
-        alert("Có lỗi xảy ra trong quá trình lấy dữ liệu!");
+        toast.error("Có lỗi xảy ra trong quá trình lấy dữ liệu!");
         console.log(error.message) 
       }
     }
@@ -398,6 +399,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };

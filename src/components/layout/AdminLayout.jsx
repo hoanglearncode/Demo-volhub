@@ -146,6 +146,7 @@ import NotificationManagement from "../../page/admin/NotificationManagement.jsx"
 import QueuePage from "../../page/admin/QueuePage.jsx"; // quản lý các hàng đợi thông tin
 
 import { useAuth } from "../../context/AuthContext.jsx";
+import { toast, ToastContainer } from "react-toastify";
 
 function AdminLayout() {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -317,7 +318,7 @@ function AdminLayout() {
           setStatusSystem(data.data.systemStatus);
         }
       } catch (error) { 
-        alert("Có lỗi xảy ra trong quá trình lấy dữ liệu!");
+        toast.error(`Lỗi: ${error.message}`);
       }
     }
     loaded ();
@@ -780,7 +781,6 @@ function AdminLayout() {
                 <Route path="/admin/notifications/manage" element={<RequireAuth><NotificationManagement /></RequireAuth>} />
 
                 {/* Legacy Routes */}
-                <Route path="/admin/account" element={<RequireAuth><AdminProfile /></RequireAuth>} />
                 <Route path="/admin/post-box" element={<RequireAuth><ConnectionQueue /></RequireAuth>} />
                 <Route path="/admin/history" element={<RequireAuth><AuditLog /></RequireAuth>} />
 
@@ -791,8 +791,8 @@ function AdminLayout() {
               </Routes>
           </div>
         </main>
+        <ToastContainer />
       </div>
-
       {/* Mobile Overlay */}
       {!isCollapsed && (
         <div 

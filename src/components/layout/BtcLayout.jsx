@@ -59,8 +59,6 @@ import RecruitmentReport from "../../page/oganations/RecruitmentReport.jsx";
 
 // Import new pages that need to be created
 import EventDetailPage from "../../page/oganations/EventDetailPage.jsx"; // Chi tiết sự kiện
-import EventEditPage from "../../page/oganations/EventEditPage.jsx"; // Sửa sự kiện
-import EventClonePage from "../../page/oganations/EventClonePage.jsx"; // Nhân bản sự kiện
 import VolunteerManagementPage from "../../page/oganations/VolunteerManagementPage.jsx"; // Quản lý TNV tổng hợp
 import VolunteerDetailPage from "../../page/oganations/VolunteerDetailPage.jsx"; // Chi tiết hồ sơ TNV
 import VolunteerAssignmentPage from "../../page/oganations/VolunteerAssignmentPage.jsx"; // Phân công TNV

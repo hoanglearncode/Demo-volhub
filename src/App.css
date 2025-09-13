@@ -1,1 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+@font-face{
+  font-family: 'VolunteerScript';
+  src: url('/fonts/great-vibes.woff2') format('woff2'),
+       url('/fonts/great-vibes.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 @import "tailwindcss";
