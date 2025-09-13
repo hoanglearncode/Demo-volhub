@@ -18,7 +18,8 @@ import {
   Star,
   Eye,
   Shield,
-  LogOut
+  LogOut,
+  BotMessageSquare
 } from "lucide-react";
 
 // Import các page components
@@ -41,6 +42,7 @@ import ConnectInbox from "../../page/user/ConnectInbox.jsx";
 import Community from "../../page/user/Community.jsx";
 import PrivacySettings from "../../page/user/PrivacySettings.jsx";
 import Notifications from "../../page/user/Notifications.jsx";
+import ChatBotWidget from "../common/ChatBotWidget.jsx";
 
 // TopNav Component
 function TopNav() {
@@ -618,6 +620,7 @@ function UserLayout() {
           {/* 404 */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
+        <ChatBotWidget />
       </main>
       <Footer />
     </div>
