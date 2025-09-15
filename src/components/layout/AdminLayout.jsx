@@ -812,7 +812,7 @@ function AdminLayout() {
           </div>
 
           {/* Content Section */}
-          <div className="max-w-md space-y-6">
+          <div className="max-w-md space-y-6 mt-5">
             <div className="space-y-3">
               <h2 className="text-2xl font-bold text-gray-800">
                 Chức năng đang phát triển
