@@ -799,7 +799,7 @@ function AdminLayout() {
       </div>
 
       {/* Mobile Layout */}
-      <div className="block md:hidden pt-14 min-h-screen">
+      <div className="block md:hidden pt-16 min-h-screen">
         <div className="flex flex-col items-center justify-center h-[calc(100vh-3.5rem)] px-6 text-center bg-gradient-to-br from-red-50 to-orange-50">
           {/* Icon Section */}
           <div className="mb-8 relative">
@@ -812,7 +812,7 @@ function AdminLayout() {
           </div>
 
           {/* Content Section */}
-          <div className="max-w-md space-y-6 mt-5">
+          <div className="max-w-md space-y-6">
             <div className="space-y-3">
               <h2 className="text-2xl font-bold text-gray-800">
                 Chức năng đang phát triển
