@@ -1,15 +1,12 @@
 import { useEffect, useState } from "react";
 import dashboardService  from '../../services/oganations/dashboardService.js';
-import RecommendedCandidates from '../../components/oganations/RecommendedCandidates.jsx'
-import ImportantNotification from '../../components/oganations/ImportantNotification.jsx'
-import VerificationBanner from '../../components/oganations/VerificationBanner.jsx'
-import ExploreFeatures from '../../components/oganations/ExploreFeatures.jsx'
-import SystemUpdates from '../../components/oganations/SystemUpdates.jsx'
+import RecommendedCandidates from '../../components/oganations/dashboard/RecommendedCandidates.jsx'
+import ImportantNotification from '../../components/oganations/dashboard/ImportantNotification.jsx'
+import VerificationBanner from '../../components/oganations/dashboard/VerificationBanner.jsx'
+import ExploreFeatures from '../../components/oganations/dashboard/ExploreFeatures.jsx'
+import SystemUpdates from '../../components/oganations/dashboard/SystemUpdates.jsx'
 import ErrorState from '../../components/oganations/ErrorState.jsx'
-import EventStatusCard from "../../components/oganations/EventStatusCard.jsx"
-import PostingHeatmap from "../../components/oganations/PostingHeatmap.jsx";
-import RegistrationTrendChart from "../../components/oganations/RegistrationTrendChart.jsx";
-import KPIDashboard from "../../components/oganations/KPIDashboard.jsx";
+import KPIDashboard from "../../components/oganations/dashboard/KPIDashboard.jsx";
 
 export default function Dashboard() {
   const [isError, setIsError] = useState(false);
@@ -52,8 +49,6 @@ export default function Dashboard() {
           <div className="flex items-center justify-center min-h-[60vh]">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
           </div>
-        ) : isError ? (
-          <ErrorState status={status} onRetry={fetchData} />
         ) : (
           <div className="max-w-7xl mx-auto">
             <div className="mt-6 space-y-6">

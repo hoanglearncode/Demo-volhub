@@ -9,8 +9,7 @@ export default function LoginPage() {
   const [isRemember, setIsRemember] = useState(false);
 
   const handleSubmit = () => {
-    // Handle login logic here
-    console.log("Login:", { username, password, isRemember });
+    
   };
 
   return (

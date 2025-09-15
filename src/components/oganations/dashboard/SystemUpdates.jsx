@@ -26,7 +26,7 @@ const SystemUpdates = ({ updates = [] }) => {
     return (
       <div className="mb-8">
         <h2 className="text-lg font-semibold text-gray-800 mb-4">Cập nhật hệ thống</h2>
-        <div className="bg-gray-50 rounded-xl p-8 text-center">
+        <div className="bg-white border border-gray-200 rounded-xl p-8 text-center">
           <Bell size={48} className="mx-auto text-gray-400 mb-3" />
           <p className="text-gray-500">Không có cập nhật mới nào</p>
         </div>

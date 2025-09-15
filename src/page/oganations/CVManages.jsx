@@ -3,7 +3,7 @@ import { Search, Star, Users, Plus, Award, Eye, ChartLine } from 'lucide-react';
 import EmptyStateBanner from '../../components/oganations/EmptyStateBanner.jsx';
 import cvManageService from '../../services/oganations/cvManageService.js';
 import EventCVPanel from '../../components/oganations/EventCVPanel.jsx';
-import RecommendedCandidates from '../../components/oganations/RecommendedCandidates.jsx';
+import RecommendedCandidates from '../../components/oganations/dashboard/RecommendedCandidates.jsx';
 
 const CVManagementPage = () => {
   const [total, setTotal] = useState(0);

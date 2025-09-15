@@ -345,58 +345,6 @@ export default function MyEvents() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-3 bg-gradient-to-br from-green-500 to-blue-600 rounded-xl text-white">
-              <Calendar size={24} />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-slate-800">Sự kiện của tôi</h1>
-              <p className="text-slate-600 mt-1">Quản lý và theo dõi các hoạt động tình nguyện của bạn</p>
-            </div>
-          </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-white p-6 rounded-xl border border-gray-200">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 bg-blue-100 rounded-lg"><Calendar className="text-blue-600" size={20} /></div>
-                <span className="text-sm font-medium text-slate-600">Tổng sự kiện</span>
-              </div>
-              <div className="text-3xl font-bold text-slate-800">{stats.totalEvents}</div>
-              <div className="text-xs text-slate-500 mt-1">+{events.filter(e => e.status === "registered" || e.status === "confirmed").length} sắp tới</div>
-            </div>
-
-            <div className="bg-white p-6 rounded-xl border border-gray-200">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 bg-green-100 rounded-lg"><CheckCircle className="text-green-600" size={20} /></div>
-                <span className="text-sm font-medium text-slate-600">Đã hoàn thành</span>
-              </div>
-              <div className="text-3xl font-bold text-green-600">{stats.completedEvents}</div>
-              <div className="text-xs text-slate-500 mt-1">{stats.totalEvents ? `${((stats.completedEvents / stats.totalEvents) * 100).toFixed(0)}%` : "—"} tỷ lệ hoàn thành</div>
-            </div>
-
-            <div className="bg-white p-6 rounded-xl border border-gray-200">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 bg-orange-100 rounded-lg"><Clock className="text-orange-600" size={20} /></div>
-                <span className="text-sm font-medium text-slate-600">Tổng giờ</span>
-              </div>
-              <div className="text-3xl font-bold text-orange-600">{stats.totalHours}</div>
-              <div className="text-xs text-slate-500 mt-1">Giờ tình nguyện tích lũy</div>
-            </div>
-
-            <div className="bg-white p-6 rounded-xl border border-gray-200">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 bg-yellow-100 rounded-lg"><Star className="text-yellow-600" size={20} /></div>
-                <span className="text-sm font-medium text-slate-600">Đánh giá TB</span>
-              </div>
-              <div className="text-3xl font-bold text-yellow-600">{stats.averageRating > 0 ? stats.averageRating.toFixed(1) : "—"}</div>
-              <div className="text-xs text-slate-500 mt-1">Điểm đánh giá trung bình</div>
-            </div>
-          </div>
-        </div>
-
         {/* Controls */}
         <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
           <div className="flex flex-col lg:flex-row gap-4">

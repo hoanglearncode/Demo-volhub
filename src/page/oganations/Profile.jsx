@@ -35,10 +35,10 @@ import {
   Target,
   Heart
 } from 'lucide-react';
+import ProfileTab from '../../components/oganations/profile/ProfileTab';
 
 const OrgProfileManagement = () => {
   const [activeTab, setActiveTab] = useState('profile');
-  const [isEditing, setIsEditing] = useState(false);
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
 
@@ -189,12 +189,7 @@ const OrgProfileManagement = () => {
     streaming: { label: 'Live Stream', color: 'red', icon: Target }
   };
 
-  const tierConfig = {
-    basic: { label: 'Cơ bản', color: 'gray', bgColor: 'bg-gray-100', iconColor: 'text-gray-600' },
-    silver: { label: 'Bạc', color: 'gray', bgColor: 'bg-gray-200', iconColor: 'text-gray-600' },
-    gold: { label: 'Vàng', color: 'yellow', bgColor: 'bg-yellow-100', iconColor: 'text-yellow-600' },
-    platinum: { label: 'Bạch kim', color: 'purple', bgColor: 'bg-purple-100', iconColor: 'text-purple-600' }
-  };
+
 
   // Helper for safe class names for colors (Tailwind needs static classes in production;
   // for demo/sample we keep these simple).
@@ -259,229 +254,6 @@ const OrgProfileManagement = () => {
     }
   };
 
-  const renderProfileTab = () => (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="h-32 bg-gradient-to-r from-green-500 to-blue-600 relative">
-          <div className="absolute bottom-4 left-6 flex items-end gap-4">
-            <div className="relative">
-              <img
-                src={isEditing ? formData.logo : orgData.logo}
-                alt="Logo"
-                className="w-20 h-20 rounded-lg border-4 border-white shadow-lg object-cover bg-white"
-              />
-              {isEditing && (
-                <label className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-lg cursor-pointer hover:bg-opacity-70">
-                  <Camera className="w-5 h-5 text-white" />
-                  <input type="file" className="hidden" accept="image/*" />
-                </label>
-              )}
-            </div>
-            <div className="text-white pb-2">
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  className="text-xl font-bold bg-transparent border-b border-white text-white placeholder-white focus:outline-none"
-                />
-              ) : (
-                <div className="flex items-center gap-3">
-                  <h1 className="text-xl font-bold">{orgData.name}</h1>
-                  <div className="flex gap-2">
-                    {orgData.verified && (
-                      <div className="bg-blue-500 p-1 rounded-full">
-                        <CheckCircle className="w-4 h-4 text-white" />
-                      </div>
-                    )}
-                    {orgData.premium && (
-                      <div className="bg-yellow-500 p-1 rounded-full">
-                        <Crown className="w-4 h-4 text-white" />
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-              <p className="text-green-100 text-sm">{orgData.industry}</p>
-            </div>
-          </div>
-          
-          <div className="absolute bottom-4 right-6">
-            {isEditing ? (
-              <div className="flex gap-2">
-                <button
-                  onClick={handleSave}
-                  className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-                >
-                  <Save className="w-4 h-4" />
-                  Lưu
-                </button>
-                <button
-                  onClick={handleCancel}
-                  className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-                >
-                  <X className="w-4 h-4" />
-                  Hủy
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={handleEdit}
-                className="bg-white bg-opacity-20 hover:bg-opacity-30 text-gray-700 font-semibold px-4 py-2 rounded-lg flex items-center gap-2 backdrop-blur-sm"
-              >
-                <Edit className="w-4 h-4" />
-                Chỉnh sửa
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Stats */}
-        <div className="p-6 bg-gray-50 grid grid-cols-4 gap-4">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-gray-900">{orgData.followers}</div>
-            <div className="text-sm text-gray-500">Người theo dõi</div>
-          </div>
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-1">
-              <span className="text-2xl font-bold text-gray-900">{orgData.averageRating}</span>
-              <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-            </div>
-            <div className="text-sm text-gray-500">Đánh giá TB</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-gray-900">{orgData.eventsCreated}</div>
-            <div className="text-sm text-gray-500">Sự kiện đã tạo</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-gray-900">{orgData.activeEvents}</div>
-            <div className="text-sm text-gray-500">Đang hoạt động</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Organization Details */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold mb-4">Thông tin cơ bản</h3>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Mô tả tổ chức</label>
-              {isEditing ? (
-                <textarea
-                  value={formData.description}
-                  onChange={(e) => handleInputChange('description', e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 resize-none"
-                  rows={4}
-                />
-              ) : (
-                <p className="text-gray-700">{orgData.description}</p>
-              )}
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Lĩnh vực</label>
-                {isEditing ? (
-                  <select
-                    value={formData.industry}
-                    onChange={(e) => handleInputChange('industry', e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option>Môi trường</option>
-                    <option>Giáo dục</option>
-                    <option>Y tế</option>
-                    <option>Công nghệ</option>
-                    <option>Xã hội</option>
-                  </select>
-                ) : (
-                  <p className="text-gray-900 font-medium">{orgData.industry}</p>
-                )}
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Năm thành lập</label>
-                {isEditing ? (
-                  <input
-                    type="number"
-                    value={formData.foundedYear}
-                    onChange={(e) => handleInputChange('foundedYear', parseInt(e.target.value))}
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  />
-                ) : (
-                  <p className="text-gray-900 font-medium">{orgData.foundedYear}</p>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold mb-4">Thông tin liên hệ</h3>
-          <div className="space-y-4">
-            {[
-              { field: 'email', label: 'Email', icon: Mail, type: 'email' },
-              { field: 'phone', label: 'Điện thoại', icon: Phone, type: 'tel' },
-              { field: 'website', label: 'Website', icon: Globe, type: 'url' },
-              { field: 'address', label: 'Địa chỉ', icon: MapPin, type: 'text' }
-            ].map(({ field, label, icon: Icon, type }) => (
-              <div key={field} className="flex items-center gap-3">
-                <Icon className="w-5 h-5 text-gray-400" />
-                {isEditing ? (
-                  <input
-                    type={type}
-                    value={formData[field]}
-                    onChange={(e) => handleInputChange(field, e.target.value)}
-                    placeholder={label}
-                    className="flex-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  />
-                ) : (
-                  <span className="text-gray-700">{orgData[field]}</span>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Tier & Badges */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold mb-4">Cấp độ & Huy hiệu</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className={`p-4 rounded-lg ${tierConfig[orgData.tier]?.bgColor || 'bg-gray-100'}`}>
-            <div className="flex items-center gap-3">
-              <Award className={`${tierConfig[orgData.tier]?.iconColor || 'text-gray-600'} w-8 h-8`} />
-              <div>
-                <h4 className="font-semibold">Cấp độ {tierConfig[orgData.tier]?.label}</h4>
-                <p className="text-sm text-gray-600">Tổ chức uy tín</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="p-4 rounded-lg bg-blue-50">
-            <div className="flex items-center gap-3">
-              <CheckCircle className="w-8 h-8 text-blue-600" />
-              <div>
-                <h4 className="font-semibold">Đã xác thực</h4>
-                <p className="text-sm text-gray-600">Admin đã duyệt</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="p-4 rounded-lg bg-yellow-50">
-            <div className="flex items-center gap-3">
-              <Crown className="w-8 h-8 text-yellow-600" />
-              <div>
-                <h4 className="font-semibold">Premium</h4>
-                <p className="text-sm text-gray-600">Tính năng cao cấp</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
 
   const renderServicesTab = () => (
     <div className="space-y-6">
@@ -622,8 +394,8 @@ const OrgProfileManagement = () => {
     <div className="space-y-6">
       {/* Service Categories Filter */}
       <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <div className="flex flex-wrap gap-3">
-          <button className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-medium">
+        <div className="grid grid-cols-8 gap-3">
+          <button className="px-2 py-1 bg-blue-100 text-blue-700 rounded-lg font-medium">
             Tất cả dịch vụ
           </button>
           {Object.entries(serviceCategories).map(([key, category]) => {
@@ -792,29 +564,7 @@ const OrgProfileManagement = () => {
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <h3 className="text-lg font-semibold mb-4">Cài đặt tổ chức</h3>
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="font-medium">Cho phép người dùng gửi sự kiện</h4>
-              <p className="text-sm text-gray-500">Bật/tắt việc cho phép người dùng tạo sự kiện cho tổ chức.</p>
-            </div>
-            <label className="inline-flex relative items-center cursor-pointer">
-              <input type="checkbox" className="sr-only peer" defaultChecked />
-              <div className="w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-blue-600 peer-focus:ring-4 peer-focus:ring-blue-200 transition" />
-              <span className="ml-3 text-sm font-medium text-gray-900">Bật</span>
-            </label>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="font-medium">Yêu cầu xác thực 2 bước</h4>
-              <p className="text-sm text-gray-500">Bắt buộc quản trị viên bật 2FA khi đăng nhập.</p>
-            </div>
-            <label className="inline-flex relative items-center cursor-pointer">
-              <input type="checkbox" className="sr-only peer" defaultChecked />
-              <div className="w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-blue-600 transition" />
-              <span className="ml-3 text-sm font-medium text-gray-900">Bật</span>
-            </label>
-          </div>
+          Chức năng đang được phát triển
         </div>
       </div>
     </div>
@@ -878,7 +628,7 @@ const OrgProfileManagement = () => {
 
           {/* Content based on tab */}
           <div>
-            {activeTab === 'profile' && renderProfileTab()}
+            {activeTab === 'profile' && (<ProfileTab />)}
             {activeTab === 'services' && renderServicesTab()}
             {activeTab === 'marketplace' && renderMarketplaceTab()}
             {activeTab === 'billing' && renderBillingTab()}

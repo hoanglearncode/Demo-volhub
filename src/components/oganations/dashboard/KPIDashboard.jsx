@@ -12,10 +12,10 @@ import {
   Activity
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import EventStatusCard from './EventStatusCard';
-import KPICard from './KPICard';
-import RegistrationTrendChart from './RegistrationTrendChart';
-import PostingHeatmap from './PostingHeatmap'
+import EventStatusCard from '../EventStatusCard';
+import KPICard from '../KPICard';
+import RegistrationTrendChart from '../RegistrationTrendChart';
+import PostingHeatmap from '../PostingHeatmap'
 const KPIDashboard = () => {
   // Sample data - trong thực tế sẽ lấy từ API hoặc props
   const [kpiData] = useState({

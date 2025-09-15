@@ -9,18 +9,6 @@ import {
   ChevronDown,
   ChevronUp
 } from "lucide-react";
-
-// ChatBotWidget
-// - TailwindCSS for styling
-// - Framer Motion for smooth animations
-// - lucide-react for icons
-// Props:
-// - title: string
-// - subtitle: string
-// - initialOpen: boolean
-// - initialMessages: array of { id, from: 'bot'|'user', text }
-// - onSend: function(text) -> optional promise/void
-
 export default function ChatBotWidget({
   title = "Hỗ trợ",
   subtitle = "Gặp vấn đề? Mình giúp nhé!",
@@ -75,7 +63,7 @@ export default function ChatBotWidget({
   }
 
   return (
-    <div className={`fixed bottom-7 right-10 z-50`}> 
+    <div className={`fixed bottom-7 right-3 md:right-10 z-50`}> 
       {/* Chat window */}
       <AnimatePresence>
         {open && (
@@ -156,7 +144,7 @@ export default function ChatBotWidget({
       </AnimatePresence>
 
       {/* Floating trigger */}
-      <div className="mt-3  flex items-end justify-end">
+      <div className="mt-3 flex items-end justify-end">
         <motion.button
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
@@ -167,9 +155,6 @@ export default function ChatBotWidget({
           className="flex items-center gap-3 p-4 rounded-full shadow-lg bg-indigo-500 hover:bg-fuchsia-500 text-white focus:outline-none"
         >
           <Bot size={24} />
-          <div className="md:hidden">
-            {open ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
-          </div>
         </motion.button>
       </div>
     </div>

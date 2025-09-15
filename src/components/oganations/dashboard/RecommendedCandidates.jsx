@@ -26,7 +26,7 @@ const RecommendedCandidates = ({ candidates = [] }) => {
     return (
       <div className="mb-8">
         <h2 className="text-lg font-semibold text-gray-800 mb-4">Ứng viên đề xuất</h2>
-        <div className="bg-gray-50 rounded-xl p-8 text-center">
+        <div className="bg-white border border-gray-200 rounded-xl p-8 text-center">
           <Users size={48} className="mx-auto text-gray-400 mb-3" />
           <p className="text-gray-500">Chưa có ứng viên đề xuất nào</p>
         </div>

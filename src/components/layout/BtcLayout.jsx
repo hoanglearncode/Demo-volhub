@@ -72,6 +72,8 @@ import ChatSystemPage from "../../page/oganations/ChatSystemPage.jsx"; // Hệ t
 import EventCalendarPage from "../../page/oganations/EventCalendarPage.jsx"; // Lịch sự kiện
 import SettingsPage from "../../page/oganations/SettingsPage.jsx"; // Cài đặt tổ chức
 import VolunteerRecommendationPage from "../../page/oganations/VolunteerRecommendationPage.jsx"; // Gợi ý TNV
+import NotFoundPage from "../../page/common/NotFoundPage.jsx";
+import ErrorState from "../oganations/ErrorState.jsx";
 
 function BtcLayout() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -101,7 +103,7 @@ function BtcLayout() {
         submenu: [
           { to: "/btc/events", title: "Danh sách sự kiện", Icon: ClipboardList },
           { to: "/btc/events/calendar", title: "Lịch sự kiện", Icon: Calendar },
-          { to: "/btc/recruitment-post", title: "Tạo sự kiện mới", Icon: Plus }
+          { to: "/btc/events/recruitment-post", title: "Tạo sự kiện mới", Icon: Plus }
         ]
       },
       { 
@@ -382,7 +384,7 @@ function BtcLayout() {
         </div>
       </header>
 
-      <div className="flex pt-14">
+      <div className="flex pt-14 hidden sm:block">
         {/* Sidebar */}
         <aside className={`fixed left-0 top-14 bottom-0 bg-white border-r border-gray-200 transition-all duration-300 z-40 ${
           isCollapsed ? 'w-16' : 'w-64'
@@ -466,7 +468,7 @@ function BtcLayout() {
             {/* Bottom Actions */}
             <div className="border-t border-gray-200 p-2 space-y-2">
               <Link 
-                to={'/btc/recruitment-post'} 
+                to={'/btc/events/'} 
                 className="w-full flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white py-2.5 rounded-lg transition-colors"
               >
                 <Plus size={18} />
@@ -502,7 +504,7 @@ function BtcLayout() {
                     <button className="px-3 py-1.5 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">
                       Xuất báo cáo
                     </button>
-                    <Link to="/btc/recruitment-post" className="px-3 py-1.5 text-sm bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+                    <Link to="/btc/events/" className="px-3 py-1.5 text-sm bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
                       Tạo sự kiện
                     </Link>
                   </>
@@ -569,11 +571,77 @@ function BtcLayout() {
               <Route path="/btc/services" element={<ServicePurchasePage />} />
               <Route path="/btc/my-cart" element={<MyCartsPage />} />
               <Route path="/btc/post-box" element={<PostBoxPage />} />
+
+              <Route path="/btc/*" element={<ErrorState />} />
             </Routes>
           </div>
         </main>
       </div>
 
+      <div className="block sm:hidden">
+        <div></div>
+        <div className="p-6">
+            <Routes>
+              {/* Dashboard */}
+              <Route path="/btc" element={<Dashboard isCollapsed={isCollapsed} />} />
+
+              {/* Event Management Routes */}
+              <Route path="/btc/events" element={<RecruitmentPage />} />
+              <Route path="/btc/events/calendar" element={<EventCalendarPage />} />
+              <Route path="/btc/events/detail/:id" element={<EventDetailPage />} />
+              <Route path="/btc/events/edit/:id" element={<RecruitmentPostPage />} />
+              <Route path="/btc/events/clone/:id" element={<RecruitmentPostPage />} />
+              <Route path="/btc/events/recruitment-post" element={<RecruitmentPostPage />} />
+
+              {/* Volunteer Management Routes */}
+              <Route path="/btc/volunteers" element={<VolunteerManagementPage />} />
+              <Route path="/btc/volunteers/recommendations" element={<VolunteerRecommendationPage />} />
+              <Route path="/btc/volunteers/detail/:id" element={<VolunteerDetailPage />} />
+              <Route path="/btc/volunteers/assignment/:eventId" element={<VolunteerAssignmentPage />} />
+              <Route path="/btc/cv-manage" element={<CVManages />} />
+              <Route path="/btc/cv-manage/view-profile/:id" element={<Profile />} />
+              <Route path="/btc/cv-manage/contact/:id" element={<Profile />} />
+
+              {/* Analytics & Reports Routes */}
+              <Route path="/btc/analytics" element={<OrgAnalyticsPage />} />
+              <Route path="/btc/analytics/events" element={<EventAnalyticsPage />} />
+              <Route path="/btc/recruitment-report" element={<RecruitmentDashboard />} />
+              <Route path="/btc/recruitment/report/:id" element={<RecruitmentReport />} />
+
+              {/* Organization Profile Routes */}
+              <Route path="/btc/profile" element={<OrgProfileManagement />} />
+              <Route path="/btc/profile/verification" element={<VerifyPage />} />
+              <Route path="/btc/feedback" element={<FeedbackManagementPage />} />
+
+              {/* Promotion & Media Routes */}
+              <Route path="/btc/promotion" element={<PromotionToolsPage />} />
+              <Route path="/btc/promotion/recap" element={<EventRecapPage />} />
+              <Route path="/btc/blog" element={<BlogManagementPage />} />
+              <Route path="/btc/media" element={<MediaToolsDashboard />} />
+
+              {/* Support & Communication Routes */}
+              <Route path="/btc/support" element={<RecruiterSupportPage />} />
+              <Route path="/btc/chat" element={<ChatSystemPage />} />
+
+              {/* System Routes */}
+              <Route path="/btc/notification-system" element={<SystemNotificationPage />} />
+              <Route path="/btc/notification-system/detail/:id" element={<SystemNotificationPage />} />
+              
+              {/* Account & Settings Routes */}
+              <Route path="/btc/account" element={<Account />} />
+              <Route path="/btc/settings" element={<SettingsPage />} />
+              <Route path="/btc/verify" element={<VerifyPage />} />
+              
+              {/* Additional Routes */}
+              <Route path="/btc/history" element={<HistoryPage />} />
+              <Route path="/btc/services" element={<ServicePurchasePage />} />
+              <Route path="/btc/my-cart" element={<MyCartsPage />} />
+              <Route path="/btc/post-box" element={<PostBoxPage />} />
+
+              <Route path="/btc/*" element={<ErrorState />} />
+            </Routes>
+          </div>
+      </div>
       {/* Mobile Overlay */}
       {!isCollapsed && (
         <div 

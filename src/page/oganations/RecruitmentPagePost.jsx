@@ -10,10 +10,8 @@ import axios from 'axios';
 import {toast, ToastContainer} from 'react-toastify';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-
 export default function RecruitmentPostPage() {
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState(6);
   const [formData, setFormData] = useState({
     // Basic Info
     title: '',
@@ -89,15 +87,6 @@ export default function RecruitmentPostPage() {
   const [interest, setInterest] = useState([]);
   const [task, setTask] = useState([]);
 
-  const steps = [
-    { id: 1, title: 'Thông tin cơ bản', icon: FileText },
-    { id: 2, title: 'Thời gian & Địa điểm', icon: Calendar },
-    { id: 3, title: 'Yêu cầu TNV', icon: Users },
-    { id: 4, title: 'Quyền lợi & Hỗ trợ', icon: Award },
-    { id: 5, title: 'Media & Liên hệ', icon: Camera },
-    { id: 6, title: 'Cài đặt nâng cao', icon: Settings }
-  ];
-
   useEffect(()=> {
     const loaded = async () => {
       try {
@@ -157,57 +146,44 @@ export default function RecruitmentPostPage() {
 
   const validateStep = (step) => {
     const newErrors = {};
-    
-    switch (step) {
-      case 1:
         if (!formData.title) newErrors.title = 'Tên sự kiện là bắt buộc';
         if (!formData.description) newErrors.description = 'Mô tả sự kiện là bắt buộc';
         if (!formData.category) newErrors.category = 'Danh mục là bắt buộc';
-        break;
-      case 2:
+      
         if (!formData.startDate) newErrors.startDate = 'Ngày bắt đầu là bắt buộc';
         if (!formData.startTime) newErrors.startTime = 'Giờ bắt đầu là bắt buộc';
         if (!formData.isOnline && !formData.location) newErrors.location = 'Địa điểm là bắt buộc';
-        break;
-      case 3:
+
         if (formData.volunteersNeeded < 1) newErrors.volunteersNeeded = 'Cần ít nhất 1 tình nguyện viên';
-        break;
-      case 5:
+    
         if (!formData.contactInfo.coordinatorName) newErrors.coordinatorName = 'Tên điều phối viên là bắt buộc';
         if (!formData.contactInfo.phone) newErrors.phone = 'Số điện thoại là bắt buộc';
         if (!formData.contactInfo.email) newErrors.email = 'Email là bắt buộc';
-        break;
-    }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const nextStep = () => {
-    if (validateStep(currentStep)) {
-      setCurrentStep(prev => Math.min(prev + 1, steps.length));
-    }
-  };
 
-  const prevStep = () => {
-    setCurrentStep(prev => Math.max(prev - 1, 1));
-  };
 
   const handleSubmit = async (asDraft = false) => {
     setIsSubmitting(true);
     try {
       const res = async () => {
-          const data = await axios.post(`${import.meta.env.VITE_URL}/btc/events/post-events`, formData, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              accept: 'application/json',
-            },
-            timeout: 4000
-          });
-          if(data.data.success) {
-            toast.success("Gửi dữ liệu thành công");
-            navigate('/btc/events')
-          }
+          // const data = await axios.post(`${import.meta.env.VITE_URL}/btc/events/post-events`, formData, {
+          //   headers: {
+          //     Authorization: `Bearer ${token}`,
+          //     accept: 'application/json',
+          //   },
+          //   timeout: 4000
+          // });
+          // if(data.data.success) {
+          //   toast.success("Gửi dữ liệu thành công");
+          //   navigate('/btc/events')
+          // }
+          event.addNewEvents(formData);
+          toast.success("Gửi dữ liệu thành công");
+          navigate('/btc/events')
       }
       res();
     } catch (error) {
@@ -217,10 +193,15 @@ export default function RecruitmentPostPage() {
     }
   };
 
-  const renderStepContent = () => {
-    switch (currentStep) {
-      case 1:
-        return (
+
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="mx-auto">
+        {/* Form Content */}
+        <div className="bg-white rounded-xl shadow-sm p-8">
+
+
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -308,10 +289,6 @@ export default function RecruitmentPostPage() {
               </select>
             </div>
           </div>
-        );
-
-      case 2:
-        return (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -429,11 +406,7 @@ export default function RecruitmentPostPage() {
                 />
               </div>
             )}
-          </div>
-        );
-
-      case 3:
-        return (
+          </div>          
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -562,10 +535,6 @@ export default function RecruitmentPostPage() {
               </select>
             </div>
           </div>
-        );
-
-      case 4:
-        return (
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-medium text-gray-900 mb-4">Quyền lợi cho tình nguyện viên</h3>
@@ -627,10 +596,6 @@ export default function RecruitmentPostPage() {
               </div>
             </div>
           </div>
-        );
-
-      case 5:
-        return (
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -784,10 +749,6 @@ export default function RecruitmentPostPage() {
               <p className="text-sm text-gray-500 mt-2">Tối đa 8 ảnh bổ sung</p>
             </div>
           </div>
-        );
-
-      case 6:
-        return (
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-medium text-gray-900 mb-4">Cài đặt phê duyệt</h3>
@@ -886,98 +847,20 @@ export default function RecruitmentPostPage() {
               </div>
             </div>
           </div>
-        );
-
-      default:
-        return null;
-    }
-  };
-
-
-  return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="mx-auto">
-{/* Progress Steps */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            {steps.map((step) => {
-              const StepIcon = step.icon;
-              return (
-                <div
-                  key={step.id}
-                  className={`flex items-center ${step.id < steps.length ? 'flex-1' : ''}`}
-                >
-                  <div className="flex items-center">
-                    <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        currentStep >= step.id
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-200 text-gray-500'
-                      }`}
-                    >
-                      {currentStep > step.id ? (
-                        <CheckCircle className="w-5 h-5" />
-                      ) : (
-                        <StepIcon className="w-5 h-5" />
-                      )}
-                    </div>
-                    <div className="ml-3">
-                      <p className={`text-sm font-medium ${
-                        currentStep >= step.id ? 'text-blue-600' : 'text-gray-500'
-                      }`}>
-                        Step {step.id}
-                      </p>
-                      <p className={`text-xs ${
-                        currentStep >= step.id ? 'text-blue-600' : 'text-gray-500'
-                      }`}>
-                        {step.title}
-                      </p>
-                    </div>
-                  </div>
-                  {step.id < steps.length && (
-                    <div
-                      className={`flex-1 h-1 mx-4 ${
-                        currentStep > step.id ? 'bg-blue-600' : 'bg-gray-200'
-                      }`}
-                    />
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Form Content */}
-        <div className="bg-white rounded-xl shadow-sm p-8">
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold text-gray-900">
-              {steps.find(s => s.id === currentStep)?.title}
-            </h2>
-          </div>
-
-          {renderStepContent()}
 
           {/* Navigation Buttons */}
           <div className="flex items-center justify-between mt-8 pt-6 border-t">
-            <button
-              onClick={prevStep}
-              disabled={currentStep === 1}
-              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Quay lại
-            </button>
+          
 
             <div className="flex space-x-3">
-              {currentStep === steps.length ? (
-                <>
-                  <button
+            `<button
                     onClick={() => handleSubmit(true)}
                     disabled={isSubmitting}
                     className="flex items-center px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50"
                   >
                     <Save className="w-4 h-4 mr-2" />
                     {isSubmitting ? 'Đang lưu...' : 'Lưu nháp'}
-                  </button>
+              </button>
                   <button
                     onClick={() => handleSubmit(false)}
                     disabled={isSubmitting}
@@ -986,15 +869,6 @@ export default function RecruitmentPostPage() {
                     <Send className="w-4 h-4 mr-2" />
                     {isSubmitting ? 'Đang gửi...' : 'Gửi phê duyệt'}
                   </button>
-                </>
-              ) : (
-                <button
-                  onClick={nextStep}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                >
-                  Tiếp tục
-                </button>
-              )}
             </div>
           </div>
         </div>

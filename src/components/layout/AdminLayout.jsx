@@ -81,7 +81,11 @@ import {
   ThumbsUp,
   ThumbsDown,
   MessageSquareMore,
-  Factory
+  Factory,
+  BotIcon,
+  Smartphone,
+  Construction,
+  AlertOctagon
 } from "lucide-react";
 
 // Auth 
@@ -392,8 +396,8 @@ function AdminLayout() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 bg-slate-800 text-white z-50 shadow-lg">
-        <div className="flex items-center justify-between px-4 h-14">
+      <header className="fixed top-0 inset-x-0 bg-slate-800 text-white z-50 shadow-lg">
+        <div className="mx-auto max-w-screen-xl w-full flex items-center justify-between px-4 h-14">
           {/* Left section */}
           <div className="flex items-center gap-4">
             <button
@@ -570,7 +574,8 @@ function AdminLayout() {
         </div>
       </header>
 
-      <div className="flex pt-14">
+      {/* Desktop Layout */}
+      <div className="hidden md:flex pt-14">
         {/* Sidebar */}
         <aside className={`fixed left-0 top-14 bottom-0 bg-white border-r border-gray-200 transition-all duration-300 z-40 ${
           isCollapsed ? "w-16" : "w-64"
@@ -705,101 +710,182 @@ function AdminLayout() {
           </div>
 
           {/* Page Content */}
-            <div className="p-6">
-              <Routes>
-                {/* Dashboard */}
-                <Route path="/admin" element={<RequireAuth><Dashboard /></RequireAuth>} />
-                <Route path="/admin/analytics/platform" element={<RequireAuth><PlatformAnalytics /></RequireAuth>} />
-                <Route path="/admin/alerts" element={<RequireAuth><SystemAlerts /></RequireAuth>} />
+          <div className="p-6">
+            <Routes>
+              {/* Dashboard */}
+              <Route path="/admin" element={<RequireAuth><Dashboard /></RequireAuth>} />
+              <Route path="/admin/analytics/platform" element={<RequireAuth><PlatformAnalytics /></RequireAuth>} />
+              <Route path="/admin/alerts" element={<RequireAuth><SystemAlerts /></RequireAuth>} />
 
-                {/* Event Management Routes */}
-                {/** 2 */}
-                <Route path="/admin/events" element={<RequireAuth><EventManagement /></RequireAuth>} />
-                <Route path="/admin/events/create" element={<RequireAuth><EventCreatePage /></RequireAuth>} />
-                <Route path="/admin/events/detail/:id" element={<RequireAuth><EventDetailPage /></RequireAuth>} />
-                <Route path="/admin/events/approval-queue" element={<RequireAuth><EventApprovalQueue /></RequireAuth>} />
-                <Route path="/admin/events/quality-control" element={<RequireAuth><EventQualityControl /></RequireAuth>} />
-                <Route path="/admin/events/analytics" element={<RequireAuth><EventAnalytics /></RequireAuth>} />
+              {/* Event Management Routes */}
+              {/** 2 */}
+              <Route path="/admin/events" element={<RequireAuth><EventManagement /></RequireAuth>} />
+              <Route path="/admin/events/create" element={<RequireAuth><EventCreatePage /></RequireAuth>} />
+              <Route path="/admin/events/detail/:id" element={<RequireAuth><EventDetailPage /></RequireAuth>} />
+              <Route path="/admin/events/approval-queue" element={<RequireAuth><EventApprovalQueue /></RequireAuth>} />
+              <Route path="/admin/events/quality-control" element={<RequireAuth><EventQualityControl /></RequireAuth>} />
+              <Route path="/admin/events/analytics" element={<RequireAuth><EventAnalytics /></RequireAuth>} />
 
-                {/* Volunteer Management Routes */}
-                {/** 3 */}
-                <Route path="/admin/volunteers" element={<RequireAuth><VolunteerManagement /></RequireAuth>} />
-                <Route path="/admin/volunteers/detail/:id" element={<RequireAuth><VolunteerDetailPage /></RequireAuth>} />
-                <Route path="/admin/volunteers/verification" element={<RequireAuth><VolunteerVerification /></RequireAuth>} />
-                <Route path="/admin/volunteers/violations" element={<RequireAuth><VolunteerViolationManagement /></RequireAuth>} />
-                <Route path="/admin/volunteers/certifications" element={<RequireAuth><VolunteerCertificationSystem /></RequireAuth>} />
+              {/* Volunteer Management Routes */}
+              {/** 3 */}
+              <Route path="/admin/volunteers" element={<RequireAuth><VolunteerManagement /></RequireAuth>} />
+              <Route path="/admin/volunteers/detail/:id" element={<RequireAuth><VolunteerDetailPage /></RequireAuth>} />
+              <Route path="/admin/volunteers/verification" element={<RequireAuth><VolunteerVerification /></RequireAuth>} />
+              <Route path="/admin/volunteers/violations" element={<RequireAuth><VolunteerViolationManagement /></RequireAuth>} />
+              <Route path="/admin/volunteers/certifications" element={<RequireAuth><VolunteerCertificationSystem /></RequireAuth>} />
 
-                {/* Partner Management Routes */}
-                {/** 1 */}
-                <Route path="/admin/partners" element={<RequireAuth><PartnerManagement /></RequireAuth>} />
-                <Route path="/admin/partners/verification" element={<RequireAuth><PartnerVerification /></RequireAuth>} />
-                <Route path="/admin/partners/tiers" element={<RequireAuth><PartnerTierManagement /></RequireAuth>} />
-                <Route path="/admin/partners/analytics" element={<RequireAuth><PartnerAnalytics /></RequireAuth>} />
+              {/* Partner Management Routes */}
+              {/** 1 */}
+              <Route path="/admin/partners" element={<RequireAuth><PartnerManagement /></RequireAuth>} />
+              <Route path="/admin/partners/verification" element={<RequireAuth><PartnerVerification /></RequireAuth>} />
+              <Route path="/admin/partners/tiers" element={<RequireAuth><PartnerTierManagement /></RequireAuth>} />
+              <Route path="/admin/partners/analytics" element={<RequireAuth><PartnerAnalytics /></RequireAuth>} />
 
-                {/* Connection Management Routes */}
-                {/** 4 */}
-                <Route path="/admin/connections" element={<RequireAuth><ConnectionQueue /></RequireAuth>} />
-                <Route path="/admin/connections/approval-queue" element={<RequireAuth><ConnectionApprovalQueue /></RequireAuth>} />
-                <Route path="/admin/connections/proxy-chat" element={<RequireAuth><ProxyChatSystem /></RequireAuth>} />
-                <Route path="/admin/connections/abuse-reports" element={<RequireAuth><AbuseReportManagement /></RequireAuth>} />
+              {/* Connection Management Routes */}
+              {/** 4 */}
+              <Route path="/admin/connections" element={<RequireAuth><ConnectionQueue /></RequireAuth>} />
+              <Route path="/admin/connections/approval-queue" element={<RequireAuth><ConnectionApprovalQueue /></RequireAuth>} />
+              <Route path="/admin/connections/proxy-chat" element={<RequireAuth><ProxyChatSystem /></RequireAuth>} />
+              <Route path="/admin/connections/abuse-reports" element={<RequireAuth><AbuseReportManagement /></RequireAuth>} />
 
-                {/* Content Management Routes */}
-                {/** 5 */}
-                <Route path="/admin/content" element={<RequireAuth><ContentModeration /></RequireAuth>} />
-                <Route path="/admin/content/queue" element={<RequireAuth><ContentQueue /></RequireAuth>} />
-                <Route path="/admin/content/spotlight" element={<RequireAuth><ContentSpotlight /></RequireAuth>} />
-                <Route path="/admin/content/community-feed" element={<RequireAuth><CommunityFeedManagement /></RequireAuth>} />
+              {/* Content Management Routes */}
+              {/** 5 */}
+              <Route path="/admin/content" element={<RequireAuth><ContentModeration /></RequireAuth>} />
+              <Route path="/admin/content/queue" element={<RequireAuth><ContentQueue /></RequireAuth>} />
+              <Route path="/admin/content/spotlight" element={<RequireAuth><ContentSpotlight /></RequireAuth>} />
+              <Route path="/admin/content/community-feed" element={<RequireAuth><CommunityFeedManagement /></RequireAuth>} />
 
-                {/* Services Management Routes  - 1*/}
-                {/* 1 */}
-                <Route path="/admin/services" element={<RequireAuth><ServicesPage /></RequireAuth>} />
+              {/* Services Management Routes  - 1*/}
+              {/* 1 */}
+              <Route path="/admin/services" element={<RequireAuth><ServicesPage /></RequireAuth>} />
 
-                {/* Reports & Analytics Routes */}
-                <Route path="/admin/report" element={<RequireAuth><Reports /></RequireAuth>} />
-                <Route path="/admin/report/comparison" element={<RequireAuth><ComparisonReports /></RequireAuth>} />
-                <Route path="/admin/report/connection-funnel" element={<RequireAuth><ConnectionFunnelAnalytics /></RequireAuth>} />
+              {/* Reports & Analytics Routes */}
+              <Route path="/admin/report" element={<RequireAuth><Reports /></RequireAuth>} />
+              <Route path="/admin/report/comparison" element={<RequireAuth><ComparisonReports /></RequireAuth>} />
+              <Route path="/admin/report/connection-funnel" element={<RequireAuth><ConnectionFunnelAnalytics /></RequireAuth>} />
 
-                {/* System Management Routes */}
-                <Route path="/admin/system" element={<RequireAuth><SystemMonitoring /></RequireAuth>} />
-                <Route path="/admin/system/alerts" element={<RequireAuth><SystemAlerts /></RequireAuth>} />
-                <Route path="/admin/system/audit-log" element={<RequireAuth><AuditLog /></RequireAuth>} />
-                <Route path="/admin/system/roles" element={<RequireAuth><RoleManagement /></RequireAuth>} />
-                <Route path="/admin/system/integrations" element={<RequireAuth><IntegrationManagement /></RequireAuth>} />
+              {/* System Management Routes */}
+              <Route path="/admin/system" element={<RequireAuth><SystemMonitoring /></RequireAuth>} />
+              <Route path="/admin/system/alerts" element={<RequireAuth><SystemAlerts /></RequireAuth>} />
+              <Route path="/admin/system/audit-log" element={<RequireAuth><AuditLog /></RequireAuth>} />
+              <Route path="/admin/system/roles" element={<RequireAuth><RoleManagement /></RequireAuth>} />
+              <Route path="/admin/system/integrations" element={<RequireAuth><IntegrationManagement /></RequireAuth>} />
 
-                {/* Backup & Export Routes */}
-                <Route path="/admin/backup" element={<RequireAuth><DataBackup /></RequireAuth>} />
-                <Route path="/admin/backup/export" element={<RequireAuth><DataExport /></RequireAuth>} />
+              {/* Backup & Export Routes */}
+              <Route path="/admin/backup" element={<RequireAuth><DataBackup /></RequireAuth>} />
+              <Route path="/admin/backup/export" element={<RequireAuth><DataExport /></RequireAuth>} />
 
-                {/* Support Routes */}
-                <Route path="/admin/support" element={<RequireAuth><Support /></RequireAuth>} />
-                <Route path="/admin/support/tickets" element={<RequireAuth><TicketManagement /></RequireAuth>} />
-                <Route path="/admin/support/complaints" element={<RequireAuth><ComplaintResolution /></RequireAuth>} />
+              {/* Support Routes */}
+              <Route path="/admin/support" element={<RequireAuth><Support /></RequireAuth>} />
+              <Route path="/admin/support/tickets" element={<RequireAuth><TicketManagement /></RequireAuth>} />
+              <Route path="/admin/support/complaints" element={<RequireAuth><ComplaintResolution /></RequireAuth>} />
 
-                {/* Settings Routes */}
-                <Route path="/admin/profile" element={<RequireAuth><AdminProfile /></RequireAuth>} />
-                <Route path="/admin/settings" element={<RequireAuth><AdminSettings /></RequireAuth>} />
-                <Route path="/admin/notifications/manage" element={<RequireAuth><NotificationManagement /></RequireAuth>} />
+              {/* Settings Routes */}
+              <Route path="/admin/profile" element={<RequireAuth><AdminProfile /></RequireAuth>} />
+              <Route path="/admin/settings" element={<RequireAuth><AdminSettings /></RequireAuth>} />
+              <Route path="/admin/notifications/manage" element={<RequireAuth><NotificationManagement /></RequireAuth>} />
 
-                {/* Legacy Routes */}
-                <Route path="/admin/post-box" element={<RequireAuth><ConnectionQueue /></RequireAuth>} />
-                <Route path="/admin/history" element={<RequireAuth><AuditLog /></RequireAuth>} />
+              {/* Legacy Routes */}
+              <Route path="/admin/post-box" element={<RequireAuth><ConnectionQueue /></RequireAuth>} />
+              <Route path="/admin/history" element={<RequireAuth><AuditLog /></RequireAuth>} />
 
-                <Route path="/admin/queue" element={<RequireAuth><QueuePage /></RequireAuth>} />
+              <Route path="/admin/queue" element={<RequireAuth><QueuePage /></RequireAuth>} />
 
-                {/* Fallback */}
-                <Route path="/admin/*" element={<NotFoundPage />} />
-              </Routes>
+              {/* Fallback */}
+              <Route path="/admin/*" element={<NotFoundPage />} />
+            </Routes>
           </div>
         </main>
-        <ToastContainer />
       </div>
-      {/* Mobile Overlay */}
-      {!isCollapsed && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
-          onClick={() => setIsCollapsed(true)}
-        />
-      )}
+
+      {/* Mobile Layout */}
+      <div className="block md:hidden pt-14 min-h-screen">
+        <div className="flex flex-col items-center justify-center h-[calc(100vh-3.5rem)] px-6 text-center bg-gradient-to-br from-red-50 to-orange-50">
+          {/* Icon Section */}
+          <div className="mb-8 relative">
+            <div className="w-24 h-24 bg-gradient-to-br from-red-500 to-orange-500 rounded-2xl flex items-center justify-center shadow-2xl">
+              <Smartphone className="text-white" size={40} />
+            </div>
+            <div className="absolute -top-2 -right-2 w-8 h-8 bg-orange-400 rounded-full flex items-center justify-center">
+              <Construction className="text-white" size={16} />
+            </div>
+          </div>
+
+          {/* Content Section */}
+          <div className="max-w-md space-y-6">
+            <div className="space-y-3">
+              <h2 className="text-2xl font-bold text-gray-800">
+                Chức năng đang phát triển
+              </h2>
+              <p className="text-gray-600 leading-relaxed">
+                Giao diện quản trị admin hiện tại chưa được tối ưu hóa cho thiết bị di động. 
+                Vui lòng sử dụng máy tính hoặc tablet để có trải nghiệm tốt nhất.
+              </p>
+            </div>
+
+            {/* Features List */}
+            <div className="bg-white rounded-xl p-6 shadow-lg border border-orange-100">
+              <div className="flex items-center gap-2 mb-4">
+                <AlertOctagon className="text-orange-500" size={20} />
+                <h3 className="font-semibold text-gray-800">Đang phát triển:</h3>
+              </div>
+              <ul className="space-y-2 text-left text-sm text-gray-600">
+                <li className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                  Giao diện responsive cho mobile
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                  Navigation menu tối ưu cho touch
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                  Dashboard view cho màn hình nhỏ
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                  Quick actions cho admin mobile
+                </li>
+              </ul>
+            </div>
+
+            {/* System Info */}
+            <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-blue-700 font-medium">Phiên bản hệ thống:</span>
+                <span className="font-mono text-blue-900">{version}</span>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col gap-3 pt-4">
+              <button
+                onClick={() => window.location.reload()}
+                className="flex items-center justify-center gap-2 bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-3 rounded-lg font-medium transition-transform hover:scale-105 active:scale-95"
+              >
+                <RefreshCw size={18} />
+                Làm mới trang
+              </button>
+              
+              <Link
+                to="/"
+                className="flex items-center justify-center gap-2 bg-gray-100 text-gray-700 px-6 py-3 rounded-lg font-medium transition-colors hover:bg-gray-200"
+              >
+                <Globe size={18} />
+                Về trang chủ
+              </Link>
+            </div>
+          </div>
+
+          {/* Footer Info */}
+          <div className="mt-12 text-xs text-gray-500 space-y-1">
+            <p>© {new Date().getFullYear()} VolunteerHub Admin Panel</p>
+            <p>Được thiết kế tối ưu cho desktop và tablet</p>
+          </div>
+        </div>
+      </div>
+
+      <ToastContainer />
     </div>
   );
 }

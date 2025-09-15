@@ -17,8 +17,7 @@ import {
   XCircle
 } from 'lucide-react';
 import recruitmentService  from '../../services/oganations/recruitmentService.js';
-import ErrorState from '../../components/oganations/ErrorState.jsx';
-
+import { useEvent } from '../../context/EventsContext';
 // map status API -> tiếng Việt
 function mapStatus(status) {
   switch (status) {
@@ -65,68 +64,9 @@ function formatDate(dateStr) {
   return d.toLocaleDateString(); // bạn có thể đổi format nếu muốn
 }
 
-// normalize function: chuẩn hóa nhiều dạng input thành 1 schema
-function normalizeRecruitments(items = []) {
-  const safeNumber = (v) => {
-    const n = Number(v ?? 0);
-    return Number.isFinite(n) ? n : 0;
-  };
-
-  return (items || []).map((item) => {
-    // hỗ trợ camelCase và snake_case
-    const id = item.id ?? item._id ?? '';
-    const title = item.title ?? item.activityTitle ?? item.name ?? item.job_title ?? null;
-    const organizationName = item.organizationName ?? item.organization ?? item.orgName ?? '';
-    // raw status có thể đã là VN hoặc EN
-    const rawStatus = item.status ?? item.rawStatus ?? '';
-    const statusVN = mapStatus(rawStatus);
-    const statusColor = getStatusColor(statusVN);
-
-    const createdAt = item.createdAt ?? item.created_at ?? item.timeStart ?? item.created ?? '';
-    const createdDate = formatDate(createdAt);
-
-    const applicants = safeNumber(item.applications ?? item.applicants ?? item.num_applicants ?? 0);
-    const views = safeNumber(item.views ?? 0);
-    const optimization = item.optimization !== undefined && item.optimization !== null ? String(item.optimization) : '0%';
-
-    // jobPostings: dùng salary/department/position nếu có, fallback 'N/A'
-    const jobPostings = item.jobPostings ?? item.job_postings ?? (item.salary ? item.salary : (item.department ?? 'N/A'));
-
-    const serviceStatus = item.serviceStatus ?? item.service_status ?? (item.isFeatured ? 'Featured' : 'Chưa có');
-
-    const location = item.local ?? item.location ?? item.city ?? '';
-
-    const compensation = item.compensation ?? item.salary ?? '';
-
-    const timeStart = item.timeStart ?? item.start ?? '';
-    const timeEnd = item.timeEnd ?? item.end ?? '';
-    const deadline = item.deadline ?? item.deadline_at ?? '';
-
-    return {
-      id,
-      name: title ?? 'Không có tiêu đề',
-      rawStatus,
-      status: statusVN,
-      statusColor,
-      createdDate,
-      applicants,
-      views,
-      optimization,
-      jobPostings,
-      serviceStatus,
-      organizationName,
-      location,
-      compensation,
-      timeStart,
-      timeEnd,
-      deadline,
-      // keep original for debug if needed
-      original: item
-    };
-  });
-}
 
 const CampaignManagement = () => {
+  const {event} = useEvent();
   const navigate = useNavigate();
   // read query params
   const [searchParams] = useSearchParams();
@@ -165,12 +105,10 @@ const CampaignManagement = () => {
         const res = await recruitmentService.getRecruitments();
         if (!isMounted) return;
 
-        const items = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
-        const normalized = normalizeRecruitments(items);
+        const items = res.data || [];
 
-        setCampaignsData(normalized);
+        setCampaignsData(items);
       } catch (err) {
-        console.error('Lỗi tải campaigns:', err);
         setError('Không thể tải danh sách chiến dịch');
         setCampaignsData([]);
       } finally {
@@ -275,30 +213,39 @@ const CampaignManagement = () => {
       </div>
     );
   };
-  if (error) return <ErrorState />;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 w-full">
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+        <div className="mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-800">Quản lý chiến dịch tuyển dụng</h1>
               <p className="text-gray-600 mt-1">Theo dõi và quản lý tất cả chiến dịch tuyển dụng của bạn</p>
             </div>
-            <Link
-              to="/btc/recruitment-post"
-              className="bg-green-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-600 transition-all duration-300 flex items-center space-x-2 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-            >
-              <Plus className="w-5 h-5" />
-              <span>Thêm chiến dịch mới</span>
-            </Link>
+            <div className='flex gap-5'>
+              <Link
+                to="/btc/events/recruitment-post"
+                className="bg-green-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-600 transition-all duration-300 flex items-center space-x-2 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              >
+                <Plus className="w-5 h-5" />
+                <span>Thêm chiến dịch mới</span>
+              </Link>
+              <Link
+                to="/btc/events/calendar"
+                className="text-gray-700 border border-green-500 px-6 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-all duration-300 flex items-center space-x-2 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              >
+                <Calendar className="w-5 h-5" />
+                <span>Lịch sự kiện</span>
+              </Link>
+            </div>
+
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="mx-auto px-6 py-8">
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
@@ -394,12 +341,10 @@ const CampaignManagement = () => {
           <div className="bg-gray-50 border-b sticky top-0 left-0 border-gray-200 z-10">
             <div className="grid grid-cols-12 gap-4 px-6 py-4 text-sm font-semibold text-gray-700">
               <div className="col-span-3">Chiến dịch tuyển dụng</div>
-              <div className="col-span-1 text-center">Tối ưu</div>
               <div className="col-span-2">Tin tuyển dụng</div>
-              <div className="col-span-1">UV từ hệ thống</div>
-              <div className="col-span-1">Lọc UV</div>
+              <div className="col-span-2">Thông số ứng viên</div>
               <div className="col-span-2">Dịch vụ đang chạy</div>
-              <div className="col-span-1">Hạn tuyển</div>
+              <div className="col-span-2">Hạn tuyển</div>
               <div className="col-span-1 text-center">Thao tác</div>              
             </div>
           </div>
