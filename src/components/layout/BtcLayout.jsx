@@ -610,13 +610,6 @@ function BtcLayout() {
               </Routes>
           </div>
       </div>
-      {/* Mobile Overlay */}
-      {!isCollapsed && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
-          onClick={() => setIsCollapsed(true)}
-        />
-      )}
     </div>
   );
 }
