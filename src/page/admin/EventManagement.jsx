@@ -27,7 +27,7 @@ import {
 
 const EventManagement = () => {
   const [activeTab, setActiveTab] = useState('all');
-  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterStatus, setFilterStatus] = useState('VOLUNTEER');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedEvents, setSelectedEvents] = useState([]);
   const [selectAll, setSelectAll] = useState(false);

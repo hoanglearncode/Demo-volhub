@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, Calendar, ChevronLeft, ChevronRight, Heart, MapPin, Users, Star, Award, Globe } from 'lucide-react';
 
-import VolunteerFeedback from '../../components/user/VolunteerFeedbackSection.jsx';
-import SearchBanner from "../../components/common/SearchBanner.jsx";
-import ActivityCard from '../../components/common/ActivityCart.jsx';
 
 // Mock data for demonstration
 const stats = [
@@ -85,7 +82,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <SearchBanner />
+   
       
       {/* Platform Stats Section */}
       <section className="py-12 sm:py-16 lg:py-20">
@@ -147,9 +144,7 @@ const Home = () => {
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {activity.map((item) => (
-              <ActivityCard key={item.id} activity={item} />
-            ))}
+            
           </div>
           
           <div className="text-center mt-8 sm:hidden">
@@ -223,7 +218,6 @@ const Home = () => {
         </div>
       </section>
       
-      <VolunteerFeedback />
     </div>
   );
 };

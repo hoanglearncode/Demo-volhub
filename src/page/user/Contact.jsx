@@ -91,26 +91,6 @@ const useContactForm = () => {
   };
 };
 
-// UI Components - Tách biệt giao diện
-
-// Message Component
-const MessageNotification = ({ message, onRemove }) => (
-  <div className={`p-4 rounded-md shadow-lg transition-all duration-300 ${
-    message.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-  }`}>
-    <div className="flex items-center justify-between">
-      <span>{message.message}</span>
-      <button 
-        onClick={() => onRemove(message.id)}
-        className="ml-4 text-gray-500 hover:text-gray-700"
-      >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-  </div>
-);
 
 // Contact Form Component
 const ContactForm = ({ formData, onInputChange, onSubmit, services }) => (
@@ -328,29 +308,6 @@ const ContactInfo = ({ data }) => (
   </div>
 );
 
-// Map Component
-const MapSection = () => (
-  <div className="mt-12">
-    <div className="bg-white rounded-lg shadow-lg p-8">
-      <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-        <i className="fas fa-map text-blue-600 mr-2"></i>
-        Vị Trí Của Chúng Tôi
-      </h3>
-      <div className="bg-gray-200 h-64 rounded-lg flex items-center justify-center">
-        <iframe 
-          className="h-full w-full rounded-lg" 
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d21802.600095030924!2d105.79699377701378!3d10.00697899892561!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31a063005e8d0845%3A0x33c293ed4cc6875f!2zxJDGsOG7nW5nIDIxLCBz4buRIG5ow6AgQzQvNzkga2RjIDU4NiwgUGjGsOG7nW5nIFBow7ogVGjhu6ksIFF14bqtbiBDw6FpIFLEg25nLCBUaMOgbmggUGjhu5EgQ-G6p24gVGjGoS4!5e0!3m2!1svi!2s!4v1753697464391!5m2!1svi!2s" 
-          width="600" 
-          height="450" 
-          style={{border:0}} 
-          allowFullScreen="" 
-          loading="lazy" 
-          referrerPolicy="no-referrer-when-downgrade"
-        />
-      </div>
-    </div>
-  </div>
-);
 
 // Main Contact Page Component
 const ContactPage = () => {
@@ -363,7 +320,7 @@ const ContactPage = () => {
   } = useContactForm();
 
   return (
-    <>
+    <div>
       {/* Header Section */}
       <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-16">
         <div className="container mx-auto px-4 text-center">
@@ -380,17 +337,6 @@ const ContactPage = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-12">
-        {/* Message Notifications */}
-        <div className="fixed top-4 right-4 z-50 space-y-2">
-          {messages.map((message) => (
-            <MessageNotification 
-              key={message.id} 
-              message={message} 
-              onRemove={removeMessage} 
-            />
-          ))}
-        </div>
-
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Contact Form */}
           <ContactForm 
@@ -404,13 +350,8 @@ const ContactPage = () => {
           <ContactInfo data={contactData} />
         </div>
 
-        {/* Map Section */}
-        {contactData.showMap && <MapSection />}
       </main>
-
-      {/* FontAwesome CDN for icons */}
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-    </>
+    </div>
   );
 };
 

@@ -397,7 +397,7 @@ function AdminLayout() {
     <div className="flex flex-col min-h-screen bg-gray-50">
       {/* Header */}
       <header className="fixed top-0 inset-x-0 bg-slate-800 text-white z-50 shadow-lg">
-        <div className="mx-auto max-w-screen-xl w-full flex items-center justify-between px-4 h-14">
+        <div className="mx-auto w-full flex items-center justify-between px-4 h-14">
           {/* Left section */}
           <div className="flex items-center gap-4">
             <button
@@ -676,41 +676,8 @@ function AdminLayout() {
 
         {/* Main Content */}
         <main className={`flex-1 transition-all duration-300 ${isCollapsed ? "ml-16" : "ml-64"}`}>
-          {/* Page Header */}
-          <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 z-30">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-800">{getCurrentPageTitle()}</h1>
-                <p className="text-sm text-gray-600 mt-1">
-                  {getPageDescription()}
-                </p>
-              </div>
-              
-              {/* Quick Actions */}
-              <div className="flex items-center gap-2">
-                {getQuickActions().map((action, index) => (
-                  <Link
-                    key={index}
-                    to={action.path}
-                    className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
-                      action.variant === 'primary' 
-                        ? 'bg-red-500 text-white hover:bg-red-600' 
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    {action.label}
-                  </Link>
-                ))}
-                
-                <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-                  <RefreshCw size={16} />
-                </button>
-              </div>
-            </div>
-          </div>
-
           {/* Page Content */}
-          <div className="p-6">
+          <div className="p-3">
             <Routes>
               {/* Dashboard */}
               <Route path="/admin" element={<RequireAuth><Dashboard /></RequireAuth>} />
@@ -799,7 +766,7 @@ function AdminLayout() {
       </div>
 
       {/* Mobile Layout */}
-      <div className="block md:hidden pt-16 min-h-screen">
+      <div className="block md:hidden pt-17 min-h-screen">
         <div className="flex flex-col items-center justify-center h-[calc(100vh-3.5rem)] px-6 text-center bg-gradient-to-br from-red-50 to-orange-50">
           {/* Icon Section */}
           <div className="mb-8 relative">

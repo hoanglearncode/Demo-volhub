@@ -6,7 +6,7 @@ import {
   TrendingUp, Users, Activity, Target, ChevronDown, Download,
   MessageSquare, Flag, History, Settings
 } from 'lucide-react';
-
+ 
 const VolunteerManagement = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -770,52 +770,6 @@ const VolunteerManagement = () => {
           }}
         />
       )}
-
-      {/* Verification Queue Widget */}
-      <div className="fixed bottom-6 right-6 w-80 bg-white border border-gray-200 rounded-lg shadow-lg p-4">
-        <div className="flex items-center justify-between mb-3">
-          <h4 className="font-semibold text-gray-900">Hàng đợi xác minh</h4>
-          <span className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">
-            {stats.pending}
-          </span>
-        </div>
-        <div className="space-y-2">
-          {volunteers.filter(v => v.status === 'pending').slice(0, 3).map(volunteer => (
-            <div key={volunteer.id} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
-              <div className="flex items-center space-x-2">
-                <img 
-                  src={volunteer.avatar} 
-                  alt={volunteer.name}
-                  className="w-6 h-6 rounded-full object-cover"
-                />
-                <span className="text-sm font-medium text-gray-900">{volunteer.name}</span>
-              </div>
-              <div className="flex space-x-1">
-                <button 
-                  onClick={() => handleVerifyVolunteer(volunteer.id)}
-                  className="p-1 text-green-600 hover:bg-green-100 rounded"
-                  title="Xác minh"
-                >
-                  <CheckCircle className="w-4 h-4" />
-                </button>
-                <button 
-                  className="p-1 text-red-600 hover:bg-red-100 rounded"
-                  title="Từ chối"
-                >
-                  <XCircle className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          ))}
-          {stats.pending > 3 && (
-            <div className="text-center">
-              <button className="text-blue-600 hover:text-blue-800 text-sm">
-                Xem thêm {stats.pending - 3} TNV...
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
     </div>
   );
 };

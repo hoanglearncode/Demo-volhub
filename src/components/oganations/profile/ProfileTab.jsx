@@ -277,42 +277,6 @@ export default function ProfileTab () {
           </div>
         </div>
       </div>
-
-      {/* Tier & Badges */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold mb-4">Cấp độ & Huy hiệu</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className={`p-4 rounded-lg ${tierConfig[orgData.tier]?.bgColor || 'bg-gray-100'}`}>
-            <div className="flex items-center gap-3">
-              <Award className={`${tierConfig[orgData.tier]?.iconColor || 'text-gray-600'} w-8 h-8`} />
-              <div>
-                <h4 className="font-semibold">Cấp độ {tierConfig[orgData.tier]?.label}</h4>
-                <p className="text-sm text-gray-600">Tổ chức uy tín</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="p-4 rounded-lg bg-blue-50">
-            <div className="flex items-center gap-3">
-              <CheckCircle className="w-8 h-8 text-blue-600" />
-              <div>
-                <h4 className="font-semibold">Đã xác thực</h4>
-                <p className="text-sm text-gray-600">Admin đã duyệt</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="p-4 rounded-lg bg-yellow-50">
-            <div className="flex items-center gap-3">
-              <Crown className="w-8 h-8 text-yellow-600" />
-              <div>
-                <h4 className="font-semibold">Premium</h4>
-                <p className="text-sm text-gray-600">Tính năng cao cấp</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

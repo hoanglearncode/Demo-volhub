@@ -16,6 +16,8 @@ export default function Layout() {
   
   const active = url.pathname.split('/')[1];
 
+  const role = '';
+
   switch (active) {
     case 'admin':
       return <AdminLayout />

@@ -141,7 +141,6 @@ export default function RegisterPage() {
   };
 
   useEffect(()=> {
-    alert(submitMessage);
   }, [submitMessage]);
 
   return (

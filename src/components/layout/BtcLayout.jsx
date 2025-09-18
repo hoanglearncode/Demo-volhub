@@ -487,33 +487,6 @@ function BtcLayout() {
 
         {/* Main Content */}
         <main className={`flex-1 transition-all duration-300 ${isCollapsed ? 'ml-16' : 'ml-64'}`}>
-          {/* Page Header - Fixed */}
-          <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 z-30">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-800">{getCurrentPageTitle()}</h1>
-                <p className="text-sm text-gray-600 mt-1">
-                  {getPageDescription()}
-                </p>
-              </div>
-              
-              {/* Quick Actions */}
-              <div className="flex items-center gap-2">
-                {location.pathname === '/btc' && (
-                  <>
-                    <button className="px-3 py-1.5 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">
-                      Xuất báo cáo
-                    </button>
-                    <Link to="/btc/events/" className="px-3 py-1.5 text-sm bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
-                      Tạo sự kiện
-                    </Link>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Page Content - Scrollable */}
           <div className="p-6">
             <Routes>
               {/* Dashboard */}
@@ -579,67 +552,62 @@ function BtcLayout() {
       </div>
 
       <div className="block sm:hidden">
-        <div></div>
         <div className="p-6">
-            <Routes>
-              {/* Dashboard */}
-              <Route path="/btc" element={<Dashboard isCollapsed={isCollapsed} />} />
+              <Routes>
+                {/* Dashboard */}
+                <Route path="/btc" element={<Dashboard isCollapsed={isCollapsed} />} />
 
-              {/* Event Management Routes */}
-              <Route path="/btc/events" element={<RecruitmentPage />} />
-              <Route path="/btc/events/calendar" element={<EventCalendarPage />} />
-              <Route path="/btc/events/detail/:id" element={<EventDetailPage />} />
-              <Route path="/btc/events/edit/:id" element={<RecruitmentPostPage />} />
-              <Route path="/btc/events/clone/:id" element={<RecruitmentPostPage />} />
-              <Route path="/btc/events/recruitment-post" element={<RecruitmentPostPage />} />
+                {/* Event Management Routes */}
+                <Route path="/btc/events" element={<RecruitmentPage />} />
+                <Route path="/btc/events/calendar" element={<EventCalendarPage />} />
+                <Route path="/btc/events/detail/:id" element={<EventDetailPage />} />
+                <Route path="/btc/events/edit/:id" element={<RecruitmentPostPage />} />
+                <Route path="/btc/events/clone/:id" element={<RecruitmentPostPage />} />
+                <Route path="/btc/events/recruitment-post" element={<RecruitmentPostPage />} />
 
-              {/* Volunteer Management Routes */}
-              <Route path="/btc/volunteers" element={<VolunteerManagementPage />} />
-              <Route path="/btc/volunteers/recommendations" element={<VolunteerRecommendationPage />} />
-              <Route path="/btc/volunteers/detail/:id" element={<VolunteerDetailPage />} />
-              <Route path="/btc/volunteers/assignment/:eventId" element={<VolunteerAssignmentPage />} />
-              <Route path="/btc/cv-manage" element={<CVManages />} />
-              <Route path="/btc/cv-manage/view-profile/:id" element={<Profile />} />
-              <Route path="/btc/cv-manage/contact/:id" element={<Profile />} />
+                {/* Volunteer Management Routes */}
+                <Route path="/btc/volunteers" element={<VolunteerManagementPage />} />
+                <Route path="/btc/volunteers/recommendations" element={<VolunteerRecommendationPage />} />
+                <Route path="/btc/volunteers/detail/:id" element={<VolunteerDetailPage />} />
 
-              {/* Analytics & Reports Routes */}
-              <Route path="/btc/analytics" element={<OrgAnalyticsPage />} />
-              <Route path="/btc/analytics/events" element={<EventAnalyticsPage />} />
-              <Route path="/btc/recruitment-report" element={<RecruitmentDashboard />} />
-              <Route path="/btc/recruitment/report/:id" element={<RecruitmentReport />} />
+                {/* Analytics & Reports Routes */}
+                <Route path="/btc/analytics" element={<OrgAnalyticsPage />} />
+                <Route path="/btc/analytics/events" element={<EventAnalyticsPage />} />
+                <Route path="/btc/recruitment-report" element={<RecruitmentDashboard />} />
+                <Route path="/btc/recruitment/report/:id" element={<RecruitmentReport />} />
 
-              {/* Organization Profile Routes */}
-              <Route path="/btc/profile" element={<OrgProfileManagement />} />
-              <Route path="/btc/profile/verification" element={<VerifyPage />} />
-              <Route path="/btc/feedback" element={<FeedbackManagementPage />} />
+                {/* Organization Profile Routes */}
+                <Route path="/btc/profile" element={<OrgProfileManagement />} />
+                <Route path="/btc/profile/verification" element={<VerifyPage />} />
+                <Route path="/btc/feedback" element={<FeedbackManagementPage />} />
 
-              {/* Promotion & Media Routes */}
-              <Route path="/btc/promotion" element={<PromotionToolsPage />} />
-              <Route path="/btc/promotion/recap" element={<EventRecapPage />} />
-              <Route path="/btc/blog" element={<BlogManagementPage />} />
-              <Route path="/btc/media" element={<MediaToolsDashboard />} />
+                {/* Promotion & Media Routes */}
+                <Route path="/btc/promotion" element={<PromotionToolsPage />} />
+                <Route path="/btc/promotion/recap" element={<EventRecapPage />} />
+                <Route path="/btc/blog" element={<BlogManagementPage />} />
+                <Route path="/btc/media" element={<MediaToolsDashboard />} />
 
-              {/* Support & Communication Routes */}
-              <Route path="/btc/support" element={<RecruiterSupportPage />} />
-              <Route path="/btc/chat" element={<ChatSystemPage />} />
+                {/* Support & Communication Routes */}
+                <Route path="/btc/support" element={<RecruiterSupportPage />} />
+                <Route path="/btc/chat" element={<ChatSystemPage />} />
 
-              {/* System Routes */}
-              <Route path="/btc/notification-system" element={<SystemNotificationPage />} />
-              <Route path="/btc/notification-system/detail/:id" element={<SystemNotificationPage />} />
-              
-              {/* Account & Settings Routes */}
-              <Route path="/btc/account" element={<Account />} />
-              <Route path="/btc/settings" element={<SettingsPage />} />
-              <Route path="/btc/verify" element={<VerifyPage />} />
-              
-              {/* Additional Routes */}
-              <Route path="/btc/history" element={<HistoryPage />} />
-              <Route path="/btc/services" element={<ServicePurchasePage />} />
-              <Route path="/btc/my-cart" element={<MyCartsPage />} />
-              <Route path="/btc/post-box" element={<PostBoxPage />} />
+                {/* System Routes */}
+                <Route path="/btc/notification-system" element={<SystemNotificationPage />} />
+                <Route path="/btc/notification-system/detail/:id" element={<SystemNotificationPage />} />
+                
+                {/* Account & Settings Routes */}
+                <Route path="/btc/account" element={<Account />} />
+                <Route path="/btc/settings" element={<SettingsPage />} />
+                <Route path="/btc/verify" element={<VerifyPage />} />
+                
+                {/* Additional Routes */}
+                <Route path="/btc/history" element={<HistoryPage />} />
+                <Route path="/btc/services" element={<ServicePurchasePage />} />
+                <Route path="/btc/my-cart" element={<MyCartsPage />} />
+                <Route path="/btc/post-box" element={<PostBoxPage />} />
 
-              <Route path="/btc/*" element={<ErrorState />} />
-            </Routes>
+                <Route path="/btc/*" element={<ErrorState />} />
+              </Routes>
           </div>
       </div>
       {/* Mobile Overlay */}

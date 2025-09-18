@@ -619,7 +619,7 @@ function UserLayout() {
           
           {/* 404 */}
           <Route path="*" element={<NotFoundPage />} />
-        </Routes>
+        </Routes> 
         <ChatBotWidget />
       </main>
       <Footer />
