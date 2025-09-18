@@ -320,8 +320,8 @@ export default function RecruitmentPostPage() {
      ------------------------- */
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="mx-auto">
+    <div className="min-h-screen bg-gray-50">
+      <div className="mx-auto mt-10">
         <div className="bg-white rounded-xl shadow-sm p-8">
           {/* BASIC INFO */}
           <section className="space-y-4 mb-6">

@@ -552,7 +552,7 @@ function BtcLayout() {
       </div>
 
       <div className="block sm:hidden">
-        <div className="p-6">
+        <div className="">
               <Routes>
                 {/* Dashboard */}
                 <Route path="/btc" element={<Dashboard isCollapsed={isCollapsed} />} />
