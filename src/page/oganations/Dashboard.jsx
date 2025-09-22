@@ -1,12 +1,5 @@
 import { useEffect, useState } from "react";
-import dashboardService  from '../../services/oganations/dashboardService.js';
-import RecommendedCandidates from '../../components/oganations/dashboard/RecommendedCandidates.jsx'
-import ImportantNotification from '../../components/oganations/dashboard/ImportantNotification.jsx'
-import VerificationBanner from '../../components/oganations/dashboard/VerificationBanner.jsx'
-import ExploreFeatures from '../../components/oganations/dashboard/ExploreFeatures.jsx'
-import SystemUpdates from '../../components/oganations/dashboard/SystemUpdates.jsx'
-import ErrorState from '../../components/oganations/ErrorState.jsx'
-import KPIDashboard from "../../components/oganations/dashboard/KPIDashboard.jsx";
+
 
 export default function Dashboard() {
   const [isError, setIsError] = useState(false);
@@ -22,7 +15,7 @@ export default function Dashboard() {
     setIsError(false);
     
     try {
-      const value = await dashboardService.getDashboardData();
+      const value = {};
       if (value.success) {
         setData(value.data);
         setNotification(value.data?.notification);
@@ -52,12 +45,6 @@ export default function Dashboard() {
         ) : (
           <div className="max-w-7xl mx-auto">
             <div className="mt-6 space-y-6">
-              <ImportantNotification notification={notification} />
-              <VerificationBanner isVerified={data?.isVerified} />
-              <ExploreFeatures />
-              <KPIDashboard />
-              <RecommendedCandidates candidates={recommendedCandidates} />
-              <SystemUpdates updates={systemUpdates} />
             </div>
           </div>
         )}

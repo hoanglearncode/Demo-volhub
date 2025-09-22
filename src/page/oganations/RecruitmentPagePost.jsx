@@ -320,8 +320,8 @@ export default function RecruitmentPostPage() {
      ------------------------- */
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="mx-auto md:mt-1 mt-10">
+    <div className="min-h-screen bg-gray-50 md:p-6">
+      <div className="mx-auto mb-14">
         <div className="bg-white rounded-xl shadow-sm p-8">
           {/* BASIC INFO */}
           <section className="space-y-4 mb-6">
@@ -402,10 +402,9 @@ export default function RecruitmentPostPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Giờ bắt đầu <span className="text-red-500">*</span></label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Giờ bắt đầu</label>
                 <input type="time" value={formData.startTime} onChange={(e) => handleInputChange('startTime', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.startTime ? 'border-red-500' : 'border-gray-300'}`} />
-                {errors.startTime && <p className="mt-1 text-sm text-red-600">{errors.startTime}</p>}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent`} />
               </div>
             </div>
 
