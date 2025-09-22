@@ -125,15 +125,11 @@ function BenefitsCard({ eventData = {} }) {
 
       <hr className="border-t border-gray-100 my-4" />
 
-      <div className="space-y-3">
+      <div className="space-y-5">
         {extras.map((ex) => {
-          const Icon = ex.Icon;
           return (
             <div key={ex.key} className="flex items-start space-x-3">
-              <div className="flex-shrink-0 mt-0.5">
-                <Icon className="w-5 h-5 text-gray-500" />
-              </div>
-              <div className="min-w-0">
+              <div className="w-full flex flex-col items-start space-x-3 p-3 bg-green-50 rounded-lg">
                 <div className="flex items-baseline space-x-2">
                   <h4 className="text-sm font-semibold text-gray-800">{ex.title}</h4>
                   {ex.highlight && <span className="text-xs text-green-600 font-medium">{ex.highlight}</span>}
@@ -144,11 +140,6 @@ function BenefitsCard({ eventData = {} }) {
           );
         })}
       </div>
-
-      <p className="mt-4 text-xs text-gray-400">
-        Lưu ý: một số quyền lợi có thể áp dụng theo điều kiện hoặc theo quyết định của ban tổ chức. Vui lòng liên hệ để biết chi
-        tiết.
-      </p>
     </div>
   );
 }
@@ -236,6 +227,7 @@ Chúng mình rất hy vọng đem đến những trải nghiệm đáng nhớ ch
     createdAt: '2024-11-20T10:30:00Z',
     updatedAt: '2024-12-01T15:45:00Z',
     createdBy: 'Green Earth Admin',
+    isFinite: false,
   };
 
   const applications = [
@@ -344,14 +336,14 @@ Chúng mình rất hy vọng đem đến những trải nghiệm đáng nhớ ch
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="mt-14 md:mt-0 min-h-screen bg-gray-50 p-4 sm:p-6">
+      <div className="mx-auto">
         {/* Header */}
         <div className="mb-6">
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
             <div className="flex-1 min-w-0">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 truncate">{eventData.title}</h1>
-              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mt-3">
+              <h1 className="text-2xl sm:text-3xl text-wrap font-bold text-gray-900 truncate">{eventData.title}</h1>
+              <div className="flex flex-row flex-wrap md:items-center gap-4 text-xs sm:text-sm text-gray-600 mt-3">
                 <span>ID: {eventData.id}</span>
                 <span> Tạo: {formatDate(eventData.createdAt)}</span>
                 <span> Bởi: {eventData.createdBy}</span>
@@ -360,7 +352,7 @@ Chúng mình rất hy vọng đem đến những trải nghiệm đáng nhớ ch
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+            <div className="flex flex-row items-stretch gap-2">
               <button className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                 <Share2 className="w-4 h-4 mr-2" />
                 Chia sẻ
@@ -443,20 +435,11 @@ Chúng mình rất hy vọng đem đến những trải nghiệm đáng nhớ ch
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <div className="space-y-3 text-sm text-gray-700">
-                      <div className="flex justify-between"><span className="text-gray-600">Số lượng cần tuyển:</span><span className="font-medium">{eventData.volunteersNeeded !== null ? `${eventData.volunteersNeeded} Người` : 'Không giới hạn'}</span></div>
+                      <div className="flex justify-between"><span className="text-gray-600">Số lượng cần tuyển:</span><span className="font-medium">{eventData.volunteersNeeded !== null ? `${eventData.volunteersNeeded} Người` : ''}</span></div>
                       <div className="flex justify-between"><span className="text-gray-600">Độ tuổi:</span><span className="font-medium">{eventData.minAge !== null && eventData.maxAge !== null ? `${eventData.minAge} - ${eventData.maxAge} tuổi` : 'Không yêu cầu'}</span></div>
                       <div className="flex justify-between"><span className="text-gray-600">Giới tính:</span><span className="font-medium">{eventData.genderRequirement === 'any' ? 'Không yêu cầu' : eventData.genderRequirement}</span></div>
                       <div className="flex justify-between"><span className="text-gray-600">Kinh nghiệm:</span><span className="font-medium capitalize">{eventData.experienceLevel}</span></div>
                     </div>
-                  </div>
-
-                  <div>
-                    <h4 className="font-medium mb-3">Kỹ năng yêu cầu:</h4>
-                    <ul className="list-disc ml-6 space-y-2 text-sm text-gray-700">
-                      {eventData.skillsRequired.map((skill, idx) => (
-                        <li key={`${skill}-${idx}`}>{skill}</li>
-                      ))}
-                    </ul>
                   </div>
                 </div>
 
@@ -655,7 +638,7 @@ Chúng mình rất hy vọng đem đến những trải nghiệm đáng nhớ ch
             <div className="p-4 md:p-6 border-t border-gray-200 bg-gray-50 flex flex-col md:flex-row items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <button className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"><CheckCircle className="w-4 h-4 mr-2" />Duyệt tất cả</button>
-                <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"><Download className="w-4 h-4 mr-2" />Xuất danh sách</button>
+                {eventData.isFinite && <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"><Download className="w-4 h-4 mr-2" />Xuất danh sách</button>}
               </div>
               <div className="text-sm text-gray-600">Hiển thị {applications.length} / {eventData.stats.applications} đăng ký</div>
             </div>
@@ -799,7 +782,7 @@ Chúng mình rất hy vọng đem đến những trải nghiệm đáng nhớ ch
               <div>
                 <h4 className="font-medium text-gray-900 mb-3">Thông báo</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <button className="flex items-center justify-center px-4 py-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100"><MessageSquare className="w-5 h-5 mr-2" />Gửi thông báo cho TNV</button>
+                  <button className="flex items-center justify-center px-4 py-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100"><MessageSquare className="w-5 h-5 mr-2" />Gửi thông báo cho ứng viên</button>
                   <button className="flex items-center justify-center px-4 py-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100"><Bell className="w-5 h-5 mr-2" />Nhắc nhở deadline</button>
                 </div>
               </div>
