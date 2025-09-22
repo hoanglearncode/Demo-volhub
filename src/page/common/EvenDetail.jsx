@@ -387,6 +387,7 @@ Chúng mình rất hy vọng đem đến những trải nghiệm đáng nhớ ch
     endDate: '2024-12-15',
     startTime: '06:00',
     endTime: '11:00',
+    deadline: '2024-12-13',
     location: 'Vinhomes Oceanpark 3, Hưng Yên',
     address: null,
     coordinates: { lat: 10.3364, lng: 107.0861 },
@@ -527,13 +528,17 @@ Chúng mình rất hy vọng đem đến những trải nghiệm đáng nhớ ch
     return configs[priority] || configs.normal;
   };
 
-  const formatDate = (dateString) =>
-    new Date(dateString).toLocaleDateString('vi-VN', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+ const formatDateDMY = (dateString) => {
+    if (!dateString) return '';
+    const d = new Date(dateString);
+    if (Number.isNaN(d.getTime())) return '';
+
+    return d.toLocaleDateString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }); // ví dụ: "15/12/2024"
+  };
 
   const formatTime = (timeString) => timeString;
 
@@ -550,11 +555,9 @@ Chúng mình rất hy vọng đem đến những trải nghiệm đáng nhớ ch
             <div className="flex-1 min-w-0">
               <h1 className="text-2xl sm:text-3xl text-wrap font-bold text-gray-900 truncate">{eventData.title}</h1>
               <div className="flex flex-col md:flex-row flex-wrap md:items-center gap-4 text-sm text-gray-600 mt-3">
-                <span>ID: {eventData.id}</span>
-                <span> Tạo: {formatDate(eventData.createdAt)}</span>
+                <span> Đăng lúc: {formatDateDMY(eventData.createdAt)}</span>
                 <span> Bởi: {eventData.createdBy}</span>
-                <span> Priority: {priorityConfig.label}</span>
-                <span> Trạng thái: {statusConfig.label}</span>
+                <span className='font-semibold text-red-700'> Hạn đăng ký: {formatDateDMY(eventData.deadline)}</span>
               </div>
             </div>
 
@@ -625,7 +628,7 @@ Chúng mình rất hy vọng đem đến những trải nghiệm đáng nhớ ch
                   <div className="flex items-start space-x-3">
                     <Calendar className="w-5 h-5 text-gray-500 mt-0.5" />
                     <div>
-                      <p className="font-medium">{formatDate(eventData.startDate)}</p>
+                      <p className="font-medium">{formatDateDMY(eventData.startDate)}</p>
                       <p className="text-sm text-gray-600">{formatTime(eventData.startTime)} - {formatTime(eventData.endTime)}</p>
                     </div>
                   </div>
