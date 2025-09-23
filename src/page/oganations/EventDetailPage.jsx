@@ -415,18 +415,19 @@ Chúng mình rất hy vọng đem đến những trải nghiệm đáng nhớ ch
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Main */}
             <div className="lg:col-span-2 space-y-6">
-              <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                <img src={eventData.coverImage} alt="Event cover" className="w-full h-56 sm:h-72 md:h-80 object-cover" />
-              </div>
-
-              <div className="bg-white rounded-xl shadow-sm p-6">
-                <h3 className="text-lg font-semibold mb-4">Mô tả sự kiện</h3>
-                <div className="prose max-w-none">
-                  {eventData.description.split('\n').map((paragraph, idx) => (
-                    <p key={idx} className="text-gray-700 leading-relaxed">
-                      {paragraph}
-                    </p>
-                  ))}
+              <div className='rounded-xl shadow-sm overflow-hidden'>
+                <div className="overflow-hidden">
+                  <img src={eventData.coverImage} alt="Event cover" className="w-full h-56 sm:h-72 md:h-80 object-cover" />
+                </div>
+                <div className="bg-white p-6">
+                  <h3 className="text-lg font-semibold mb-4">Mô tả sự kiện</h3>
+                  <div className="prose max-w-none">
+                    {eventData.description.split('\n').map((paragraph, idx) => (
+                      <p key={idx} className="text-gray-700 leading-relaxed">
+                        {paragraph}
+                      </p>
+                    ))}
+                  </div>
                 </div>
               </div>
 

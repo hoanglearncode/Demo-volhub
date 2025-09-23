@@ -133,11 +133,6 @@ function BenefitsCard({ eventData = {} }) {
           );
         })}
       </div>
-
-      <p className="mt-4 text-xs text-gray-400">
-        Lưu ý: một số quyền lợi có thể áp dụng theo điều kiện hoặc theo quyết định của ban tổ chức. Vui lòng liên hệ để biết chi
-        tiết.
-      </p>
     </div>
   );
 }
@@ -578,20 +573,22 @@ Chúng mình rất hy vọng đem đến những trải nghiệm đáng nhớ ch
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Main */}
             <div className="lg:col-span-2 space-y-6">
-              <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                <img src={eventData.coverImage} alt="Event cover" className="w-full h-56 sm:h-72 md:h-80 object-cover" />
-              </div>
-
-              <div className="bg-white rounded-xl shadow-sm p-6">
-                <h3 className="text-lg font-semibold mb-4">Mô tả sự kiện</h3>
-                <div className="prose max-w-none">
-                  {eventData.description.split('\n').map((paragraph, idx) => (
-                    <p key={idx} className="text-gray-700 leading-relaxed">
-                      {paragraph}
-                    </p>
+              <div className='rounded-xl overflow-hidden shadow-sm '>
+                <div className="bg-white shadow-sm overflow-hidden">
+                  <img src={eventData.coverImage} alt="Event cover" className="w-full h-56 sm:h-72 md:h-80 object-cover" />
+                </div>
+                <div className="bg-white p-6">
+                  <h3 className="text-lg font-semibold mb-4">Mô tả sự kiện</h3>
+                  <div className="prose max-w-none">
+                    {eventData.description.split('\n').map((paragraph, idx) => (
+                      <p key={idx} className="text-gray-700 leading-relaxed">
+                        {paragraph}
+                      </p>
                   ))}
                 </div>
               </div>
+              </div>
+
 
               <div className="bg-white rounded-xl shadow-sm p-6">
                 <h3 className="text-lg font-semibold mb-4">Yêu cầu tình nguyện viên</h3>
